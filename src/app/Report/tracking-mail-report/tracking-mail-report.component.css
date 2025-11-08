@@ -1,0 +1,81 @@
+
+a {
+    color: #5d9cec;
+    text-decoration: none;
+    background-color: transparent;
+    font-size: 11px !important;
+}
+
+a:hover {
+    text-decoration: underline; /* or 'visible' depending on your desired effect */
+}
+
+.custom-grid .e-gridheader, .custom-grid .e-rowcell, .custom-grid .headerText {
+  font-size: 10px !important;
+
+}
+ 
+:host ::ng-deep .custom-grid .e-headertext {
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  font-size: 10px;
+}
+*{
+	font-size: 10px !important;
+}
+ 
+.th2
+{
+	color: #ffffff;
+}
+.required:after {
+    content:" *";
+    color: red;
+    }
+
+.btnn{
+	font-size: 15px;
+	margin-top: -12px;
+	background-color: #D3D3D3;
+	border-radius: 3px;
+	border: 1px solid #f2f2f2;
+	margin-left: -3px;
+}
+.btnn:hover{
+	background-color: #37bee7;
+	color: #fff;
+}
+.btnn:focus{
+	border-top: 2px solid #37bee7;
+	border-right: 0.1px solid #f2f2f2;
+	border-left: 0.1px solid #f2f2f2;
+	border-bottom: 1px solid #fff;
+	background-color: #fff;
+	color: #000;
+}
+
+input,textarea,select
+{
+	border: 1px solid rgb(202, 203, 204);
+}
+ 
+thead {
+	width: calc( 100% - 1em )
+  }
+  tbody {
+	display: block;
+	overflow: auto;
+	width: 100%;
+  }
+  
+  thead tr {
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+  }
+  
+  thead, tbody tr {
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+  }

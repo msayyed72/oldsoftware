@@ -1,0 +1,70 @@
+.red-circle {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: red;
+    border-radius: 50%;
+  }
+  
+  .green-circle {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: green;
+    border-radius: 50%;
+  }
+
+.draging_image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.9); /* semi-transparent white */
+  z-index: 9999999;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.draging_image_content {
+  text-align: center;
+  pointer-events: none;
+}
+
+.draging_image_content i {
+  font-size: 64px;
+  color: #4CAF50; /* green drag icon */
+  margin-bottom: 16px;
+}
+
+.draging_image_content p {
+  font-size: 18px;
+  color: #333;
+}
+
+
+
+.no-scroll {
+  overflow: hidden;
+}
+
+
+thead tr th{
+    background-color: #6b46c1;
+}
+/* Apply to entire grid */
+::ng-deep .e-grid .e-rowcell,
+::ng-deep .e-grid .e-headertext {
+  font-size:10px !important;   /* Adjust size as per your requirement */
+  line-height: 18px;            /* Optional for better spacing */
+}
+ejs-grid{
+      background-color: #0c0808!important; /* Set your desired background color */
+
+}
+.e-grid-header {
+  background-color: #4CAF50; /* Green background for header */
+}

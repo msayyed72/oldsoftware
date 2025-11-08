@@ -1,0 +1,595 @@
+
+<ol class="flex flex-wrap items-center gap-y-4 font-semibold text-gray-500 dark:text-white-dark mb-3">
+    <li>
+        <a href="javascript:;"
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+            <icon-home />
+        </a>
+    </li>
+   
+    <li
+        class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full before:bg-primary">
+        <a href="javascript:;" routerLink="/Manifest/to-shipment-company"
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 text-primary shadow dark:border-0 dark:bg-[#191e3a]">
+            <icon-box class="shrink-0 ltr:mr-2 rtl:ml-2" />
+
+             Shipment Manifest & Dispatch
+        </a>
+    </li>
+    <li
+        class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full before:bg-primary">
+        <button 
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+            <icon-cpu-bolt class="ltr:mr-2 rtl:ml-2" />
+Shipments Awaiting Manifest       
+        </button>
+
+        
+    </li>
+
+</ol>
+
+
+<div class="min-h-screen p-1 md:px-0">
+  <div class="container-fulid grid grid-cols-1 md:grid-cols-12 ">
+
+    <div class="md:col-span-3  rounded-lg shadow-md p-4 flex flex-col">
+      <div class="text-center font-bold text-lg mb-4"> UNDER MANIFESTATION </div>
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-4 text-xs">
+        <div class="text-gray-600">Tot Inv: <span class="font-bold">{{totalCartonLeft}}</span></div>
+        <div class="text-gray-600">Tot WT: <span class="font-bold">{{totalWeightSumRef}}</span></div>
+        <div class="text-gray-600">Tot Ctn: <span class="font-bold">{{stock_non_booking_B_To_B.length}}</span></div>
+      </div>
+
+      <!-- Non-booked Carton Table with Scroll -->
+      <div class="overflow-x-auto max-w-full h-[80vh] overflow-auto">
+        <table class="table w-full text-xs">
+          <thead style="position: sticky;top: 0px;">
+            <tr>
+              <th class="w-1/5 p-1">Hawb No.</th>
+              <th class="w-1/5 p-1">Wgt</th>
+              <th class="w-1/5 p-1">Ctn</th>
+              <th class="w-1/5 p-1">Bag no.</th>
+              <th class="w-1/5 p-1">Aadhar ver...</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container
+              *ngFor="let stock_non_booking_B_To_B of stock_non_booking_B_To_B, let i=index;trackBy: trackByFn">
+              <tr
+                (dblclick)=" viewAadharVerifycation(stock_non_booking_B_To_B);openModelForEdit(stock_non_booking_B_To_B)"
+                (click)="assignnonbook(stock_non_booking_B_To_B); changeTableRowColor(i)" [ngStyle]="{
+    'background-color': stock_non_booking_B_To_B.packed_unpacked_status == 1 ? 'red' :
+                        rowClicked === i ? 'lightgray' : 'white'
+  }">
+
+                <td class="p-1" [ngStyle]="{'color':stock_non_booking_B_To_B.color ? 'red' : 'black' }">
+                  {{stock_non_booking_B_To_B.invoice_no}}</td>
+                <td class="p-1" [ngStyle]="{'color':stock_non_booking_B_To_B.color ? 'red' : 'black' }">
+                  {{stock_non_booking_B_To_B.total_wt_sum}}</td>
+                <td class="p-1" [ngStyle]="{'color':stock_non_booking_B_To_B.color ? 'red' : 'black' }">
+                  {{stock_non_booking_B_To_B.carton_no}}/{{stock_non_booking_B_To_B.total_carton}}</td>
+                <td class="p-1" [ngStyle]="{'color':stock_non_booking_B_To_B.color ? 'red' : 'black' }">
+                  {{stock_non_booking_B_To_B.bag_no}}</td>
+                <td class="p-1" [ngStyle]="{'color': stock_non_booking_B_To_B.color ? 'red' : 'black' }"
+                  style="display: flex;justify-content: center;">
+
+                  <i class="fas fa-id-card text-danger"
+                    (click)="viewAadharVerifycation(stock_non_booking_B_To_B); this.openModelForEdit(stock_non_booking_B_To_B)"></i>
+                </td>
+
+
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Receiving Mode -->
+    <div class="md:col-span-6  rounded-lg shadow-md p-4 flex flex-col items-center">
+      <div class="text-center font-bold text-lg mb-4">Receiving Mode</div>
+      <div class="flex mb-4 bg-gray-200 rounded-full p-1">
+        <button
+          [ngClass]="{'bg-indigo-500 text-white': isInvoiceActive, 'bg-transparent text-gray-600': !isInvoiceActive}"
+          class="px-6 py-2 rounded-full font-semibold text-sm" (click)="onInvoiceClick()">Invoice</button>
+        <button
+          [ngClass]="{'bg-indigo-500 text-white': isBarcodeActive, 'bg-transparent text-gray-600': !isBarcodeActive}"
+          class="px-6 py-2 rounded-full font-semibold text-sm" (click)="onBarcodeClick()">Barcode</button>
+      </div>
+      <form [formGroup]="valForm" class="w-full">
+
+
+
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-4">
+          <input type="text" placeholder="Invoice_No" class="p-2 border rounded-md w-full text-sm"
+            formControlName="p_invoiceNumber" (change)="getsearchbyinvoice(valForm.value)" #invoiceno>
+          <input type="text" placeholder="Carton_No" class="p-2 border rounded-md w-full text-sm" #carton
+            (change)="getsearchbycarton(valForm.value)" formControlName="p_cartonNumber"
+            oninput="this.value = this.value.replace(/[^0-9/.]/g, '').replace(/(\..*)\./g, '$1');">
+        </div>
+        <input type="text" placeholder="Barcode_No" class="p-2 border rounded-md w-full mb-4 text-sm"
+          formControlName="p_barcodeNumber" (change)="getsearchbybarcode(valForm.value)" (keyup.enter)="barcodefocus()"
+          #barcode>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-4">
+          <input type="text" placeholder="Weight" class="p-2 border rounded-md w-full text-sm"
+            formControlName="p_cartonWeight"
+            oninput="this.value = this.value.replace(/[^0-9/.]/g, '').replace(/(\..*)\./g, '$1');">
+          <select class="form-input" formControlName="p_packingCondition">
+            <option value="" disabled selected hidden="">GOOD</option>
+            <option *ngFor="let PackingConditionReceivingBranch of PackingConditionReceivingBranch"
+              value="{{PackingConditionReceivingBranch.pack_condition}}">
+              {{PackingConditionReceivingBranch.pack_condition}}
+            </option>
+          </select>
+        </div>
+        <div class="flex flex-wrap justify-center gap-2 mb-4">
+          <button class="bg-blue-500 text-white px-4 py-2 rounded-md text-sm" (click)="availablenonbooking.open()">Add All</button>
+          <button (click)="submitForm($event, valForm.value)"
+                #save class="btn btn-success">Save</button>
+          <!-- <button class="bg-yellow-500 text-white px-4 py-2 rounded-md text-sm">Update</button> -->
+          <button class="bg-gray-400 text-white px-4 py-2 rounded-md text-sm" (click)="reset()">Reset</button>
+          <button class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm"
+            routerLink="/Manifest/to-shipment-company">Back</button>
+          <button class="btn btn-danger" (click)="deletefuntion.open()"
+                [ngClass]="{'bnt-hide': btn !=='2' && btn !=='4'}" [disabled]="btn !=='2' && btn !=='4'">Delete</button>
+        </div>
+      </form>
+      <!-- Stock Table -->
+      <div class="w-full flex-1 flex flex-col">
+        <div class="text-center font-bold text-lg mb-2">STOCK</div>
+        <div class="w-full flex-1" style="flex: none;">
+          <ejs-grid #grid style="width: 100% !important;" [dataSource]="stock_B_To_B"
+            (dataBound)="bindHeaderCheckboxEvent()" (rowSelected)="onRowSelected($event)"
+            (rowDeselected)="onRowDeselected($event)" height="100%"
+            [selectionSettings]="{ type: 'Multiple', mode: 'Row', checkboxOnly: true }" [allowSelection]="true">
+
+            <e-columns>
+              <!-- Master Checkbox Column -->
+              <e-column type="checkbox" width="50"></e-column>
+
+              <!-- SR NO. -->
+              <e-column headerText="SR NO." width="80" textAlign="Center" [template]="indexTemplate"></e-column>
+              <ng-template #indexTemplate let-data>
+                {{ +data.index + 1 }}
+              </ng-template>
+
+              <!-- Branch -->
+              <e-column field="deliveryAreaCode" headerText="Branch" width="120"></e-column>
+
+              <!-- Manifest No. or Seal No. -->
+              <e-column headerText="Manifest No." width="160" [template]="manifestTemplate"></e-column>
+              <ng-template #manifestTemplate let-data>
+                <span *ngIf="data.seal_no">{{ data.seal_no }}</span>
+                <span *ngIf="!data.seal_no">{{ data.ptp_mf_no }}</span>
+              </ng-template>
+
+              <!-- Manifest Date -->
+              <e-column field="manifest_date" headerText="Manifest Date" width="120"></e-column>
+
+              <!-- Tot Pcs -->
+              <e-column field="total_carton" headerText="Tot Pcs" width="100" textAlign="Right"></e-column>
+
+              <!-- Tot Wgt -->
+              <e-column field="total_weight" headerText="Tot Wgt" width="100" textAlign="Right"></e-column>
+            </e-columns>
+          </ejs-grid>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booked Carton -->
+    <div class="md:col-span-3  rounded-lg shadow-md p-4 flex flex-col">
+      <div class="text-center font-bold text-lg mb-4">MANIFESTED</div>
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-4 text-xs">
+        <div class="text-gray-600">Tot Inv: <span class="font-bold">{{totalCartonRight}}</span></div>
+        <div class="text-gray-600">Tot WT: <span class="font-bold">{{totalWeightSumRef2.toFixed(2)}}</span></div>
+        <div class="text-gray-600">Tot Ctn: <span class="font-bold">{{
+            stock_booking_B_To_B.length}}</span></div>
+      </div>
+      <!-- <div class="grid grid-cols-2 gap-2 mb-4">
+        <select class="block w-full rounded-md border-gray-300 shadow-sm text-xs">
+          <option>Select-Mode</option>
+        </select>
+        <select class="block w-full rounded-md border-gray-300 shadow-sm text-xs">
+          <option>Select-Country</option>
+        </select>
+      </div> -->
+      <div class="overflow-x-auto max-w-full h-[80vh] overflow-auto">
+        <table class="table w-full text-xs">
+          <thead style="position: sticky;top: 0px;">
+            <tr>
+              <!-- <th>S.No</th> -->
+              <th class="text-white"><input type="checkbox" (change)="CheckAlldelete()"></th>
+              <th class="w-1/5 p-1">Hawb No.</th>
+              <th class="w-1/5 p-1">Wgt</th>
+              <th class="w-1/5 p-1">Ctn</th>
+              <th class="w-1/5 p-1">Bag</th>
+              <th class="w-1/5 p-1 cursor-pointer" [appSort]="stock_booking_B_To_B" data-order="desc" data-name="manifest_final_wt" >Finel Weight</th>
+              <!-- <th class="text-white">Destination</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stock_booking_B_To_B of stock_booking_B_To_B, let i=index"
+              (click)="assignbook(stock_booking_B_To_B)" (click)="changeTableRowColor_booked(i)"
+              [ngStyle]="{'background-color':rowClicked_booked === i ? 'lightgray' : 'white' }">
+              <td class="p-1"><input type="checkbox"
+                  (change)="onChangedelete($event, stock_booking_B_To_B.mf_details_id)"
+                  [(ngModel)]="stock_booking_B_To_B.checked"></td>
+              <td class="p-1" [ngStyle]="{'color':stock_booking_B_To_B.color ? 'red' : 'black' }">
+                {{stock_booking_B_To_B.invoice_no}}</td>
+              <td class="p-1" [ngStyle]="{'color':stock_booking_B_To_B.color ? 'red' : 'black' }">
+                {{stock_booking_B_To_B.total_wt_sum ? stock_booking_B_To_B.total_wt_sum.toFixed(2) : 0 }}</td>
+              <td class="p-1" [ngStyle]="{'color':stock_booking_B_To_B.color ? 'red' : 'black' }">
+                {{stock_booking_B_To_B.carton_no}}</td>
+              <td class="p-1" [ngStyle]="{'color':stock_booking_B_To_B.color ? 'red' : 'black' }">
+                {{stock_booking_B_To_B.box_no}}</td>
+              <td class="p-1" [ngStyle]="{'color':stock_booking_B_To_B.color ? 'red' : 'black' }">
+                {{stock_booking_B_To_B.manifest_final_wt}}</td>
+              <!-- <td [ngStyle]="{'color':stock_booking_B_To_B.color ? 'red' : 'black' }">
+                    {{stock_booking_B_To_B.print_title}}</td> -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+<modal #ManifestModel class="modal-top extra-large-modal" [closeOnOutsideClick]="false">
+  <ng-template #modalHeader>
+    <div>Update Shipment Details </div>
+  </ng-template>
+
+  <ng-template #modalBody>
+    <div class="grid grid-cols-1 sm:grid-cols-2 w-full">
+      <div class="border-r h-[80vh] overflow-auto">
+        <div class="p-3">
+          <h6 class="mb-3">Document Preview</h6>
+          <div class="document-viewer">
+            <div *ngIf="allDate; else noFiles">
+              <!-- <div class="image-wrapper" (wheel)="onWheel($event)" (mousedown)="onMouseDown($event)"
+                (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp()" (mouseleave)="onMouseUp()">
+
+                <img *ngIf="allDate.final_weight_image" [src]="allDate.final_weight_image | safeUrl" alt="Final Weight"
+                  class="img-fluid" [ngStyle]="{ 
+                            transform: 'scale(' + zoom + ') translate(' + offsetX + 'px, ' + offsetY + 'px)' 
+                        }" />
+
+                <div class="toolbar-inside-image">
+                  <i class="fa fa-search-minus text-white" (click)="zoomOut()" [class.active]="zoom === minZoom"></i>
+                  <i class="fa fa-undo text-white" (click)="resetZoom()" [class.active]="zoom === 1"></i>
+                  <i class="fa fa-search-plus text-white" (click)="zoomIn()" [class.active]="zoom === maxZoom"></i>
+                </div>
+              </div> -->
+              <ng-container [ngSwitch]="weighturl.kind">
+  <!-- Drive (preview iframe) -->
+  <iframe *ngSwitchCase="'drive'"
+          [src]="weighturl.safeSrc"
+          class="w-full border rounded"
+          style="height:100vh;"></iframe>
+
+  <!-- PDF (ngx-doc-viewer needs a plain string) -->
+  <ngx-doc-viewer *ngSwitchCase="'pdf'"
+                  [url]="weighturl.url"
+                  viewer="google"
+                  style="width:100%;height:100vh;"></ngx-doc-viewer>
+
+  <!-- Full HTML from API rendered via Blob URL in iframe -->
+  <iframe *ngSwitchCase="'iframe'"
+          [src]="weighturl.safeSrc"
+          class="w-full border rounded"
+          style="height:100vh;"></iframe>
+
+  <!-- (Optional) If you ever use sanitized HTML fragments -->
+  <div *ngSwitchCase="'html'"
+       class="w-full border rounded"
+       [innerHTML]="weighturl.html"></div>
+</ng-container>
+              <!-- FRONT -->
+<ng-container [ngSwitch]="front.kind">
+  <!-- Drive (preview iframe) -->
+  <iframe *ngSwitchCase="'drive'"
+          [src]="front.safeSrc"
+          class="w-full border rounded"
+          style="height:100vh;"></iframe>
+
+  <!-- PDF (ngx-doc-viewer needs a plain string) -->
+  <ngx-doc-viewer *ngSwitchCase="'pdf'"
+                  [url]="front.url"
+                  [viewer]="'google'"
+                  style="width:100%;height:100vh;"></ngx-doc-viewer>
+
+  <!-- Full HTML from API rendered via Blob URL in iframe -->
+  <iframe *ngSwitchCase="'iframe'"
+          [src]="front.safeSrc"
+          class="w-full border rounded"
+          style="height:100vh;"></iframe>
+
+  <!-- (Optional) If you ever use sanitized HTML fragments -->
+  <div *ngSwitchCase="'html'"
+       class="w-full border rounded"
+       [innerHTML]="front.html"></div>
+</ng-container>
+
+<!-- BACK (same idea) -->
+<ng-container [ngSwitch]="back.kind">
+  <iframe *ngSwitchCase="'drive'"
+          [src]="back.safeSrc"
+          class="w-full border rounded"
+          style="height:100vh;"></iframe>
+
+  <ngx-doc-viewer *ngSwitchCase="'pdf'"
+                  [url]="back.url"
+                  [viewer]="'google'"
+                  style="width:100%;height:100vh;"></ngx-doc-viewer>
+
+  <iframe *ngSwitchCase="'iframe'"
+          [src]="back.safeSrc"
+          class="w-full border rounded"
+          style="height:100vh;"></iframe>
+
+  <div *ngSwitchCase="'html'"
+       class="w-full border rounded"
+       [innerHTML]="back.html"></div>
+</ng-container>
+
+
+              
+<!-- 
+              <iframe *ngIf="allDate.aadhar_url_front" [src]="convertToPreviewUrl(allDate.aadhar_url_front) | safeUrl"
+                class="w-full border rounded" style="height: 100vh; overflow: auto;">
+              </iframe>
+              <iframe *ngIf="allDate.aadhar_url_back" [src]="convertToPreviewUrl(allDate.aadhar_url_back) | safeUrl"
+                class="w-full border rounded" style="height: 100vh; overflow: auto;">
+              </iframe> -->
+            </div>
+            <ng-template #noFiles>
+              <div class="text-center text-muted p-4">
+                No documents to display
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Second Column -->
+      <div class="mt-4 p-2">
+        <h6 class="mb-3">Receiver Details For Ref:- <span class="text-danger">{{this.HawbNo}}</span></h6>
+
+        <div class="mb-4">
+          <label for="input1" class="block text-sm font-medium text-gray-700">Full Name</label>
+          <input type="text" id="input1" class="form-input" [(ngModel)]="name" [ngModelOptions]="{standalone: true}"
+            name="name" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="input2" class="block text-sm font-medium text-gray-700">Aadhar Number</label>
+          <input type="text" id="input2" class="form-input" [ngModelOptions]="{standalone: true}" [(ngModel)]="aadharNo"
+            name="aadharNo" placeholder="XXXX XXXX XXXX" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="input3" class="block text-sm font-medium text-gray-700">Registered Address</label>
+          <textarea type="text" id="input3" class="form-input" [(ngModel)]="aadharAddress" rows="4" required></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label for="input4" class="block text-sm font-medium text-gray-700">Shipment Final Weight</label>
+          <input type="text" id="input4" class="form-input" [(ngModel)]="finalWeight"
+            [ngModelOptions]="{standalone: true}" name="finalWeight" required>
+        </div>
+        <div>
+  <div class="flex flex-wrap">
+    <!-- Front Aadhaar Upload Section -->
+    <div class="w-full md:w-1/2 mb-4">
+      <label for="aadhaarFront" class="block text-sm font-medium text-gray-700">{{ frontLabel }}</label>
+      <div class="upload-area border p-4 text-center" *ngIf="!frontUploaded">
+        <p class="mb-2">Choose File</p>
+        <input type="file" id="aadhaarFront" [ngModelOptions]="{standalone: true}"
+          [(ngModel)]="frontaddharIngFile" (change)="frontAadhaarCard($event); onFileSelected($event);"
+          class="form-control p-2 border border-gray-300 rounded-md w-full" />
+      </div>
+      <div *ngIf="previewUrlFront" class="text-center mt-2">
+        <img [src]="previewUrlFront" height="150" class="img-fluid rounded border" />
+        <div class="mt-1 text-sm text-gray-500">{{ frontUploaded ? 'Front Uploaded' : '' }}</div>
+      </div>
+    </div>
+
+    <!-- Back Aadhaar Upload Section -->
+    <div class="w-full md:w-1/2 mb-4" *ngIf="frontUploaded || backUploaded">
+      <label for="aadhaarBack" class="block text-sm font-medium text-gray-700">{{ backLabel }}</label>
+      <div class="upload-area border p-4 text-center" *ngIf="!backUploaded">
+        <p class="mb-2">Choose File</p>
+        <input type="file" id="aadhaarBack" [ngModelOptions]="{standalone: true}"
+          [(ngModel)]="BackaddharIngFile" (change)="backAadhaarCard($event); onFileSelected1($event);"
+          class="form-control p-2 border border-gray-300 rounded-md w-full" />
+      </div>
+      <div *ngIf="previewUrlBack" class="text-center mt-2">
+        <img [src]="previewUrlBack" height="150" class="img-fluid rounded border" />
+        <div class="mt-1 text-sm text-gray-500">{{ backUploaded ? 'Back Uploaded' : '' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Message -->
+  <div class="text-center mt-2" *ngIf="aadhaar_loading">
+    <span class="text-yellow-500">Please wait a moment...</span>
+  </div>
+</div>
+
+<!-- Re-upload Button -->
+<div class="row">
+  <div class="w-full lg:w-1/4">
+    <button type="button" (click)="reUploadAadhar()" *ngIf="frontUploaded || backUploaded"
+      class="btn btn-success w-full mt-3 py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600">
+      ReUpload
+    </button>
+  </div>
+</div>
+
+
+        <!-- Buttons - 2 rows -->
+        <div class="grid grid-cols-2 gap-4 mt-4">
+          <!-- Row 1 -->
+          <button class="btn btn-primary"
+            [disabled]="!frontUploaded || !backUploaded" (click)="UpdateAadharDetailsImages()">
+            Update Aadhar Details
+          </button>
+          <button (click)="UpdateAadharDetails()"
+            class="px-6 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600">
+            Update Details
+          </button>
+
+          <!-- Row 2 -->
+          <button (click)="submitForm($event, valForm.value)"
+            class="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-md hover:bg-yellow-600">
+            Send to Manifest
+          </button>
+          <button (click)="OpenSheetData()"
+            class="px-6 py-2 bg-purple-500 text-white font-semibold rounded-md hover:bg-purple-600">
+            Fetch from Google Sheet
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </ng-template>
+
+
+</modal>
+
+<modal #SheetData class="modal-top extra-large-modal" [closeOnOutsideClick]="false">
+  <ng-template #modalHeader>
+    <div>Sheet Data</div>
+  </ng-template>
+  <ng-template #modalBody>
+    <ejs-grid appInputSearch [dataSource]="fetchSystemData" [toolbar]="['Search']" height="80vh" [allowPaging]="true"
+      [allowSorting]="true" [pageSettings]="{ pageSize: 50 }" [allowFiltering]="true"
+      [filterSettings]="{ type: 'Excel' }">
+      <e-columns>
+        <e-column field="sr_no" headerText="S.No" width="80"></e-column>
+        <e-column field="Receiver_name" headerText="Receiver Name" width="200"></e-column>
+        <e-column field="Receiver_Address" headerText="Address" width="300"></e-column>
+        <e-column field="Receiver_ID_ No" headerText="Aadhaar No" width="180"></e-column>
+        <e-column field="Aadhaar_Link_1" headerText="Aadhaar Link" width="150"
+          [template]="aadhaarLinkTemplate"></e-column>
+        <e-column field="Count" headerText="Used Count" width="70"></e-column>
+        <e-column headerText="Action" width="150" [template]="SelectItem"></e-column>
+
+      </e-columns>
+    </ejs-grid>
+    <ng-template #SelectItem let-data>
+      <!-- <a href=""></a> -->
+        <!-- <svg xmlns="http://www.w3.org/2000/svg" class="absolute right-2 top-2 h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg> -->
+      <button class="btn btn-danger btn-sm" style="font-weight: normal;" (click)="SetData(data)">Select</button>
+    </ng-template>
+    <!-- Aadhaar Link Template -->
+    <ng-template #aadhaarLinkTemplate let-data>
+      <a [href]="data.Aadhaar_Link_1  | safeUrl" target="_blank" *ngIf="data.Aadhaar_Link_1">View</a>
+      <span *ngIf="!data.Aadhaar_Link_1">N/A</span>
+    </ng-template>
+  </ng-template>
+
+</modal>
+
+
+
+<modal #availablenonbooking class="modal-top extra-large-modal" [closeOnOutsideClick]="false">
+  <ng-template #modalHeader>
+    <div>Bulk Insert</div>
+  </ng-template>
+  <ng-template #modalBody>
+   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  <div class="w-full">
+    <button type="button" *ngIf="arrall" class="btn-dark mb-2 px-4 py-2 bg-gray-800 text-white rounded-md flex items-center">
+      Total Hawb: 
+      <span class="badge my-0 bg-white text-black ml-4">{{ arrall.length }}</span>
+    </button>
+  </div>
+  <div class="w-full">
+    <button type="button" *ngIf="selected2" class="btn-dark mb-2 px-4 py-2 bg-gray-800 text-white rounded-md flex items-center">
+      Total Package:
+      <span class="badge my-0 bg-white text-black ml-4">{{ selected2.length }}</span>
+    </button>
+  </div>
+  <div class="w-full">
+    <button type="button" class="btn-dark mb-2 px-4 py-2 bg-gray-800 text-white rounded-md flex items-center">
+      Total Weight:
+      <span class="badge my-0 bg-white text-black ml-4">{{ tot_clr_wgt_add_all }} kg</span>
+    </button>
+  </div>
+</div>
+
+       <div class="table-responsive">
+          <ejs-grid #nonBookGrid [dataSource]="stock_non_booking_B_To_B" height="70vh" [allowSorting]="true"
+            [allowFiltering]="true" [filterSettings]="{ type: 'Menu' }"
+            (rowSelected)="assignnonbook($event.data); setCartonId()" (rowDeselected)="setCartonId()"
+            [toolbar]="['Search','Add']" [allowPaging]="false" appInputSearch [allowExcelExport]="true"
+            [allowPdfExport]="true" [editSettings]="editSettings" [showColumnChooser]="true"
+            (toolbarClick)="onToolbarClick($event)">
+
+
+            <e-columns>
+              <!-- Master Checkbox Column -->
+              <e-column type="checkbox" width="50"></e-column>
+
+              <!-- HAWB Number -->
+              <e-column field="invoice_no" headerText="InvNo" textAlign="Left" width="120"></e-column>
+              <e-column field="box_no" headerText="InvNo" textAlign="Left" width="120"></e-column>
+
+              <!-- Destination -->
+              <e-column field="print_title" headerText="Destination" textAlign="Left" width="150"></e-column>
+
+              <!-- Weight -->
+              <e-column field="rcvd_wgt" headerText="Wgt" textAlign="Right" width="100"></e-column>
+
+              <!-- Carton: current/total -->
+              <e-column field="carton_display" headerText="Ctn" textAlign="Center" width="120">
+                <ng-template #template let-data>
+                  {{ data.carton_no }}/{{ data.total_carton }}
+                </ng-template>
+              </e-column>
+
+              <!-- State -->
+              <e-column field="delivery_state_name" headerText="State" textAlign="Left" width="130"></e-column>
+            </e-columns>
+          </ejs-grid>
+
+
+
+
+        </div>
+    </ng-template>
+    <!-- Aadhaar Link Template -->
+   
+
+</modal>
+
+
+
+<modal #deletefuntion class="modal-top small-modal" [closeOnOutsideClick]="false">
+  <ng-template #modalHeader>
+    <div>Delete Reason</div>
+  </ng-template>
+  <ng-template #modalBody>
+   <form class="mb-3" role="form" name="iecForm" novalidate="">
+        <label class="text-gray-700">Reason</label>
+
+      <select class="form-select">
+        <option value="" disabled selected hidden>Select-Reason</option>
+        <option *ngFor="let ReasonCombobox_b_to_b of ReasonCombobox_b_to_b"
+          value="{{ReasonCombobox_b_to_b.ctn_ststus_id}}">{{ReasonCombobox_b_to_b.ststus_name}}</option>
+      </select>
+  <div class="flex justify-end mt-2">
+    <button class="bg-red-500 text-white p-2 rounded-md hover:bg-red-600" type="button" (click)="delete()">Delete</button>
+  </div>
+</form>
+
+  </ng-template>
+
+</modal>
+

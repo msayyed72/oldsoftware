@@ -1,0 +1,35 @@
+::ng-deep .custom-grid .e-gridheader th.e-headercell {
+  text-align: center !important; /* center headers */
+  font-size: 10px !important;    /* smaller header text */
+}
+
+::ng-deep .custom-grid .e-rowcell {
+  font-size: 9px !important;    /* smaller row text */
+  padding: 0px 0px;              /* compact spacing */
+}
+
+.custom-cell {
+  white-space: normal!important ;
+  word-wrap: break-word!important;
+}
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal-img {
+  /* max-width: 90%; */
+  max-height: 80vh;
+  /* border-radius: 8px; */
+  object-fit: contain; /* Ensures image fits within the specified dimensions */
+}
+.hidden {
+  display: none;
+}

@@ -1,0 +1,417 @@
+<ol class="flex flex-wrap items-center gap-y-4 font-semibold text-gray-500 dark:text-white-dark mb-3">
+  <li>
+    <a href="javascript:;"
+      class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+      <icon-home />
+    </a>
+  </li>
+
+  <li
+    class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full before:bg-primary">
+    <a href="javascript:;"
+      class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 text-primary shadow dark:border-0 dark:bg-[#191e3a]">
+      <icon-box class="shrink-0 ltr:mr-2 rtl:ml-2" />
+      View & Modify
+    </a>
+  </li>
+  <li class="ml-auto flex items-center justify-center text-gray-500 dark:text-white-dark">
+    <!-- You can replace this with dynamic date if necessary -->
+    <input type="date" class="form-input" [(ngModel)]="date" (change)="get_invoice()">
+  </li>
+
+
+</ol>
+
+
+<div class="w-full">
+
+
+  <div class="bg-white shadow rounded p-4">
+    <ejs-grid appInputSearch #mainGrid height="80vh" [dataSource]="rowsFilter" [allowSorting]="true"
+      [allowResizing]="false" [allowReordering]="true" [allowExcelExport]="true" [allowPdfExport]="true"
+      [allowFiltering]="true" (toolbarClick)="ToogledToolBar($event)" [filterSettings]="filterSettings"
+      (actionBegin)="onActionBegin($event)" [toolbar]="toolbarOptions" toolbarOverflowMode="Scrollable"
+      [allowPaging]="true" [pageSettings]="{ pageSize: 50, pageSizes: [25,50,100,150] }" [editSettings]="editSettings"
+      (rowDataBound)="highlightBookingAgent($event)"  [textWrapSettings]="{wrapMode:'all'}" [allowTextWrap]='true'>
+      <e-columns>
+        <e-column  headerText="SR NO." textAlign="Center" [template]="serialTemplate" width="130"></e-column>
+
+ <ng-template #serialTemplate let-data let-rowIndex="rowIndex">
+            {{ +data.index + 1 }}
+        </ng-template>
+
+        <e-column field="hawb_no" headerText="HAWB NO.." textAlign="Center" [template]="hawbNoTemplate"
+          width="130"></e-column>
+        <e-column field="label" headerText="Label" width="130" textAlign="Center"
+          [template]="resaonForDelay"></e-column>
+        <ng-template #resaonForDelay let-data>
+          <span *ngIf="data.label" class="" style="font-weight: normal;">{{data.label}}</span>
+        </ng-template>
+        <e-column field="sales_rep" headerText="Sales Rep." width="160" textAlign="Left"></e-column>
+
+        <e-column field="hawb_date" headerText="HAWB Date" textAlign="Center"></e-column>
+ <e-column field="mergeDate" headerText="Payment & Del. Date" width="160" textAlign="Center">
+  <ng-template #template let-data>
+    <span [innerHTML]="data.mergeDate.split('\n').join('<br>')"></span>
+  </ng-template>
+</e-column>
+
+
+        <!-- <e-column field="payment_date" headerText="Payment Date" width="130" textAlign="Center"></e-column> -->
+        <e-column field="co_loader" headerText="Collection By" textAlign="Center"></e-column>
+
+        <!-- <e-column field="co_loader_tracking_no" headerText="Ref No" textAlign="Center"></e-column> -->
+        <e-column field="sender_name" headerText="Sender Name" textAlign="Center"></e-column>
+        <e-column field="mergeWtAndPcs" headerText="Total Pcs & Wt." textAlign="Center" ></e-column>
+        <!-- <e-column field="total_weight" headerText="Weight" textAlign="Center" [template]="weightTemplate"></e-column> -->
+        <e-column field="payment_status" headerText="Pay. Sts" textAlign="Center" width='120'
+          [template]="PaymentStsforinv"></e-column>
+  <e-column field="invCurrentSts" headerText="Inv. Sts" width='120' textAlign="Center">
+      <ng-template #template let-data>
+        <span [ngClass]="getIconClass(data.invCurrentSts)" class="flex justify-center items-center">
+          <ng-container *ngIf="data.invCurrentSts === 'Not Generated'">
+            <span [ngxTippy]="'Not Generated'">
+              <icon-x class="h-6 w-6" />
+            </span>
+          </ng-container>
+          <ng-container *ngIf="data.invCurrentSts === 'Generated'">
+            <span [ngxTippy]="'Invoice Generated'">
+              <icon-file class="h-6 w-6" />
+            </span>
+          </ng-container>
+          <ng-container *ngIf="data.invCurrentSts === 'Marked as Sent'">
+            <span [ngxTippy]="'Marked as Sent'">
+              <icon-checks class="h-6 w-6" />
+            </span>
+          </ng-container>
+          <ng-container *ngIf="data.invCurrentSts === 'Sent to Customer'">
+            <span [ngxTippy]="'Sent to Customer'">
+              <icon-mail class="h-6 w-6" />
+            </span>
+          </ng-container>
+        </span>
+      </ng-template>
+    </e-column>
+        <!-- <e-column field="invCurrentSts" headerText="Invoice Status" textAlign="Center">
+            <ng-template #template let-data>
+              <span [ngClass]="getBadgeClass(data.invCurrentSts)">{{ data.invCurrentSts }}</span>
+            </ng-template>
+          </e-column>
+   -->
+        <e-column headerText="Action" textAlign="Center" [template]="actionTemplate">
+          <ng-template #actionTemplate let-data>
+            <button mat-icon-button [matMenuTriggerFor]="invoiceMenu" class="p-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 512 512">
+                <path
+                  d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6 .3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z" />
+              </svg>
+            </button>
+
+            <mat-menu #invoiceMenu="matMenu">
+
+              <button *ngIf="data.payment_status === 'npd' || data.payment_status === 'no'" mat-menu-item
+                (click)="calculateDate(data,'yes')">
+                <span class="menu-item">
+                  Paid Amount
+                </span>
+              </button>
+              <button *ngIf="data.payment_status === 'yes' || data.payment_status === 'npd'" mat-menu-item
+                (click)="calculateDate(data,'no')">
+                <span class="menu-item">
+                  Unpaid
+                </span>
+              </button>
+              <button mat-menu-item *ngIf="data?.payment_status === 'yes' || data?.payment_status === 'no'"
+                class="btn btn-info w-full gap-2" (click)="calculateDate(data, 'npd')">
+
+                NP-D
+              </button>
+            </mat-menu>
+
+          </ng-template>
+
+        </e-column>
+      </e-columns>
+    </ejs-grid>
+    <ng-template #PaymentStsforinv let-item>
+        <span [ngClass]="{
+        'text-success': item.payment_status == 'yes', 
+        'text-danger': item.payment_status == 'no', 
+        'text-info': item.payment_status == 'npd'
+      }" [ngxTippy]="
+        item.payment_status == 'yes' ? 'Paid' : 
+        item.payment_status == 'no' ? 'Not Paid' : 'NP - D'
+      ">
+          <icon-credit-card class="h-5 w-5" />
+        </span>
+    </ng-template>
+
+
+    <ng-template #hawbNoTemplate let-data>
+      <!-- <span [ngStyle]="{'color': data.cancel_status == '1' ? 'red' : 'black' }">{{ data.hawb_no }}</span> -->
+      <a class="text-primary cursor-pointer" (click)="view_invoice(data.hawb_no, data.hawb_id,0)">{{data.hawb_no}}</a>
+    </ng-template>
+
+    <ng-template #weightTemplate let-data>
+      <span [ngStyle]="{'color': data.total_weight === '0.00' ? 'red' : 'black' }">{{ data.total_weight }}</span>
+    </ng-template>
+  </div>
+</div>
+
+<modal #sendFreeAgentInvPdf class="modal-top extra-large-modal">
+  <ng-template #modalHeader>
+    <div class="flex items-center justify-between bg-purple-700 px-6 py-4 rounded-t-md">
+      <h5 class=" text-lg font-semibold flex items-center">
+        <i class="fas fa-file-invoice mr-2"></i>
+        <span class="font-serif">Customer Final Invoice</span>
+      </h5>
+      <!-- <button type="button" class=" text-2xl" (click)="sendFreeAgentInvPdf.close()"> -->
+      <!-- &times;
+          </button> -->
+    </div>
+  </ng-template>
+
+  <!-- Body -->
+  <ng-template #modalBody>
+    <div class="bg-white p-6 rounded-b-md w-full max-w-7xl">
+
+      <!-- Header Section -->
+      <div class="flex justify-between mb-6">
+        <div>
+          <div class="text-purple-700 font-bold">Sender: {{ selectedDetails?.sender_name }}</div>
+          <div class="text-gray-500 text-sm">Invoice Number: INV-{{ selectedDetails?.hawb_no }}</div>
+        </div>
+        <div class="text-right">
+          <div class="inline-block bg-purple-100 text-purple-700 text-xs font-bold rounded-full px-3 py-1 mb-2">
+            HAWB No: {{ selectedDetails?.hawb_no }}
+          </div>
+          <div class="text-gray-500 text-sm">Date Issued: {{ selectedDetails?.hawb_date }}</div>
+        </div>
+      </div>
+
+      <!-- Items Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-gray-700">
+          <thead class="bg-purple-50 text-gray-700 uppercase text-xs">
+            <tr>
+              <th class="px-3 py-2 text-left">Quantity</th>
+              <th class="px-3 py-2 text-left">Description</th>
+              <th class="px-3 py-2 text-right">Unit Price (£)</th>
+              <th class="px-3 py-2 text-right">VAT (%)</th>
+              <th class="px-3 py-2 text-right">Subtotal (£)</th>
+              <th class="px-3 py-2 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of editingData; let i = index" class="hover:bg-gray-100">
+              <td class="px-3 py-2 text-center">{{ item.quantity }}</td>
+              <td class="px-3 py-2">{{ item.description }}</td>
+              <td class="px-3 py-2 text-right">£{{ item.unit_price | number:'1.2-2' }}</td>
+              <td class="px-3 py-2 text-right">{{ item.VAT }}</td>
+              <td class="px-3 py-2 text-right">£{{ (item.quantity * item.unit_price) | number:'1.2-2' }}</td>
+              <td class="px-3 py-2 text-center flex justify-center space-x-2">
+                <button class="text-purple-600 hover:text-purple-800" (click)="openEditPopup(i)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="text-red-500 hover:text-red-700" (click)="removeRow(i)">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Add Row Button -->
+      <div class="flex justify-end my-4">
+        <button class="flex items-center bg-purple-600 hover:bg-purple-700 text-white text-sm px-4 py-2 rounded"
+          (click)="addRow()">
+          <i class="fas fa-plus-circle mr-2"></i> Add Item
+        </button>
+      </div>
+
+      <!-- Totals Section -->
+      <div class="flex justify-end mt-8">
+        <div class="w-full md:w-1/3">
+          <table class="w-full text-sm">
+            <tbody>
+              <tr>
+                <td class="py-2 text-gray-500">Subtotal:</td>
+                <td class="py-2 text-right">£{{ getNetTotal() | number:'1.2-2' }}</td>
+              </tr>
+              <tr>
+                <td class="py-2 text-gray-500">Tax (0%):</td>
+                <td class="py-2 text-right">£{{ getVATAMt() | number:'1.2-2' }}</td>
+              </tr>
+              <tr>
+                <td class="py-2 font-bold text-purple-700">Total GBP:</td>
+                <td class="py-2 text-right font-bold text-purple-700">
+                  £{{ getGBPAmount() + getVATAMt() | number:'1.2-2' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </ng-template>
+
+  <!-- Footer -->
+  <ng-template #modalFooter>
+    <div class="flex justify-end mt-6 space-x-4">
+      <button type="button" class="border border-red-500 text-red-500 hover:bg-red-50 font-semibold px-5 py-2 rounded"
+        (click)="sendFreeAgentInvPdf.close()">
+        Discard
+      </button>
+      <button class="flex items-center bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2 rounded"
+        (click)="createInvoice_freeAgent()">
+        <i class="fas fa-file-pdf mr-2"></i> Generate Invoice
+      </button>
+    </div>
+  </ng-template>
+</modal>
+
+
+<modal #editItemModal class="modal-top extra-large-modal">
+
+  <!-- Header -->
+  <ng-template #modalHeader>
+    <div class="flex items-center justify-between bg-purple-700 p-4 rounded-t">
+      <h5 class="text-lg font-semibold ">Edit Invoice Item</h5>
+
+    </div>
+  </ng-template>
+
+  <!-- Body -->
+  <ng-template #modalBody>
+    <div class="p-6 bg-white">
+      <form class="space-y-4">
+
+        <!-- AutoComplete -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">AutoComplete</label>
+          <ng-select [items]="suggestionData" bindLabel="label" [searchable]="true" [clearable]="false"
+            [multiple]="false" [formControl]="accountNoControl" placeholder="Select an Acc No"
+            (change)="selectSuggestion($event)" class="custom-multiselect">
+          </ng-select>
+
+        </div>
+
+        <!-- Quantity -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+          <input type="number"
+            class="w-full border rounded-md p-2 text-sm focus:ring-purple-500 focus:border-purple-500"
+            [(ngModel)]="editItem.quantity" name="quantity" min="1" />
+        </div>
+
+        <!-- Details -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Details</label>
+          <textarea class="w-full border rounded-md p-2 text-sm focus:ring-purple-500 focus:border-purple-500"
+            [(ngModel)]="editItem.description" name="description" rows="2"></textarea>
+        </div>
+
+        <!-- Unit Price -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Unit Price (£)</label>
+          <input type="number"
+            class="w-full border rounded-md p-2 text-sm focus:ring-purple-500 focus:border-purple-500"
+            [(ngModel)]="editItem.unit_price" name="unit_price" min="0" step="0.01" />
+        </div>
+
+        <!-- VAT -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">VAT (%)</label>
+          <input type="text" class="w-full border rounded-md p-2 text-sm focus:ring-purple-500 focus:border-purple-500"
+            [(ngModel)]="editItem.VAT" name="VAT" />
+        </div>
+
+      </form>
+    </div>
+  </ng-template>
+
+  <!-- Footer -->
+  <ng-template #modalFooter>
+    <div class="flex justify-end p-4 bg-gray-50 rounded-b">
+      <button type="button"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
+        (click)="editItemModal.close()">
+        Cancel
+      </button>
+      <button type="button"
+        class="px-4 py-2 ml-3 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700"
+        (click)="saveEdit()">
+        Save
+      </button>
+    </div>
+  </ng-template>
+
+</modal>
+
+<modal #paymentStsupdate class="modal-top extra-large-modal" backdrop="static">
+  <ng-template #modalHeader>
+    <div>Send Payment Mail</div>
+  </ng-template>
+
+  <ng-template #modalBody>
+    <div class="h-px bg-gradient-to-l from-indigo-900/20 via-black to-indigo-900/20 opacity-[0.1] dark:via-white"></div>
+    <form [formGroup]="params" class="grid gap-6 p-6">
+      <div>
+        <input type="date" class="form-input" formControlName="date"
+          (change)="Get_NextPickupDate_After14Days_freeagent(params.value.date,receiverPincode)" />
+      </div>
+      <div>
+        <select type="text" class="form-input" placeholder="Enter To" formControlName="paymentSts">
+          <option value="">-- Select Payment Type --</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Cash">Cash</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div *ngIf="params.value.paymentSts == 'Other'">
+        <input type="text" class="form-input" placeholder="Enter Payment Type" formControlName="customPaymentType" />
+      </div>
+      <div>
+        <label class="w-12 h-6 relative">
+          <input type="checkbox" class="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+            id="custom_switch_checkbox2" [(ngModel)]="sendMailChecked" [ngModelOptions]="{standalone: true}" />
+          <span for="custom_switch_checkbox2"
+            class="outline_checkbox bg-icon border-2 border-[#ebedf2] dark:border-white-dark block h-full rounded-full before:absolute before:left-1 before:bg-[#ebedf2] dark:before:bg-white-dark before:bottom-1 before:w-4 before:h-4 before:rounded-full before:bg-[url(/assets/images/close.svg)] before:bg-no-repeat before:bg-center peer-checked:before:left-7 peer-checked:before:bg-[url(/assets/images/checked.svg)] peer-checked:border-primary peer-checked:before:bg-primary before:transition-all before:duration-300"></span>
+        </label>
+      </div>
+      <span *ngIf=" sendMailChecked  && isOdiLocation" class="text-red-500">* ODA Location Deliveries Take 21 Working Days.</span>
+      <div>
+        <input *ngIf="sendMailChecked" type="text" class="form-input" placeholder="Enter To" formControlName="to" />
+      </div>
+
+
+      <!-- Editor -->
+      <div *ngIf="sendMailChecked" class="h-fit">
+        <quill-editor #editor [modules]="editorOptions" placeholder="" formControlName="description" class="w-full"
+          style="min-height: 200px" (onContentChanged)="quillEditorReady($event)"></quill-editor>
+      </div>
+
+      <!-- File upload -->
+
+      <!-- ✅ Radio Buttons for Send Type -->
+
+      <!-- Buttons -->
+      <div class="mt-8 flex items-center ltr:ml-auto rtl:mr-auto">
+        <button type="button" class="btn btn-outline-danger ltr:mr-3 rtl:ml-3" (click)="paymentStsupdate.close()">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" (click)="afterConformationPAyment(sendMailChecked)">
+          {{ sendMailChecked ? 'Send Mail' : 'Paid' }}
+        </button>
+
+      </div>
+    </form>
+
+
+  </ng-template>
+
+
+
+</modal>

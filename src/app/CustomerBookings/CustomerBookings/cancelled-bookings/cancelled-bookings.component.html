@@ -1,0 +1,44 @@
+<ol class="flex flex-wrap items-center gap-y-4 font-semibold text-gray-500 dark:text-white-dark mb-3">
+    <li>
+        <a href="javascript:;"
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+            <icon-home />
+        </a>
+    </li>
+   
+    <li
+        class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full before:bg-primary">
+        <button mat-button [matMenuTriggerFor]="menu"
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+            <icon-cpu-bolt class="ltr:mr-2 rtl:ml-2" />
+           Cancelled Shipments
+            <icon-caret-down class="inline-block ltr:ml-1 rtl:mr-1" />
+        </button>
+
+        <mat-menu #menu="matMenu">
+                        <button mat-menu-item routerLink="/customer/newBookings"> New Bookings</button>
+            <button mat-menu-item routerLink="/customer/awaitpickups">Pickup Arranged Shipmets</button>
+
+        </mat-menu>
+    </li>
+
+</ol>
+
+<ejs-grid [dataSource]="CancelledShipment" [allowSorting]="true" [allowFiltering]="true" [allowExcelExport]="true"
+      [allowPdfExport]="true" [filterSettings]='filterSettings' [allowPaging]="true" [showColumnChooser]="true"
+      [pageSettings]="{ pageSize: 50, pageSizes: [25, 50, 100, 150] }" toolbarOverflowMode="Scrollable"
+      [allowResizing]="true" [toolbar]="toolbarOptions" >
+      <e-columns>
+        <e-column field="invoice_no" headerText="HAWB No." width="120" textAlign="Center"></e-column>
+        <e-column field="origin_country" headerText="Origin Country" width="120" textAlign="Center"></e-column>
+        <e-column field="total_carton" headerText="Carton Qty" width="100" textAlign="Center"></e-column>
+        <e-column field="total_weight" headerText="Weight (kg)" width="100" textAlign="Center"></e-column>
+        <e-column field="country_name" headerText="Destination" width="150" textAlign="Center"></e-column>
+        <e-column field="sender_name" headerText="Sender" width="150" textAlign="Center"></e-column>
+        <e-column headerText="Action" width="150" textAlign="Center" [template]="ActionForCancelShipment">
+          <ng-template #ActionForCancelShipment let-fetch>
+            <button  (click)="update_Pickup_assignToBranch(fetch)"><i class="fa fa-undo"></i> Undo</button>
+          </ng-template>
+        </e-column>
+      </e-columns>
+    </ejs-grid>

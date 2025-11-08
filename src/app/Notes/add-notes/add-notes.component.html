@@ -1,0 +1,215 @@
+<body *ngIf="isDragging" class="overflow-hidden">
+    <div class="flex justify-center items-center w-full h-full absolute top-0 left-0 bg-gray-800 bg-opacity-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <i class="fas fa-cloud-upload-alt text-4xl text-gray-600"></i>
+            <p class="mt-4 text-lg text-gray-600">Drop files here to add them to the chat</p>
+        </div>
+    </div>
+</body>
+
+
+<div class="relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)] sm:min-h-0" (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" [class.dragover]="isDragging">
+    <div class="panel flex-1 p-0">
+        <ng-container *ngIf="isShowUserChat">
+            <div class="relative h-full pb-[68px]" #chatContainer>
+                <div class="flex items-center justify-between p-4" #headerSection>
+                    <div class="relative flex-none" #userImageWrapper>
+                        <img src="assets/images/cf.png" class="h-10 w-13   sm:h-12 sm:w-12   " />
+                        <div class="absolute bottom-0 ltr:right-0 rtl:left-0" #statusIndicatorWrapper>
+                            <!-- <div class="h-4 w-4 rounded-full bg-success" #statusIndicator></div> -->
+                        </div>
+                    </div>
+                    <div class="mx-3" #userInfoWrapper>
+                        <p class="font-semibold" #userName>{{this.selectedData['invoice_no'] }}</p>
+                        <!-- <p class="text-xs text-white-dark" #userStatus>{{ selectedUser.active ? 'Active now' : 'Last
+                            seen at ' + selectedUser.time }}</p> -->
+                    </div>
+                    <div class="flex gap-3 sm:gap-5" #actionButtonsWrapper>
+                        <!-- <button type="button" #callButton>
+                            <icon-phone-call class="hover:text-primary" />
+                        </button>
+                        <button type="button" #videoButton>
+                            <icon-video class="h-5 w-5 hover:text-primary" />
+                        </button> -->
+                    </div>
+                </div>
+                <div class="h-px w-full border-b border-[#e0e6ed] dark:border-[#1b2e4b]" #separatorLine></div>
+                <ng-scrollbar #scrollable
+                    class="chat-conversation-box relative !h-[calc(100vh_-_289px)] min-h-[300px] sm:!h-[calc(100vh_-_300px)]"
+                    visibility="native" #scrollableContent>
+                    <div class="space-y-5 p-4" #messagesContainer>
+                        <div class="m-6 mt-0 block">
+
+                        </div>
+                        <ng-container *ngIf="NotesReceivedForInvoice && NotesReceivedForInvoice.length"
+                            #messagesContainer>
+                            <div *ngFor="let message of NotesReceivedForInvoice; let i = index" #messageWrapper
+                                (mousemove)="onMessageHover(true, message)"
+                                (mouseleave)="onMessageHover(false, message)">
+
+                                <div *ngIf="isFirstMessageOfDay(i)"
+                                    class="w-full text-center py-2 whitespace-nowrap block">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <span class="border-t border-gray-300 w-full"></span>
+                                        <span class="text-gray-600 font-semibold">{{ message.display_date }}</span>
+                                        <span class="border-t border-gray-300 w-full"></span>
+                                    </div>
+                                    <br>
+                                </div>
+
+                                <div class="flex items-start gap-3"
+                                    [ngClass]="{ 'justify-end': message.user_id === this.userDetails['v_user_id'], 'justify-start': message.user_id !== this.userDetails['v_user_id'] }"
+                                    #messageAlignment>
+
+                                    <!-- User Name Alignment -->
+                                    <div class="space-y-2" #messageTextWrapper>
+                                        <p class="font-semibold text-sm text-gray-800" *ngIf="message.user_name"
+                                            class="{{ message.user_id === this.userDetails['v_user_id'] ? 'text-right' : 'text-left' }}">
+                                            {{ message.user_name }}
+                                        </p>
+
+                                        <div class="flex items-center gap-3" #messageContentWrapper>
+                                             <div [ngClass]="{ hidden: message.user_id !== this.userDetails['v_user_id'] }"
+                                                #emojiButtonWrapper mat-icon-button [matMenuTriggerFor]="actionMenu">
+                                                <icon-mood-smile class="hover:text-primary" #emojiButton />
+                                                <mat-menu #actionMenu="matMenu">
+                                                    <button mat-menu-item
+                                                        (click)="markImportant(message, message.label_status)">
+                                                        <span class="menu-item">
+                                                            {{ message.label_status == 0 ? 'Make Important' : 'Undo
+                                                            Important' }}
+                                                        </span>
+                                                    </button>
+                                                       <button *ngIf="message.notes.startsWith('$a-z/')" mat-menu-item
+                                                        (click)="changeReason(message)">
+                                                        <span class="menu-item">
+                                                            Change Reason
+                                                        </span>
+                                                    </button>
+                                                </mat-menu>
+                                            </div> 
+                                            <!-- Content Based on Message Type -->
+                                            <div *ngIf="message.notes.startsWith('$a-z/') && message.notes.endsWith('.pdf')"
+                                              class="rounded-md bg-black/10 p-4 py-2 dark:bg-gray-800 block"
+                                                [ngClass]="message.user_id === this.userDetails['v_user_id'] ? 'ltr:rounded-br-none rtl:rounded-bl-none  text-white' : 'ltr:rounded-bl-none rtl:rounded-br-none'">
+                                                <div class="flex items-center justify-between p-4 rounded-lg shadow-md " style="background-color: transparent!important;"
+                                                    (click)="openImages(message.notes.substring(5))">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-red-500 text-white p-2 rounded-full">
+                                                            <i class="fas fa-file-pdf"></i>
+                                                        </div>
+                                                        <div class="ml-3">
+                                                            <p class="font-semibold">{{ message.notes.substring(5) }}
+                                                            </p>
+                                                            <p class="text-sm text-gray-600">PDF Document</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-black">{{message.notes_reason}}</div>
+                                            </div>
+
+                                            <div *ngIf="message.notes.startsWith('$a-z/') && (message.notes.endsWith('.jpg') || message.notes.endsWith('.jpeg') || 
+                        message.notes.endsWith('.png') || message.notes.endsWith('.gif'))" class="rounded-md bg-black/10 p-4 py-2 dark:bg-gray-800 block"
+                                                [ngClass]="message.user_id === this.userDetails['v_user_id'] ? 'ltr:rounded-br-none rtl:rounded-bl-none  text-white' : 'ltr:rounded-bl-none rtl:rounded-br-none'"
+                                                (click)="openImages(message.notes.substring(5))">
+                                                <img [src]="'https://api.cargoforce.com/Origin_v2/api_php_booking/chatImages/' + message.notes.substring(5)"
+                                                    alt="Image" class="max-w-full h-auto rounded-md"
+                                                    style="max-width: 500px; width: auto;" />
+                                                                                                   <div class="text-black">{{message.notes_reason}}</div>
+ 
+                                            </div>
+
+                                            <!-- Text Message Display -->
+                                            <div *ngIf="!(message.notes.startsWith('$a-z/') && (message.notes.endsWith('.pdf') || message.notes.endsWith('.jpg') || 
+                        message.notes.endsWith('.jpeg') || message.notes.endsWith('.png') || message.notes.endsWith('.gif')))"
+                                                class="rounded-md bg-black/10 p-4 py-2 dark:bg-gray-800 block"
+                                                [ngClass]="message.user_id === this.userDetails['v_user_id'] ? 'ltr:rounded-br-none rtl:rounded-bl-none !bg-primary text-white' : 'ltr:rounded-bl-none rtl:rounded-br-none'">
+                                                <span>{{ message.notes }}</span>
+                                            </div>
+
+                                            <!-- Emoji and Important Mark Options -->
+                                            <div [ngClass]="{ hidden: message.user_id === this.userDetails['v_user_id'] }"
+                                                #emojiButtonWrapper mat-icon-button [matMenuTriggerFor]="actionMenu">
+                                                <icon-mood-smile class="hover:text-primary" #emojiButton />
+                                                <mat-menu #actionMenu="matMenu">
+                                                    <button mat-menu-item
+                                                        (click)="markImportant(message, message.label_status)">
+                                                        <span class="menu-item">
+                                                            {{ message.label_status == 0 ? 'Make Important' : 'Undo
+                                                            Important' }}
+                                                        </span>
+                                                    </button>
+                                                     <button *ngIf="message.notes.startsWith('$a-z/')" mat-menu-item
+                                                        (click)="changeReason(message)">
+                                                        <span class="menu-item">
+                                                            Change Reason
+                                                        </span>
+                                                    </button>
+                                                </mat-menu>
+                                            </div>
+                                        </div>
+
+                                        <!-- Message Time and Important Label -->
+                                        <div class="text-xs text-white-dark flex items-center"
+                                            [ngClass]="{ 'ltr:text-right rtl:text-left': message.user_id == this.userDetails['v_user_id'] }"
+                                            #messageTimeWrapper>
+                                            <span>{{ message.updated_time ? message.updated_time : '5h ago' }}</span>
+                                            <span class="text-warning">
+                                                <icon-star *ngIf="message.label_status == 1" class="h-4 w-4 ml-2" />
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </ng-container>
+
+
+                    </div>
+                </ng-scrollbar>
+                <div class="absolute bottom-0 left-0 w-full p-4" #inputWrapper>
+                    <div class="w-full items-center space-x-3 rtl:space-x-reverse sm:flex" #inputSection>
+                        <div class="relative flex-1" #inputContainer>
+                            <!-- Input field for typing message -->
+                            <input class="form-input rounded-full border-0 bg-[#f4f4f4] px-12 py-2 focus:outline-none"
+                                placeholder="Type a message" [(ngModel)]="textMessage" name="textMessage"
+                                (keyup.enter)="sendMessage()" (keyup)="onKeyUp($event)" (keydown)="onKeyDown($event)"
+                                (paste)="handlePaste($event)" #messageInput />
+
+                            <!-- Emoji button -->
+                            <button type="button"
+                                class="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:left-4 rtl:right-4"
+                                #emojiButtonInput>
+                                <label for="fileInput">
+                                    <icon-paperclip #emojiIcon />
+                                </label>
+                                <input type="file" id="fileInput" class="hidden" (change)="handleFileInput($event)" />
+                            </button>
+
+
+                            <!-- Send button -->
+                            <button type="button"
+                                class="absolute top-1/2 -translate-y-1/2 hover:text-primary ltr:right-4 rtl:left-4"
+                                (click)="sendMessage()" #sendButton>
+                                <icon-send #sendIcon />
+                            </button>
+
+                            <!-- Employee name list popup -->
+                            <ul *ngIf="showMentionList" class="list-group position-absolute bg-white shadow"
+                                style="z-index: 1000; min-width: 200px; max-height: 150px; overflow-y: auto; bottom: 100%; margin-bottom: 5px;">
+                                <li *ngFor="let user of filteredUsers; let i = index"
+                                    [class.active]="i === selectedIndex" class="list-group-item list-group-item-action"
+                                    (click)="selectUser(user.employee_name)">
+                                    {{ user.employee_name }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </ng-container>
+    </div>
+</div>

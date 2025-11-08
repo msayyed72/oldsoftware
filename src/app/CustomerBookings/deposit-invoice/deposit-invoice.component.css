@@ -1,0 +1,12 @@
+.e-gridheader, .e-rowcell {
+  word-wrap: break-word;
+  white-space: normal; /* Allows the text to wrap */
+}
+
+.e-gridheader {
+  word-break: break-all; /* Forces long words to break */
+}
+
+.e-rowcell {
+  overflow-wrap: break-word;
+}

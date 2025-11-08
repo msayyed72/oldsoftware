@@ -1,0 +1,113 @@
+<h4 class="text-gray-900 my-2" style="font-size: 14px !important;font-weight: bold;color: #656565;">Tracking Mail Sent Report</h4>
+<div class="flex flex-wrap">
+  <div class="w-full">
+    <div class="shadow-md rounded-lg">
+      <div style="padding: 10px !important;">
+        <form [formGroup]="valForm" autocomplete="off" class="space-y-4" role="form" novalidate="">
+          <div  class="flex space-x-4">
+           
+            <div class="w-full sm:w-1/3">
+              <label class="text-sm font-medium  text-gray-700">From Date</label>
+              <!-- <input #F_TRA  [typeahead]="transit" [typeaheadScrollable]=false class="custom-select custom-select-sm"
+                type="text" placeholder="Select" [typeaheadMinLength]="0" formControlName="transit_type_name"
+                (keyup.enter)="keytab($event)"   [typeaheadOptionField]="'transit_type_name'" 
+                (typeaheadOnSelect)="transit_id (valForm.value)"/> -->
+                <input type="date"    class="block w-full rounded-md border border-gray-300 px-3 py-1 bg-white dark:bg-white  text-xs text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" 
+  formControlName="fromDate">
+            </div>
+
+
+            <div class="w-full sm:w-1/3">
+              <label class="text-sm font-medium text-gray-700">To Date</label>
+              <!-- <input #F_TRA  [typeahead]="transit" [typeaheadScrollable]=false class="custom-select custom-select-sm"
+                type="text" placeholder="Select" [typeaheadMinLength]="0" formControlName="transit_type_name"
+                (keyup.enter)="keytab($event)"   [typeaheadOptionField]="'transit_type_name'" 
+                (typeaheadOnSelect)="transit_id (valForm.value)"/> -->
+                <input type="date" class="block w-full rounded-md border border-gray-300 px-3 py-1 bg-white dark:bg-white  text-xs text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"    formControlName="toDate">
+            </div>
+            <div  class="w-full sm:w-1/3">
+              <label class="text-sm font-medium text-gray-700">Third-Party Name</label>
+              <select class="block w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" formControlName="type">
+                <option value="-1" selected>All</option>
+                <option *ngFor="let data of CO_Loader" value="{{data.key}}">{{data.value}}</option>
+                 <!-- <option *ngFor="let CO_Loader of CO_Loader" value="{{CO_Loader.transporter_id}}">
+                        {{CO_Loader.transporter_name}}
+                      </option> -->
+              </select>
+
+            </div>
+
+          </div>
+        
+
+        </form>
+        <div class="flex justify-center space-x-4 mt-4">
+          <button class="inline-flex items-center rounded-md bg-emerald-600 px-4 py-1 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" type="button" (click)="getreport()" style="border-radius: 4px; padding: 5px 10px;background-color: #27C24C;">Search </button>&nbsp;&nbsp;&nbsp;
+          <!-- <button class="btn btn-danger" type="button" >Reset</button>&nbsp;&nbsp;&nbsp; -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+</div>
+<div class="mt-4  shadow-sm ring-1 ring-gray-200" style="border-top-width: 0.5px;
+    border-color: #cfdbe2;">
+  <div style="padding: 10px !important;">
+    
+
+    <div class="overflow-x-auto" >
+      <!-- <button class="btn btn-success" type="submit" [routerLink]="['/expense-add']">Add</button> -->
+    <ejs-grid #mainGrid class="custom-grid"
+            [dataSource]="fetchCheckWeightData"
+            [allowSorting]="true"
+            [allowPaging]="true"
+            [allowFiltering]="true"
+            [allowExcelExport]="true"
+            [toolbar]="['Search']"
+            [pageSettings]='{ pageSize: 30, pageSizes: [25,50,100,150] }'
+            [filterSettings]='filterSettings'
+            [enableHover]="true"
+            [allowResizing]="true"
+            [allowTextWrap]="true"
+          (toolbarClick)="ToogledToolBar($event)"
+            [enableVirtualization]="false"
+            
+            >
+    <e-columns>
+          <e-column headerText='SR NO.' width='80' textAlign='Center' [template]="serialTemplate">
+          </e-column>
+          <ng-template #serialTemplate let-data let-rowIndex="rowIndex">
+        {{ +data.index + 1 }}
+      </ng-template>
+        <!-- <e-column field="hawb_no" headerText="Invoice No"></e-column> -->
+        <e-column field="hawb_no" width="120" headerText="HAWB No">
+  <ng-template #template let-data>
+    <a 
+      [routerLink]="['/Utilities/tracking']" 
+      [queryParams]="{ q: data.hawb_no }" 
+      target="_blank"
+      style="color: #0000EE; text-decoration: none; cursor: pointer;">
+      {{ data.hawb_no }}
+    </a>
+  </ng-template>
+</e-column>
+    <e-column field="tracking_courier_name" headerText="Courier Name"></e-column>
+    <e-column field="tracking_no" headerText="Tracking Number"></e-column>
+<e-column field="tracking_url" headerText="Tracking Link" width="180" textAlign="Center" [template]="trackingLinkTemplate"></e-column>
+
+<ng-template #trackingLinkTemplate let-data>
+  <a [href]="data.tracking_url" target="_blank" style="color: #007bff; text-decoration: underline;">
+  {{  data.tracking_url }}
+  </a>
+</ng-template>
+    <e-column field="employee_name" headerText="Assigned Employee"></e-column>
+    <e-column field="tracking_sended_date" headerText="Tracking Sent Date"></e-column>
+      <!-- <e-column field="transporter_name" headerText="Transporter"></e-column> -->
+    </e-columns>
+  </ejs-grid>
+
+
+    </div>
+  </div>
+</div>

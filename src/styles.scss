@@ -1,0 +1,17 @@
+@import '~@syncfusion/ej2-material-theme/styles/material.css';
+@import '~@syncfusion/ej2-angular-grids/styles/material.css';
+@import '~@syncfusion/ej2-base/styles/material.css';
+@import '~@syncfusion/ej2-buttons/styles/material.css';
+@import '~@syncfusion/ej2-dropdowns/styles/material.css';
+@import '~@syncfusion/ej2-inputs/styles/material.css';
+@import '~@syncfusion/ej2-navigations/styles/material.css';
+@import '~@syncfusion/ej2-popups/styles/material.css';
+@import '~@syncfusion/ej2-splitbuttons/styles/material.css';
+
+
+.dark .e-gridheader, .dark .e-headercell { background: #1f2937; color: #888ea8!important; }
+.dark .e-rowcell { background: #111827; color: #888ea8!important; }
+.dark .e-grid .e-row:hover .e-rowcell { background: #1f2937; }
+.dark .e-grid .e-row:hover .e-rowcell { color: #888ea8!important; }
+.dark.e-grid .e-toolbar .e-toolbar-items{ background: #1f2937!important; color: #888ea8!important;}
+.dark.e-grid{ background: #1f2937!important;}

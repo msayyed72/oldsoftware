@@ -1,0 +1,147 @@
+<h4 class="text-gray-900 my-2" style="font-size: 14px !important;font-weight: bold;color: #656565;">Dispatch Manifest Report</h4>
+<div class="flex flex-wrap">
+  <div class="w-full">
+    <div class="bg-white shadow-md rounded-lg">
+      <div style="padding: 10px !important;">
+        <form [formGroup]="valForm" autocomplete="off" class="space-y-4" role="form" novalidate="">
+          <div class="flex space-x-4">
+           
+            <div class="w-full sm:w-1/3">
+              <label class="text-sm font-medium text-gray-700">From Date</label>
+              <!-- <input #F_TRA  [typeahead]="transit" [typeaheadScrollable]=false class="custom-select custom-select-sm"
+                type="text" placeholder="Select" [typeaheadMinLength]="0" formControlName="transit_type_name"
+                (keyup.enter)="keytab($event)"   [typeaheadOptionField]="'transit_type_name'" 
+                (typeaheadOnSelect)="transit_id (valForm.value)"/> -->
+                <input type="date" class="block w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"   formControlName="fromDate">
+            </div>
+
+
+            <div class="w-full sm:w-1/3">
+              <label class="text-sm font-medium text-gray-700">To Date</label>
+              <!-- <input #F_TRA  [typeahead]="transit" [typeaheadScrollable]=false class="custom-select custom-select-sm"
+                type="text" placeholder="Select" [typeaheadMinLength]="0" formControlName="transit_type_name"
+                (keyup.enter)="keytab($event)"   [typeaheadOptionField]="'transit_type_name'" 
+                (typeaheadOnSelect)="transit_id (valForm.value)"/> -->
+                <input type="date" class="block w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"  formControlName="toDate">
+            </div>
+          
+
+          </div>
+        
+
+        </form>
+        <div class="flex justify-center space-x-4 mt-4">
+          <button class="inline-flex items-center rounded-md bg-emerald-600 px-4 py-1 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" type="button" (click)="getreport()" style="border-radius: 4px; padding: 5px 10px;background-color: #27C24C;">Search </button>&nbsp;&nbsp;&nbsp;
+          <!-- <button class="btn btn-primary" type="button" (click)="formateUsingChatGPt()">Formate Item Details Using Chat Gpt</button>&nbsp;&nbsp;&nbsp; -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+ <!-- <div class="col-sm-3">
+  <div class="card card-default">
+    <div style="padding: 10px !important;">
+      <h4 style="color: red; font-weight: bold; font-size: 16px;">Summary</h4>
+
+      <div class="d-flex align-items-center mb-3">
+        <div style="width: 20px; height: 20px; background-color: yellow; border: 1px solid #000; margin-right: 10px;"></div>
+        <span style="font-size: 14px; font-weight: 500;">Item details contain less than 20 characters.</span>
+      </div>
+
+      <div class="d-flex align-items-center">
+        <div style="width: 20px; height: 20px; background-color: red; border: 1px solid #000; margin-right: 10px;"></div>
+        <span style="font-size: 14px; font-weight: 500;">No item details exist.</span>
+      </div>
+
+    </div>
+  </div>
+</div> -->
+
+</div>
+<div class="mt-4 bg-white   shadow-sm ring-1 ring-gray-200" style="border-top-width: 0.5px;
+    border-color: #cfdbe2;">
+  <div style="padding: 10px !important;">
+    
+
+    <div  class="overflow-x-auto">
+      <!-- <button class="btn btn-success" type="submit" [routerLink]="['/expense-add']">Add</button> -->
+ <ejs-grid #mainGrid class="custom-grid"
+          [dataSource]="fetchCheckWeightData"
+          [allowSorting]="true"
+          [allowPaging]="true"
+          [allowFiltering]="true"
+          [allowExcelExport]="true"
+          [toolbar]="['Search']"
+          [pageSettings]="{ pageSize: 30, pageSizes: [25,50,100,150] }"
+          [filterSettings]="filterSettings"
+          [enableHover]="true"
+          (rowDataBound)="onRowDataBound($event)"
+          [allowResizing]="true"
+          [allowTextWrap]="true"
+          (toolbarClick)="ToogledToolBar($event)"
+          [enableVirtualization]="false">
+
+  <e-columns>
+    <e-column headerText="SR NO." width="80" textAlign="Center" [template]="serialTemplate"></e-column>
+    <ng-template #serialTemplate let-data>
+      {{ +data.index + 1 }}
+    </ng-template>
+
+    <e-column field="ptp_mf_no" headerText="Manifest No"></e-column>
+    <e-column field="mawb" headerText="MAWB No."></e-column>
+    <e-column field="manifest_date" headerText="Manifest Date"></e-column>
+    <!-- <e-column field="hawb_no" headerText="HAWB No"></e-column> -->
+    <e-column field="hawb_no" width="120" headerText="HAWB No">
+  <ng-template #template let-data>
+    <a 
+      [routerLink]="['/Utilities/tracking']" 
+      [queryParams]="{ q: data.hawb_no }" 
+      target="_blank"
+      style="color: #0000EE; text-decoration: none; cursor: pointer;">
+      {{ data.hawb_no }}
+    </a>
+  </ng-template>
+</e-column>
+    <e-column field="HAWB" headerText="Bagged Hawb"></e-column>
+    <e-column field="PCS" headerText="PCS"></e-column>
+    <e-column field="ACTUAL WEGIHT" headerText="Actual Weight (kg)"></e-column>
+    <e-column field="final_weight" headerText="Final Weight (kg)"></e-column>
+    <e-column field="Content" headerText="Contents" width="300"></e-column>
+    <e-column field="Sender Name" headerText="Sender Name"></e-column>
+    <e-column field="Sender's Address" headerText="Sender Address" width="300"></e-column>
+    <e-column field="Contact No:" headerText="Sender Contact"></e-column>
+    <e-column field="Receiver's name" headerText="Receiver Name"></e-column>
+    <e-column field="Receiver's Address" headerText="Receiver Address" width="300"></e-column>
+    <e-column field="Receiver's Contact Number" headerText="Receiver Contact"></e-column>
+    <e-column field="Receiver's ID No" headerText="Aadhaar No."></e-column>
+   <e-column field="aadhar_front_url" headerText="Front URL" [template]="frontUrlTemplate"></e-column>
+<e-column field="aashar_back_url" headerText="Back URL" [template]="backUrlTemplate"></e-column>
+
+<ng-template #frontUrlTemplate let-data>
+  <a [href]="data.aadhar_front_url" target="_blank">View Front</a>
+</ng-template>
+
+<ng-template #backUrlTemplate let-data>
+  <a [href]="data.aashar_back_url" target="_blank">View Back</a>
+</ng-template>
+
+    <e-column field="Delivery Address NOT As Per Aadhaar" headerText="Alternate Delivery Address" width="300"></e-column>
+    <e-column field="flight_date" headerText="Flight Date"></e-column>
+    <!-- <e-column headerText="Action" [template]="GoToInvoice"></e-column> -->
+
+    <!-- <ng-template #GoToInvoice let-data>
+      <button class="btn btn-danger" (click)="GoToModify(data)">
+        <svg fill="white" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+          <path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM80 64l64 0c8.8 0 16 7.2 16 16s-7.2 16-16 16L80 96c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l64 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm16 96l192 0c17.7 0 32 14.3 32 32l0 64c0 17.7-14.3 32-32 32L96 352c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32zm0 32l0 64 192 0 0-64L96 256zM240 416l64 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
+        </svg>
+      </button>
+    </ng-template> -->
+  </e-columns>
+</ejs-grid>
+
+
+
+
+    </div>
+  </div>
+</div>

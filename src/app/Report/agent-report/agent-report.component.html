@@ -1,0 +1,124 @@
+<h4 class="text-gray-900 my-2" style="font-size: 14px !important;font-weight: bold;color: #656565;">Bagged Shipment Report</h4>
+<div class="grid grid-cols-12 gap-4">
+  <div class="col-span-12">
+    <div class="bg-white rounded-lg shadow-sm ring-1 ring-gray-200">
+      <div style="padding: 10px !important;">
+        <form [formGroup]="valForm" autocomplete="off" class="space-y-4" role="form" novalidate="">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+           
+            <div>
+              <label class="block text-sm font-medium text-gray-800 mb-1 after:content-['*'] after:ml-0.5 after:text-red-500">From Date</label>
+              
+                <input type="date"  class="block w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"   formControlName="fromdate">
+            </div>
+
+
+            <div >
+              <label class="block text-sm font-medium text-gray-800 mb-1 after:content-['*'] after:ml-0.5 after:text-red-500">To Date</label>
+              
+                <input type="date" class="block w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"   formControlName="todate">
+            </div>
+
+            <div >
+              <label class="block text-xs font-medium text-gray-800 mb-2 mt-1">Agent Name</label>
+              <select class="block w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" formControlName="agent_id">
+                <!-- <option value="null" >Select</option> -->
+                <option value="-1" selected>All</option>
+                 <option *ngFor="let agent of agentget" value="{{agent.booking_agent_id}}">
+                        {{agent.agent_name}}
+                      </option>
+              </select>
+
+            </div>
+          
+
+          </div>
+        
+
+        </form>
+        <div class="mt-5 flex items-center justify-center gap-3">
+          <button class="inline-flex items-center rounded-md bg-emerald-600 px-4 py-1 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" type="button" (click)="getreport()" style="border-radius: 4px; padding: 5px 10px;background-color: #27C24C;">Search </button>&nbsp;&nbsp;&nbsp;
+          <!-- <button class="btn btn-primary" type="button" (click)="formateUsingChatGPt()">Formate Item Details Using Chat Gpt</button>&nbsp;&nbsp;&nbsp; -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+<div class="mt-4 bg-white   shadow-sm ring-1 ring-gray-200" style="border-top-width: 0.5px;
+    border-color: #cfdbe2;">
+  <div style="padding: 10px !important;">
+    
+
+    <div class="overflow-x-auto">
+      <!-- <button class="btn btn-success" type="submit" [routerLink]="['/expense-add']">Add</button> -->
+    <ejs-grid appInputSearch #mainGrid class="custom-grid "
+            [dataSource]="fetchCheckWeightData"
+            [allowSorting]="true"
+            [allowPaging]="true"
+            [allowFiltering]="true"
+            [allowExcelExport]="true"
+           
+            [toolbar]="['Search', 'ExcelExport']"
+            [pageSettings]="{ pageSize: 30, pageSizes: [25,50,100,150] }"
+            [filterSettings]="filterSettings"
+            [enableHover]="true" 
+            [allowResizing]="true"
+            [allowTextWrap]="true"
+            (actionBegin)="onActionBegin($event)"
+            (toolbarClick)="ToogledToolBar($event)"
+            [enableVirtualization]="false">
+
+
+            
+    
+    <e-columns>
+      <e-column headerText="SR NO." width="80" textAlign="Center" [template]="serialTemplate"></e-column>
+      <ng-template #serialTemplate let-data   >
+        {{ +data.index + 1  }}
+      </ng-template>
+    <e-column field="hawb" width="120" headerText="HAWB No">
+  <ng-template #template let-data>
+    <a 
+      [routerLink]="['/Utilities/tracking']" 
+      [queryParams]="{ q: data.hawb }" 
+      target="_blank"
+      style="color: #0000EE; text-decoration: none; cursor: pointer;">
+      {{ data.hawb }}
+    </a>
+  </ng-template>
+</e-column>
+
+
+      <e-column field="Booking_date" width="120" headerText="Booking Date"></e-column>
+      <e-column field="final_invoice" width="120" headerText="Final Invoice"></e-column>
+      <e-column field="payment" width="150" headerText="payment"></e-column>
+      <e-column field="sender_name" headerText="Sender Name"></e-column>
+      <e-column field="sender_contact" width="150"  headerText="Sender Contact"></e-column>
+      <e-column field="receiver_name"  headerText="Receiver Name"></e-column>
+      <e-column field="receiver_contact" width="150" headerText="Receiver Contact"></e-column>
+      <e-column field="destination_state" width="150" headerText="Destination State"></e-column>
+      <e-column field="collection_carton_count" width="150" headerText="Collection Carton Count"></e-column>
+      <e-column field="checkweight_carton_count" width="150" headerText="Checkweight Carton Count"></e-column>
+
+      
+      <!-- <e-column field="item_details" headerText="Item Details" width="300"></e-column>
+      <e-column field="LENGTH" headerText="Length (cm)"></e-column>
+      <e-column field="width" headerText="Width (cm)"></e-column>
+      <e-column field="height" headerText="Height (cm)"></e-column>
+      <e-column field="transporter_name" headerText="Transit Type"></e-column> -->
+      <!-- <e-column  headerText="Action" [template]="GoToInvoice"></e-column> -->
+      <!-- <ng-template #GoToInvoice let-data>
+        <button class="btn btn-danger" (click)="GoToModify(data)"><svg fill="white"  width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM80 64l64 0c8.8 0 16 7.2 16 16s-7.2 16-16 16L80 96c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l64 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm16 96l192 0c17.7 0 32 14.3 32 32l0 64c0 17.7-14.3 32-32 32L96 352c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32zm0 32l0 64 192 0 0-64L96 256zM240 416l64 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/></svg>
+</button>
+      </ng-template> -->
+    </e-columns>
+  </ejs-grid>
+
+
+
+    </div>
+  </div>
+</div>

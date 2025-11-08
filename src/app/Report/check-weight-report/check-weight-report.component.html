@@ -1,0 +1,129 @@
+<h4 class="text-gray-900 my-2" style="font-size: 14px !important;font-weight: bold;color: #656565;">Check Weight Report</h4>
+<div class="grid grid-cols-12 gap-4">
+  <div class="col-span-12 lg:col-span-9">
+    <div class="bg-white rounded-lg shadow-sm ring-1 ring-gray-200">
+      <div style="padding: 10px !important;">
+        <form [formGroup]="valForm" autocomplete="off" class="space-y-4" role="form" novalidate="">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+           
+            <div >
+              <label class="block text-xs font-medium text-gray-800 mb-1 after:content-['*'] after:ml-0.5 after:text-red-500">From Date</label>
+              <!-- <input #F_TRA  [typeahead]="transit" [typeaheadScrollable]=false class="custom-select custom-select-sm"
+                type="text" placeholder="Select" [typeaheadMinLength]="0" formControlName="transit_type_name"
+                (keyup.enter)="keytab($event)"   [typeaheadOptionField]="'transit_type_name'" 
+                (typeaheadOnSelect)="transit_id (valForm.value)"/> -->
+                <input type="date" class="block w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"   formControlName="fromDate">
+            </div>
+
+
+            <div>
+              <label class="block text-xs font-medium text-gray-800 mb-1 after:content-['*'] after:ml-0.5 after:text-red-500">To Date</label>
+              <!-- <input #F_TRA  [typeahead]="transit" [typeaheadScrollable]=false class="custom-select custom-select-sm"
+                type="text" placeholder="Select" [typeaheadMinLength]="0" formControlName="transit_type_name"
+                (keyup.enter)="keytab($event)"   [typeaheadOptionField]="'transit_type_name'" 
+                (typeaheadOnSelect)="transit_id (valForm.value)"/> -->
+                <input type="date" class="block w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"   formControlName="toDate">
+            </div>
+            <div >
+              <label class="block text-xs font-medium text-gray-800 mb-1">Transporter Name</label>
+              <select class="block w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" formControlName="type">
+                <option value="-1" selected>All</option>
+                 <option *ngFor="let CO_Loader of CO_Loader" value="{{CO_Loader.transporter_id}}">
+                        {{CO_Loader.transporter_name}}
+                      </option>
+              </select>
+
+            </div>
+
+          </div>
+        
+
+        </form>
+        <div class="mt-5 flex items-center justify-center gap-3">
+          <button class="inline-flex items-center rounded-md bg-emerald-600 px-4 py-1 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" type="button" (click)="getreport()"  style="border-radius: 4px; padding: 5px 10px;background-color: #27C24C;">Search </button>&nbsp;&nbsp;&nbsp;
+          <!-- <button class="btn btn-danger" type="button" >Reset</button>&nbsp;&nbsp;&nbsp; -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-span-12 lg:col-span-3">
+     <div class="bg-white rounded-lg shadow-sm ring-1 ring-gray-200">
+  <div style="padding: 10px !important;">
+    <h5 class="font-bold text-red-600 mb-3" style="font-size: 13px !important;">Parcel Summary</h5>
+    
+    <!-- Loop through the keys dynamically -->
+     <div class="space-y-2">
+    <div class="flex items-center" *ngFor="let key of summaryKeys">
+      <div class="flex-1">
+        <span class="text-xs font-medium text-gray-900">{{ key }}</span>
+      </div>
+      <div class="text-right">
+        <span class="text-xs font-semibold text-red-600">{{ summaryValues[key] }}</span>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+
+  </div>
+</div>
+<div class="mt-4 bg-white   shadow-sm ring-1 ring-gray-200" style="border-top-width: 0.5px;
+    border-color: #cfdbe2;">
+  <div style="padding: 10px !important;">
+    
+
+    <div class="overflow-x-auto" >
+      <!-- <button class="btn btn-success" type="submit" [routerLink]="['/expense-add']">Add</button> -->
+   <ejs-grid #mainGrid  class="custom-grid"
+          [dataSource]="fetchCheckWeightData"
+          [allowSorting]="true"
+          [allowPaging]="true"
+          [allowFiltering]="true"
+          [allowExcelExport]="true"
+          [toolbar]="['Search']"
+          [pageSettings]='{ pageSize: 30, pageSizes: [25,50,100,150] }'
+          [filterSettings]='filterSettings'
+          [enableHover]="true"
+          [allowResizing]="true"
+          [allowTextWrap]="true"
+        (toolbarClick)="ToogledToolBar($event)"
+          [enableVirtualization]="false"
+          
+          >
+  <e-columns>
+        <e-column headerText='SR NO.' width='80' textAlign='Center' [template]="serialTemplate">
+        </e-column>
+        <ng-template #serialTemplate let-data let-rowIndex="rowIndex">
+      {{ +data.index + 1 }}
+    </ng-template>
+    <!-- <e-column field="invoice_no" headerText="Hawb No"></e-column> -->
+        <e-column field="invoice_no" width="120" headerText="HAWB No">
+  <ng-template #template let-data>
+    <a 
+      [routerLink]="['/Utilities/tracking']" 
+      [queryParams]="{ q: data.invoice_no }" 
+      target="_blank"
+      style="color: #0000EE; text-decoration: none; cursor: pointer;">
+      {{ data.invoice_no }}
+    </a>
+  </ng-template>
+</e-column>
+    <e-column field="box_no" headerText="Box No"></e-column>
+    <e-column field="l" headerText="Length (cm)"></e-column>
+    <e-column field="w" headerText="Width (cm)"></e-column>
+    <e-column field="h" headerText="Height (cm)"></e-column>
+    <e-column field="vol_weight" headerText="Vol. Weight"></e-column>
+    <e-column field="act_wgt" headerText="Dead Weight"></e-column>
+    <e-column field="charagble_wt" headerText="Chargeable Weight"></e-column>
+    <!-- <e-column field="descp" headerText="Description"></e-column> -->
+    <e-column field="check_weight_time" headerText="Checked Time" format="yMd h:mm a" type="datetime"></e-column>
+    <e-column field="transporter_name" headerText="Transporter"></e-column>
+  </e-columns>
+</ejs-grid>
+
+
+    </div>
+  </div>
+</div>

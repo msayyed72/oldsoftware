@@ -1,0 +1,127 @@
+<div class="flex   panel ">
+    <div class="w-full">
+        <form [formGroup]="valForm" class="form-validate mb-3" role="form" name="registerForm" novalidate="" >
+        <div class="flex gap-2">
+            <div class="w-6/12 ">
+                <label class="required col-lg-1 mb-3" [ngStyle]="{'color': valForm.controls['branchName'].hasError('required') && (valForm.controls['branchName'].dirty || valForm.controls['branchName'].touched)? 'red' : ''}">Branch Name</label>
+                <select  class="form-select" formControlName="branchName" (change)="getBranchStockStartNo(valForm.value)"  [ngStyle]="{'border-color': valForm.controls['branchName'].hasError('required') && (valForm.controls['branchName'].dirty || valForm.controls['branchName'].touched)? 'red' : ''}"  #inputBox>
+                    <option value=""  selected hidden="">Select-Type</option>
+                   <option *ngFor="let branchName of branchName" value="{{branchName.point_id}}${{branchName.origin_prefix}}">{{branchName.origin_name}}</option>
+                </select>            </div>
+            <div class="w-6/12">
+                <label class="required col-lg-1 mb-3" [ngStyle]="{'color': valForm.controls['startingNo'].hasError('required') && (valForm.controls['startingNo'].dirty || valForm.controls['startingNo'].touched)? 'red' : ''}">Starting Number</label>
+                <input type="text" class="form-input" [ngStyle]="{'border-color': valForm.controls['startingNo'].hasError('required') && (valForm.controls['startingNo'].dirty || valForm.controls['startingNo'].touched)? 'red' : ''}" maxlength="13" formControlName="startingNo"  #inputBox/> 
+            </div>
+        </div>
+        
+        <div class="flex gap-2">
+            <div class="w-6/12">
+                <label class="required col-lg-1 mb-3" [ngStyle]="{'color': valForm.controls['issueQty'].hasError('required') && (valForm.controls['issueQty'].dirty || valForm.controls['issueQty'].touched)? 'red' : ''}">Issue Quantity</label>                
+                <input type="text" class="form-input" (change)="changeIssueQty()" [ngStyle]="{'border-color': valForm.controls['issueQty'].hasError('required') && (valForm.controls['issueQty'].dirty || valForm.controls['issueQty'].touched)? 'red' : ''}"  maxlength="20" formControlName="issueQty" #inputBox/> 
+            </div>
+            <div class="w-6/12">
+                <label class="required col-lg-1 mb-3" [ngStyle]="{'color': valForm.controls['endingNo'].hasError('required') && (valForm.controls['endingNo'].dirty || valForm.controls['endingNo'].touched)? 'red' : ''}">Ending Number</label>
+                <input type="text" class="form-input" [ngStyle]="{'border-color': valForm.controls['endingNo'].hasError('required') && (valForm.controls['endingNo'].dirty || valForm.controls['endingNo'].touched)? 'red' : ''}" formControlName="endingNo" #inputBox/> 
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <div class="w-6/12">
+                <label class="required col-lg-1 mb-3" [ngStyle]="{'color': valForm.controls['totalAwbNo'].hasError('required') && (valForm.controls['totalAwbNo'].dirty || valForm.controls['totalAwbNo'].touched)? 'red' : ''}">Total Available AWB</label>
+                <input type="text" class="form-input"  [ngStyle]="{'border-color': valForm.controls['totalAwbNo'].hasError('required') && (valForm.controls['totalAwbNo'].dirty || valForm.controls['totalAwbNo'].touched)? 'red' : ''}" formControlName="totalAwbNo" #inputBox/> 
+            </div>
+           
+        </div>
+        </form>
+        <div class="flex justify-center mt-5">
+            <button class="btn btn-primary btn-sm" type="button" (click)="submitForm($event, valForm.value)">Save</button>
+            <button class="btn btn-primary btn-sm mx-2" type="button" (click)="reset()">Clear</button>
+            <button class="btn btn-primary btn-sm" type="button" (click)="export(valForm.value)">Report</button>
+        </div>
+    </div>
+</div>
+
+<div class="flex">
+    <div class="w-full max-h-[40vh] overflow-auto " >
+        <table class="table table-striped table-bordered table-hover">
+            <thead style="background-color: #1899c0" style="position: sticky; top: 0px;">
+               <tr class="tr">
+                       <th class="th2"  style="width: 4%;">Sl No</th>
+                       <th class="th2" style="width: 10%">Branch</th>
+                       <th class="th2" style="width: 7%">Starting Awb No</th>
+                       <th class="th2" style="width: 7%">Ending Awb No</th>
+                       <th class="th2" style="width: 7%">Total No of Leaf</th>
+                       <th class="th2" style="width: 7%">Point Code Prefix</th>
+                       <th class="th2" style="width: 7%">Issue Date</th>
+                        <th class="th2" style="width: 7%">Issue Point Name</th>
+                  <th class="th2" style="width: 7%">Action
+                   <svg style="width:24px;height:24px;cursor: pointer; color: #00A6CB;" viewBox="0 0 24 24">
+                   <path fill="white" (click)="getBranchHawbAllocation()" d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M18 11H13L14.81 9.19A3.94 3.94 0 0 0 12 8A4 4 0 1 0 15.86 13H17.91A6 6 0 1 1 12 6A5.91 5.91 0 0 1 16.22 7.78L18 6Z" />
+                   </svg>
+                 </th>
+ 
+               </tr>
+            </thead >
+         <tbody class="tbody">
+             <div class="row" *ngIf="btn3" >
+             <div class="col-lg-4 mb-3"></div>
+             <div class="col-lg-3 mb-3">
+             <div style="margin-top: 10px;" class="card-body loader-demo loader-demo-sk d-flex align-items-center justify-content-center">
+             <div class="sk-circle">
+                 <div class="sk-circle1 sk-child"></div>
+                 <div class="sk-circle2 sk-child"></div>
+                 <div class="sk-circle3 sk-child"></div>
+                 <div class="sk-circle4 sk-child"></div>
+                 <div class="sk-circle5 sk-child"></div>
+                 <div class="sk-circle6 sk-child"></div>
+                 <div class="sk-circle7 sk-child"></div>
+                 <div class="sk-circle8 sk-child"></div>
+                 <div class="sk-circle9 sk-child"></div>
+                 <div class="sk-circle10 sk-child"></div>
+                 <div class="sk-circle11 sk-child"></div>
+                 <div class="sk-circle12 sk-child"></div>
+             </div>
+             </div>
+             </div>
+             </div>
+                 <tr *ngFor="let pointType of pointType, let i=index">
+                    <td style="width: 4%;" (click)="edit(pointType)">{{i+1}}</td>
+                    <td style="width: 10%" (click)="edit(pointType)">{{pointType.Receiving_point_name}}</td>
+                     <td style="width: 7%" (click)="edit(pointType)">{{pointType.awb_starting_no}}</td>
+                     <td style="width: 7%" (click)="edit(pointType)">{{pointType.awb_ending_no}}</td>   
+                     <td style="width: 7%" (click)="edit(pointType)">{{pointType.total_no_leaf}}</td>
+                     <td style="width: 7%" (click)="edit(pointType)">{{pointType.point_code_pefix}}</td>
+                     <td style="width: 7%" (click)="edit(pointType)">{{pointType.issuDate}}</td>
+                     <td style="width: 7%" (click)="edit(pointType)">{{pointType.issue_point_name}}</td>
+                       <td style="width: 7%;">
+                          
+ 
+                           <a (click)="data(pointType);DeleteModal.open()">
+                           <svg style="width:24px;height:24px;cursor: pointer; color: #00A6CB;" viewBox="0 0 24 24">
+                           <path fill="#f05050" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                          </svg></a>
+                        </td>
+                  </tr>
+ 
+           </tbody>
+           </table>
+    </div>
+</div>
+
+<div>
+    <!-- Trigger -->
+    <!-- Modal -->
+    <modal #DeleteModal class="custom-modal small-modal" [closeOnOutsideClick]="false">
+        <ng-template #modalBody>
+            <div class="text-sm text-white-dark">
+                <h1 class="text-2xl text-black">Delete</h1>
+                <h2 class="text-xl">Do you really want to delete this item?</h2>
+            </div>
+        </ng-template>
+        <ng-template #modalFooter>
+            <!-- Set canDelete to true when Delete button is clicked -->
+            <button type="button" class="btn btn-danger ltr:ml-4 rtl:mr-4" (click)="delete()">Delete</button>
+            <!-- Close modal without deleting if Cancel button is clicked -->
+            <button type="button" class="btn btn-primary ltr:ml-4 rtl:mr-4" (click)="DeleteModal.close()">Cancel</button>
+        </ng-template>
+    </modal>
+  </div>

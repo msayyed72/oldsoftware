@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Page Filter</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .file-input-label {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .file-input-label:hover {
+            background-color: #2980b9;
+        }
+
+        #pdfInput {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #2ecc71;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:hover:enabled {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #downloadLink {
+            display: none;
+            margin-top: 25px;
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: color 0.3s;
+        }
+
+        #downloadLink:hover {
+            color: #2980b9;
+        }
+
+        .message {
+            margin-top: 20px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>PDF Page Selector</h1>
+        <p>This tool will extract and save pages 1, 4, 7, 10, etc.</p>
+
+        <div class="file-input-wrapper">
+            <span class="file-input-label">Choose PDF File</span>
+            <input type="file" id="pdfInput" accept=".pdf">
+        </div>
+
+        <button id="processBtn" disabled>Process PDF</button>
+        <a id="downloadLink"></a>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script>
+        const pdfInput = document.getElementById('pdfInput');
+        const processBtn = document.getElementById('processBtn');
+        const downloadLink = document.getElementById('downloadLink');
+        const messageDiv = document.getElementById('message');
+
+        // Function to display messages to the user
+        const showMessage = (text, color = '#7f8c8d') => {
+            messageDiv.textContent = text;
+            messageDiv.style.color = color;
+        };
+
+        // Enable the button once a file is selected
+        pdfInput.addEventListener('change', () => {
+            const fileName = pdfInput.files.length > 0 ? pdfInput.files[0].name : 'No file chosen';
+            document.querySelector('.file-input-label').textContent = fileName;
+            processBtn.disabled = pdfInput.files.length === 0;
+            downloadLink.style.display = 'none';
+            showMessage(''); // Clear previous messages
+        });
+
+        processBtn.addEventListener('click', async () => {
+            const file = pdfInput.files[0];
+            if (!file) {
+                showMessage("Please select a PDF file.", '#e74c3c');
+                return;
+            }
+
+            showMessage("Processing PDF, please wait...", '#3498db');
+            processBtn.disabled = true;
+
+            try {
+                // Read the file into an ArrayBuffer
+                const arrayBuffer = await file.arrayBuffer();
+
+                // Load the PDF document using PDF-lib
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+
+                // Create a new PDF document to store the filtered pages
+                const newPdfDoc = await PDFLib.PDFDocument.create();
+
+                const pageCount = pdfDoc.getPageCount();
+                const pagesToCopy = [];
+
+                // Loop through all pages to find pages that match the pattern (1, 4, 7, 10...)
+                // Page numbers are 1-based, while the array index is 0-based.
+                for (let i = 0; i < pageCount; i++) {
+                    const pageNumber = i + 1;
+                    if (pageNumber % 3 === 1) {
+                        pagesToCopy.push(i); // Add the 0-based index of the page to copy
+                    }
+                }
+
+                if (pagesToCopy.length > 0) {
+                    // Copy the selected pages to the new PDF document
+                    const copiedPages = await newPdfDoc.copyPages(pdfDoc, pagesToCopy);
+                    copiedPages.forEach(page => newPdfDoc.addPage(page));
+                    
+                    // Save the new PDF to get its bytes
+                    const processedPdfBytes = await newPdfDoc.save();
+
+                    // Create a Blob and a URL for the processed PDF
+                    const blob = new Blob([processedPdfBytes], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+
+                    // Set the download link properties to enable downloading
+                    downloadLink.href = url;
+                    downloadLink.download = `filtered_${file.name}`;
+                    downloadLink.textContent = `Download filtered_${file.name}`;
+                    downloadLink.style.display = 'inline-block';
+
+                    showMessage("PDF successfully processed!", '#2ecc71');
+                } else {
+                    showMessage("No pages matched the criteria. The new PDF will be empty.", '#e67e22');
+                }
+
+            } catch (error) {
+                console.error("Failed to process PDF:", error);
+                showMessage("An error occurred during PDF processing.", '#e74c3c');
+            } finally {
+                processBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

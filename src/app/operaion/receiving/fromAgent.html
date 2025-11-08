@@ -1,0 +1,267 @@
+<style>
+  table,tr,th,td{
+      border: 2px solid rgb(245, 242, 242);
+  }
+ 
+</style>
+  <!-- <ul class="flex  w-6/12">
+      <li>
+          <a href="javascript:;" class="text-secondary hover:underline text-2xl">Receiving From Other Branch</a>
+      </li>
+    
+    
+  </ul>
+  <ul class="w-6/12 flex items-center justify-end">
+      <li>
+          <a href="javascript:;" class="text-secondary hover:underline text-2xl">Receiving From Other Branch</a>
+      </li>
+    
+    
+  </ul> -->
+  <form [formGroup]="valForm" class="form-validate " role="form" name="registerForm" novalidate="">
+
+  <div class="flex">
+      <div class="lg:w-6/12  sm:w-full">
+          <a href="javascript:;" class="text-secondary hover:underline text-xl">From Agent</a>        </div>
+      <div class="lg:w-4/12 flex  justify-end mx-3 align-center sm:w-8/12">
+          <a href="javascript:;" class="text-secondary hover:underline text-xl">Receiving Date</a>        </div>
+      <div class="lg:w-2/12 sm:w-4/12">
+          <input type="date" class="form-input h-[35px] py-0 text-center font-bold " formControlName="manifestDate"> 
+      </div>
+  </div>
+ <!-- <div class="panel flex mt-3  gap-3">
+      <div class="lg:w-6/12 sm:w-full ">
+          
+              <div>
+                  <label for="gridState" class="required">Loading Place (Source Branch)</label>
+                  <select id="gridState"
+                      class="form-select text-white-dark h-[30px] py-0 text-center font-bold ">
+                      <option>Choose...</option>
+                      <option>...</option>
+                  </select>
+              </div>
+              <div>
+                  <label for="" class="required">Vehicle No
+                  </label>
+                  <div class="flex">
+                     
+                      <input id="iconRight" type="text" placeholder="ID Number"
+                          class="form-input rounded lg:h-[30px] text-center font-bold" />
+                    
+                  </div>
+              </div>
+          
+      </div>
+      <div class="lg:w-6/12  sm:w-full ">
+  
+              <div>
+                  <label for="" class="required">Vehicle No
+                  </label>
+                  <div class="flex">
+                     
+                      <input id="iconRight" type="text" placeholder="ID Number"
+                          class="form-input rounded lg:h-[30px] text-center font-bold" />
+                    
+                  </div>
+              </div>
+              <div>
+                  <label for="" class="required">Vehicle No
+                  </label>
+                  <div class="flex">
+                     
+                      <input id="iconRight" type="text" placeholder="ID Number"
+                          class="form-input rounded lg:h-[30px] text-center font-bold" />
+                    
+                  </div>
+              </div>
+          
+      </div>
+      <div class="flex">
+          <div class="lg:w-4/12">
+              <button type="button" class="btn btn-success ">Success</button>
+  
+          </div>
+      </div>
+     
+ </div> -->
+
+<div class="panel shadow-[4px_6px_10px_-3px_#bfc9d4] mt-3.5 p-2.5">
+  <div class="flex gap-2 ">
+      <div class="w-4/12">
+        <div class="flex flex-col">
+            
+          <label class="col-lg-1 mb-3">Receiving Id</label>
+
+          <input  class="form-input h-[30px]" type="text" formControlName="manifestNo"  #inputBox readonly>
+
+            
+            
+            
+        </div>
+        <div class="flex flex-col">
+          <label class="required col-lg-1 mb-3" [ngStyle]="{'color': valForm.controls['sourcePoint'].hasError('required') && (valForm.controls['sourcePoint'].dirty || valForm.controls['sourcePoint'].touched)? 'red' : ''}">Source</label>
+           
+            
+          <select id="gridState"
+          class="form-select text-white-dark h-[30px] py-0 text-center font-bold "  [ngStyle]="{'border-color': valForm.controls['sourcePoint'].hasError('required') && (valForm.controls['sourcePoint'].dirty || valForm.controls['sourcePoint'].touched)? 'red' : ''}" formControlName="sourcePoint">
+          <option value="" disabled selected hidden="">Select-Type</option>
+                    <option *ngFor="let Destination_from_booking_agent of Destination_from_booking_agent" value="{{Destination_from_booking_agent.point_id}}">{{Destination_from_booking_agent.agent_name}}</option>
+                </select>
+
+        </div>
+        
+  
+      </div>
+      <div class="w-4/12">
+          <div class="flex flex-col">
+            <label class="col-lg-1 mb-3">Receiving Date</label>
+
+           
+            <input  class="form-input h-[30px]" type="date" formControlName="manifestDate" >
+
+            
+        </div>
+        <div class="flex flex-col">
+          <label class="required col-lg-1 mb-3" [ngStyle]="{'color': valForm.controls['vechileNo'].hasError('required') && (valForm.controls['vechileNo'].dirty || valForm.controls['vechileNo'].touched)? 'red' : ''}">Vehicle No</label>           
+            
+          <input  class="form-input h-[30px]  " type="text" [ngStyle]="{'border-color': valForm.controls['vechileNo'].hasError('required') && (valForm.controls['vechileNo'].dirty || valForm.controls['vechileNo'].touched)? 'red' : ''}" formControlName="vechileNo"/>
+
+        </div>
+      </div>
+      <div class="w-4/12">
+        <div class="flex flex-col">
+          
+          <label class="required col-lg-1 mb-3" [ngStyle]="{'color': valForm.controls['driverName'].hasError('required') && (valForm.controls['driverName'].dirty || valForm.controls['driverName'].touched)? 'red' : ''}">Driver Name</label>
+         
+          <input  class="form-input h-[30px]" [ngStyle]="{'border-color': valForm.controls['driverName'].hasError('required') && (valForm.controls['driverName'].dirty || valForm.controls['driverName'].touched)? 'red' : ''}" type="text" maxlength="20" formControlName="driverName" #inputBox>
+
+          
+      </div>
+      <div class="flex flex-col">
+        <label for="gridState mb-3" >Seal No</label>
+         
+          
+        <input  class="form-input h-[30px]" type="text" formControlName="sealNo"/>
+
+      </div>
+    </div>
+     </div>
+  
+     <div class="flex flex-col lg:flex-row mt-3.5 justify-center  "> 
+     
+      <div class="lg:w-12/12 flex justify-center ">
+        <button class="btn btn-primary btn-sm" type="submit"   [disabled]="btn !=='2'"><span *ngIf="Save_spin !=='1' " (click)="submitForm($event, valForm.value)">Save</span><span *ngIf="Save_spin !=='2'">Loading...</span></button>&nbsp;&nbsp;&nbsp;
+<button class="btn btn-primary btn-sm" type="button" (click)="update($event, valForm.value)" [disabled]="btn !=='1'"><span *ngIf="update_spin !=='1'">Update</span><span *ngIf="update_spin !=='2'">Loading...</span></button>&nbsp;&nbsp;&nbsp;
+<button class="btn btn-primary btn-sm" type="button" (click)="reset()">Reset</button>&nbsp;&nbsp;&nbsp;
+<button class="btn btn-primary btn-sm" type="button" >Stock</button>&nbsp;&nbsp;&nbsp;
+<button class="btn btn-primary btn-sm" type="button" (click)="export1()">Export</button>&nbsp;&nbsp;&nbsp;
+<button class="btn btn-primary btn-sm" type="button" [disabled]="btn !=='1'" (click)="booking()">Receiving</button>&nbsp;&nbsp;&nbsp;
+
+      </div>
+  </div>
+  
+     
+</div>
+
+</form>
+<div class="panel mt-3.5 shadow-[4px_6px_10px_-3px_#bfc9d4]">
+ 
+    <div class="flex flex-row mt-2.5">
+      <div class="w-full">
+          <div class="overflow-x-auto max-h-[40vh]">
+            <table class="table  table-bordered ">
+              <thead style="background-color: #1899c0">
+                 <tr class="tr">
+                    <th class="th2"  style="width: 5%;">Sl No</th>
+                    <!-- <th class="th2" style="width: 10%">unit Id</th> -->
+                    <th class="th2" style="width: 20%">Receiving Id&nbsp;&nbsp;</th>
+                    <th class="th2" style="width: 10%">Receiving Date</th>
+                    <th class="th2" style="width: 10%">Destination</th>
+                     <th class="th2" style="width: 10%">Tot Inv</th>
+                     <th class="th2" style="width: 10%">Tot Ctn</th>
+                     <th class="th2" style="width: 10%">Tot Wgt</th>
+                     <th class="th2" style="width: 10%">Vehicle No</th>
+                     <th class="th2" style="width: 10%">Booked By</th>
+                    <th class="th2" style="width: 10%">Seal no</th>
+                    <th class="th2" style="width: 8%">Action<svg style="width:24px;height:24px;cursor: pointer; color: #00A6CB;" viewBox="0 0 24 24">
+<path fill="white" (click)="getManifest_receiving_f_branch()" d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M18 11H13L14.81 9.19A3.94 3.94 0 0 0 12 8A4 4 0 1 0 15.86 13H17.91A6 6 0 1 1 12 6A5.91 5.91 0 0 1 16.22 7.78L18 6Z" />
+</svg></th>
+                 </tr>
+              </thead >
+                <tbody class="tbody">
+                  <div class="row" *ngIf="btn3" >
+        <div class="col-lg-4 mb-3"></div>
+        <div class="col-lg-3 mb-3">
+        <div style="margin-top: 10px;" class="card-body loader-demo loader-demo-sk d-flex align-items-center justify-content-center">
+            <div class="sk-circle">
+                <div class="sk-circle1 sk-child"></div>
+                <div class="sk-circle2 sk-child"></div>
+                <div class="sk-circle3 sk-child"></div>
+                <div class="sk-circle4 sk-child"></div>
+                <div class="sk-circle5 sk-child"></div>
+                <div class="sk-circle6 sk-child"></div>
+                <div class="sk-circle7 sk-child"></div>
+                <div class="sk-circle8 sk-child"></div>
+                <div class="sk-circle9 sk-child"></div>
+                <div class="sk-circle10 sk-child"></div>
+                <div class="sk-circle11 sk-child"></div>
+            </div>
+        </div>
+      </div>
+    </div>
+                   <tr *ngFor="let Manifest_from_booking_agent of Manifest_from_booking_agent, let i=index" (click)="changeTableRowColor(i)" 
+                   [ngStyle]="{'background-color':rowClicked === i ? 'lightgray' : 'white' }">
+                      <td style="width: 5%;" (click)="edit(Manifest_from_booking_agent)">{{i+1}}</td>
+                      <td style="width: 20%" (click)="edit(Manifest_from_booking_agent)">{{Manifest_from_booking_agent.ptp_mf_no}}</td>
+                      <td style="width: 10%" (click)="edit(Manifest_from_booking_agent)">{{Manifest_from_booking_agent.manifest_date}}</td>   
+                      <td style="width: 10%" (click)="edit(Manifest_from_booking_agent)">{{Manifest_from_booking_agent.Destination}}</td>
+                      <td style="width: 10%" (click)="edit(Manifest_from_booking_agent)">{{Manifest_from_booking_agent.invoice_count}}</td>
+                      <td style="width: 10%" (click)="edit(Manifest_from_booking_agent)">{{Manifest_from_booking_agent.carton_count}}</td>
+                      <td style="width: 10%" (click)="edit(Manifest_from_booking_agent)">{{Manifest_from_booking_agent.total_received_weight}}</td>
+                      <td style="width: 10%" (click)="edit(Manifest_from_booking_agent)">{{Manifest_from_booking_agent.shipment_name}}</td>  
+                      <td style="width: 10%" (click)="edit(Manifest_from_booking_agent)">{{Manifest_from_booking_agent.created_by}}</td>
+                        <td style="width: 10%" (click)="edit(Manifest_from_booking_agent)">{{Manifest_from_booking_agent.seal_no}}</td>   
+                      <td style="width: 7.2%;">
+                        <button (click)="data(Manifest_from_booking_agent);DeleteModal.open()" type="button" ngxTippy data-tippy-content="Delete" class="text-red-500">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5">
+                              <path d="M20.5 6H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path d="M18.8334 8.5L18.3735 15.3991C18.1965 18.054 18.108 19.3815 17.243 20.1907C16.378 21 15.0476 21 12.3868 21H11.6134C8.9526 21 7.6222 21 6.75719 20.1907C5.89218 19.3815 5.80368 18.054 5.62669 15.3991L5.16675 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path opacity="0.5" d="M9.5 11L10 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path opacity="0.5" d="M14.5 11L14 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path opacity="0.5" d="M6.5 6C6.55588 6 6.58382 6 6.60915 5.99936C7.43259 5.97849 8.15902 5.45491 8.43922 4.68032C8.44784 4.65649 8.45667 4.62999 8.47434 4.57697L8.57143 4.28571C8.65431 4.03708 8.69575 3.91276 8.75071 3.8072C8.97001 3.38607 9.37574 3.09364 9.84461 3.01877C9.96213 3 10.0932 3 10.3553 3H13.6447C13.9068 3 14.0379 3 14.1554 3.01877C14.6243 3.09364 15.03 3.38607 15.2493 3.8072C15.3043 3.91276 15.3457 4.03708 15.4286 4.28571L15.5257 4.57697C15.5433 4.62992 15.5522 4.65651 15.5608 4.68032C15.841 5.45491 16.5674 5.97849 17.3909 5.99936C17.4162 6 17.4441 6 17.5 6" stroke="currentColor" stroke-width="1.5" />
+                          </svg>
+                      </button>
+                    
+                    </td>
+                   </tr>
+                </tbody>
+           </table>
+                 
+                   
+              
+          </div>
+      </div>
+  </div>
+  </div>
+
+
+ 
+<!-- standard  -->
+<div>
+  <!-- Trigger -->
+  <!-- Modal -->
+  <modal #DeleteModal class="custom-modal small-modal" [closeOnOutsideClick]="false">
+      <ng-template #modalBody>
+          <div class="text-sm text-white-dark">
+              <h1 class="text-2xl text-black">Delete</h1>
+              <h2 class="text-xl">Do you really want to delete this item?</h2>
+          </div>
+      </ng-template>
+      <ng-template #modalFooter>
+          <!-- Set canDelete to true when Delete button is clicked -->
+          <button type="button" class="btn btn-danger ltr:ml-4 rtl:mr-4" (click)="delete()">Delete</button>
+          <!-- Close modal without deleting if Cancel button is clicked -->
+          <button type="button" class="btn btn-primary ltr:ml-4 rtl:mr-4" (click)="DeleteModal.close()">Cancel</button>
+      </ng-template>
+  </modal>
+</div>

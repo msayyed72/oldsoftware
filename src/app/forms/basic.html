@@ -1,0 +1,222 @@
+<h4 class="text-center text-danger font-bold">Date Wise Sales Report</h4>
+<div class="grid grid-cols-4 gap-1">
+  <div class="col-span-3 w-full bg-white shadow-[4px_6px_10px_-3px_#bfc9d4] rounded border border-[#e0e6ed] dark:border-[#1b2e4b] dark:bg-[#191e3a] dark:shadow-none">
+    <form [formGroup]="valForm" autocomplete="off" class="form-validate
+          mb-3" role="form" novalidate="">
+      <div class="grid grid-cols-4 gap-2 py-5 px-5" >
+        <div>
+          <label>Shipment Type</label>
+          <select #F_STY (keydown.enter)="F_HOL.focus()"
+            class="form-select w-2/3 lg:w-[200px] h-[30px] py-0 text-center font-bold" formControlName="shipment">
+            <option value="-1" selected>All</option>
+            <option *ngFor="let list of transit" value="{{list.service_type_id}}">{{list.service_type_name}}</option>
+          </select>
+        </div>
+        <div>
+          <label>Destination Country</label>
+          <select #F_HOL class="form-select w-2/3 lg:w-[200px] h-[30px] py-0 text-center font-bold"
+            formControlName="country" (change)="get_region(valForm.value.country)">
+            <option value="-1" selected>All</option>
+            <option *ngFor="let country of country" value="{{country.country_code}}">{{country.country_name}}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label>Destination Region</label>
+          <select #F_REG (keydown.enter)="F_STA.focus()" (change)="get_state(valForm.value.region)"
+            class="form-select w-2/3 lg:w-[200px] h-[30px] py-0 text-center font-bold" formControlName="region">
+            <option value="-1" selected>All</option>
+            <option *ngFor="let list of region" value="{{list.region_id}}">{{list.region_name}}</option>
+          </select>
+        </div>
+        <div>
+          <label>Destination State</label>
+          <select #F_STA class="form-select w-2/3 lg:w-[200px] h-[30px] py-0 text-center font-bold"
+            formControlName="state">
+            <option selected value="-1">All</option>
+            <option value="{{list.delivery_state_id}}" *ngFor="let list of
+                  state">{{list.state_name}}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label>Origin Country</label>
+          <select class="form-select w-2/3 lg:w-[200px] h-[30px] py-0 text-center font-bold"
+            formControlName="org_country">
+            <option value="-1" selected>All</option>
+            <option *ngFor="let country of country" value="{{country.country_code}}">{{country.country_name}}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label>Origin Branch</label>
+          <select *ngIf="v_user_type == 'ADMIN'" (change)="getAgent(valForm.value.branch)"
+            class="form-select w-2/3 lg:w-[200px] h-[30px] py-0 text-center font-bold" formControlName="branch">
+            <option selected value="-1">All</option>
+            <option value="{{list.point_id}}" *ngFor="let list of branch">{{list.origin_name}}
+            </option>
+          </select>
+          <input *ngIf="v_user_type != 'ADMIN'" type="text"
+            class="form-input w-2/3 lg:w-[200px] lg:h-[30px] text-center font-bold" formControlName="branch_name">
+        </div>
+        <div>
+          <label>Employee</label>
+          <select class="form-select w-2/3 lg:w-[200px] h-[30px] py-0 text-center font-bold" formControlName="user">
+            <option selected value="-1">All</option>
+            <option value="{{list.user_id}}" *ngFor="let list of
+                  employee_list">{{list.user_name}}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label>Agent</label>
+          <select class="form-select w-2/3 lg:w-[200px] h-[30px] py-0 text-center font-bold" formControlName="agent">
+            <option selected value="-1">All</option>
+            <option value="{{list.point_id}}" *ngFor="let list of agent">{{list.origin_name}}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label>From date</label>
+          <input type="date" class="form-input w-2/3 lg:w-[200px] lg:h-[30px] text-center font-bold"
+            formControlName="from_date">
+        </div>
+        <div class="col-span-3">
+          <label>To date</label>
+          <input type="date" class="form-input w-2/3 lg:w-[200px] lg:h-[30px] text-center font-bold"
+            formControlName="to_date">
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-2 col-span-4 mt-2">
+          <button class="btn btn-success btn-sm" type="button" (click)="getreport()" [disabled]="search_btn == '1'">Search <i
+              class="fa fa-spinner
+            fa-spin" *ngIf="save_spin"></i></button>&nbsp;&nbsp;&nbsp;
+          <button class="btn btn-danger btn-sm" type="button" (click)="reset()">Reset</button>&nbsp;&nbsp;&nbsp;
+          <button class="btn btn-primary btn-sm" type="button" (click)="export()">Export</button>&nbsp;&nbsp;&nbsp;
+          <button class="btn btn-primary btn-sm" type="button" (click)="download()">PDF
+            Download</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div>
+    <div class="w-full bg-white shadow-[4px_6px_10px_-3px_#bfc9d4] rounded border border-[#e0e6ed] dark:border-[#1b2e4b] dark:bg-[#191e3a] dark:shadow-none">
+      <div class="px-5 py-2">
+        <h4 style="color: rgb(43, 0, 255);font-weight: bold;font-size: 16px; text-align: center;">Summary</h4>
+        <div class="grid grid-cols-3 gap-1 " >
+          <div class="col-span-2" >
+            <label style="color: black;font-weight: bold;font-size: 15px;">Total
+              Invoice</label>
+          </div>
+          <div>
+            <label style="color: red;font-weight: bold;font-size: 15px;">{{inv_len}}</label>
+          </div>
+          <div class="col-span-2">
+            <label style="color: black;font-weight: bold;font-size: 15px;">Total
+              Carton </label>
+          </div>
+          <div>
+            <label style="color: red;font-weight: bold;font-size: 15px;">{{total_car.toFixed(2)}}</label>
+          </div>
+          <div class="col-span-2">
+            <label style="color: black;font-weight: bold;font-size: 15px;">Total
+              Weight</label>
+          </div>
+          <div>
+            <label style="color: red;font-weight: bold;font-size: 15px;">{{total_wt.toFixed(2)}}</label>
+          </div>
+          <div class="col-span-2">
+            <label style="color: black;font-weight: bold;font-size: 15px;">Total
+              Value</label>
+          </div>
+          <div>
+            <label style="color: red;font-weight: bold;font-size: 15px;">{{total_val.toFixed(2)}}</label>
+          </div>
+          <div class="col-span-2">
+            <label style="color: black;font-weight: bold;font-size: 15px;">Total
+              Commision</label>
+          </div>
+          <div>
+            <label style="color: red;font-weight: bold;font-size: 15px;">{{total_comm.toFixed(2)}}</label>
+          </div>
+          <div class="col-span-2">
+            <label style="color: black;font-weight: bold;font-size: 15px;">Total
+              Amount</label>
+          </div>
+          <div>
+            <label style="color: red;font-weight: bold;font-size: 15px;">{{total_amt.toFixed(2)}}</label>
+          </div>
+          <div class="col-span-2">
+            <label style="color: black;font-weight: bold;font-size: 15px;">Avg.Rate/Kg</label>
+          </div>
+          <div>
+            <label style="color: red;font-weight: bold;font-size: 15px;">{{ratePerkg}}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-default">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-lg-9 mb-3"> </div>
+      <div class="col-lg-3 mb-3">
+        <input type="text" [(ngModel)]="term" placeholder="Search here" class="form-control"
+          style="display: inline-block;" />
+      </div>
+    </div>
+    <div class="table-responsive" style="height: 400px;overflow: scroll;">
+      <table class="table table-striped table-bordered table-hover">
+        <thead style="background-color: #1899c0">
+          <tr>
+            <th class="th2" style="width: 5%;">Sl No</th>
+            <th class="th2" style="width: 10%">HAWB Date</th>
+            <th class="th2" style="width: 9%">Bill Number</th>
+            <th class="th2" style="width: 9%">Service</th>
+            <!-- <th class="th2" style="width: 9%">Reffrence No </th> -->
+            <th class="th2" style="width: 5%">State </th>
+            <th class="th2" style="width: 9%">District</th>
+            <th class="th2" style="width: 8%">Total Carton</th>
+            <th class="th2" style="width: 8%">Total Weight</th>
+            <th class="th2" style="width: 7%">Weight Amount</th>
+            <th class="th2" style="width: 6%">Value</th>
+            <!-- <th class="th2" style="width: 7%">Scan Charge</th> -->
+            <th class="th2" style="width: 7%">Bill Charge</th>
+            <th class="th2" style="width: 7%">pkg Charge</th>
+            <th class="th2" style="width: 9%">Other</th>
+            <th class="th2" style="width: 7%">Discount</th>
+            <th class="th2" style="width: 7%">Total</th>
+            <!-- <th class="th2" style="width: 7%">With bill</th>
+            <th class="th2" style="width: 7%">Without Bill</th> -->
+            <th class="th2" style="width: 7%">Received Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let list of reportlist; let i=index">
+            <td style="width: 5%;">{{i+1}}</td>
+            <td style="width: 10%">{{list.invoice_date}}</td>
+            <td style="width: 9%">{{list.invoice_no}}</td>
+            <td style="width: 9%">{{list.Service}}</td>
+            <!-- <td style="width: 9%">{{list.reference_no}}</td> -->
+            <td style="width: 5%">{{list.state_code}}</td>
+            <td style="width: 9%">{{list.receiver_district_name}}</td>
+            <td style="width: 8%">{{list.total_carton}}</td>
+            <td style="width: 8%">{{list.total_weight}}</td>
+            <td style="width: 7%">{{list.weight_charge}}</td>
+            <td style="width: 6%">{{list.value_charge}}</td>
+            <!-- <td style="width: 7%">{{list.scaning_charge}}</td> -->
+            <td style="width: 7%">{{list.awb_charge}}</td>
+            <td style="width: 7%">{{list.packing_charge}}</td>
+            <td style="width: 9%">{{list.extra_charge}}</td>
+            <td style="width: 7%">{{list.discount}}</td>
+            <td style="width: 7%">{{list.total}}</td>
+            <!-- <td style="width: 7%">{{list.withbill}}</td>
+            <td style="width: 7%">{{list.withoutbill}}</td> -->
+            <td style="width: 7%">{{list.received_amount}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

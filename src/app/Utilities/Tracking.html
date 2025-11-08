@@ -1,0 +1,810 @@
+<style>
+  .swal2-html-container{
+    width: 100%!important;
+  }
+</style>
+
+<div class="container mx-auto px-4 py-8 bg-gray-100 min-h-screen">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-gray-800">Track Your Package</h2>
+  </div>
+
+  <div class="flex justify-center mb-12">
+    <div class="flex w-full max-w-lg rounded-full shadow-lg overflow-hidden">
+      <input type="text" class="tracking-input flex-grow px-6 py-3 text-gray-700 focus:outline-none"
+        [(ngModel)]="invoice_id" (keydown.enter)="callShipmentData()" placeholder="Enter your Hawb No..." />
+      <button
+        class="tracking-button bg-[#6A45C0] text-white px-8 py-3 font-semibold hover:bg-[#5939A3] transition duration-300"
+        (click)="callShipmentData()">
+        Track Package
+      </button>
+
+    </div>
+  </div>
+
+  <div class="flex flex-col lg:flex-row lg:space-x-8">
+    <div class="left-panel w-full lg:w-2/3 mb-8 lg:mb-0">
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="carton-list flex flex-wrap gap-6 mb-6" *ngIf="BoxGroups.length > 0">
+          <div *ngFor="let box of BoxGroups; let i = index" class="carton-card rounded-lg p-4 w-40 h-40 flex flex-col items-center justify-center cursor-pointer transition-all duration-300
+           bg-gray-50 hover:bg-[#F0EAFE] border-2 border-transparent" [ngClass]="{
+      'bg-[#E6E0F8] border-[#6A45C0] text-[#6A45C0] font-semibold': selectedCartonNo === box.carton_no || (!selectedCartonNo && i === 0)
+    }" (click)="selectCarton(box.carton_no, box.bag_no)" [attr.data-carton]="box.carton_no">
+            <i class="fas fa-box-open text-2xl"></i>
+            <div class="carton-number text-lg mt-2">{{ box.bag_no }}</div>
+            <div class="text-sm mt-2 text-center">
+              Package: {{ box.mergedCartonNo }}
+            </div>
+          </div>
+        </div>
+
+
+
+        <div *ngIf="notesData.length > 0" class="section-title text-xl font-bold text-gray-800 mt-5 mb-3">Notes</div>
+        <div *ngIf="notesData.length > 0" class="overflow-x-auto mb-6">
+          <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+            <thead>
+              <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                <th class="py-3 px-6 text-left">Notes</th>
+                <th class="py-3 px-6 text-left">Created Time</th>
+                <th class="py-3 px-6 text-left">User</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm font-light">
+              <tr *ngFor="let note of notesData" class="border-b border-gray-200 hover:bg-gray-100">
+                <td class="py-3 px-6 text-left whitespace-nowrap">
+                  <span *ngIf="note.notes.endsWith('.pdf'); else checkImage">
+                    <div (click)="openImage(note.notes)" class="document-grid grid gap-4 mt-4">
+                      <div
+                        class="bg-gray-50 rounded-lg p-4 flex flex-col items-start gap-2 cursor-pointer transition-colors duration-200 hover:bg-gray-100">
+                        <i class="fa fa-file-pdf text-red-500 text-2xl"></i>
+                        <div>
+                          <div class="font-medium text-gray-800"></div>
+                          <div class="text-sm text-gray-500">View PDF</div>
+                        </div>
+                      </div>
+                    </div>
+                  </span>
+
+                  <ng-template #checkImage>
+                    <ng-container *ngIf="isImageFile(note.notes); else defaultText">
+                      <div (click)="openImage(note.notes)" class="document-grid grid gap-4 mt-4">
+                        <div
+                          class="bg-gray-50 rounded-lg p-4 flex flex-col items-start gap-2 cursor-pointer transition-colors duration-200 hover:bg-gray-100">
+                          <i class="fa fa-image text-blue-500 text-2xl"></i>
+                          <div>
+                            <div class="text-sm text-gray-500">View</div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+
+                    <ng-template #defaultText>
+                      <ng-container>
+                        <div class="font-medium text-gray-800">{{ note.notes }}</div>
+                      </ng-container>
+                    </ng-template>
+                  </ng-template>
+                </td>
+                <td class="py-3 px-6 text-left">{{ note.created_time }}</td>
+                <td class="py-3 px-6 text-left">{{ note.user_name }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card1-header bg-gray-100 rounded-t-lg p-4 flex justify-between items-center mt-2"
+          *ngIf="timelineEvents && timelineEvents.length">
+          <div class="card1-title text-lg font-semibold text-gray-800">Shipment Status</div>
+          <div class="    px-4 py-1 text-xs font-semibold text-center">
+            {{ timelineEvents[0]?.title }}
+            <br />
+            <span class="text-xs font-normal"
+              *ngIf="timelineEvents[timelineEvents.length - 1]?.title !== timelineEvents[timelineEvents.length - 1]?.details">
+              {{ timelineEvents[0]?.details }}
+            </span>
+          </div>
+        </div>
+
+        <div class="tabs flex space-x-2 border-b border-gray-200 mb-6">
+          <div class="tab px-4 py-2 cursor-pointer font-medium text-gray-600 transition-colors duration-200" [ngClass]="{
+      'border-b-2 border-[#6A45C0] text-[#6A45C0]': activeTab === 'shipment'
+    }" (click)="setActiveTab('shipment')">
+            Shipment Details
+          </div>
+          <div *ngIf="receivedHawbDatanew && receivedHawbDatanew.hawb_no"
+            class="tab px-4 py-2 cursor-pointer font-medium text-gray-600 transition-colors duration-200" [ngClass]="{
+      'border-b-2 border-[#6A45C0] text-[#6A45C0]': activeTab === 'warehouse'
+    }" (click)="setActiveTab('warehouse')">
+            Warehouse Info
+          </div>
+        </div>
+
+        <div class="tab-content" *ngIf="activeTab === 'shipment'">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-user-circle text-[#6A45C0]"></i>
+                <span>Booked By</span>
+              </div>
+              <p class="text-gray-600 text-sm">
+                {{ BookedCustomerDetails?.booker_name }}<br />
+                {{ BookedCustomerDetails?.booker_email }}<br />
+                {{ BookedCustomerDetails?.phone_no }}<br />
+                <span class="font-bold text-base text-[#6A45C0] cursor-pointer hover:underline"
+                  (click)="saledQuotationModel.open();">{{ BookedCustomerDetails?.count }}</span><span
+                  *ngIf="BookedCustomerDetails.booker_name"> Sales Quotation Sent</span>
+              </p>
+            </div>
+
+            <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-map-marker-alt text-[#6A45C0]"></i>
+                <span>Shipper's Address</span>
+              </div>
+              <p class="text-gray-600 text-sm">
+                {{ receivedHawbData?.sender_name }}<br />
+                {{ receivedHawbData?.sender_address }}<br />
+                {{ receivedHawbData?.sender_city }}<br />
+                {{ receivedHawbData?.sender_pincode }}<br />
+                {{ receivedHawbData?.sender_country }} <br />
+                <span class="text-[#6A45C0]">{{ receivedHawbData?.shipper_mail_id }}</span> <br />
+                {{ receivedHawbData?.sender_contact_no }}
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-user text-[#6A45C0]"></i>
+                <span>Receiver's Address</span>
+              </div>
+              <p class="text-gray-600 text-sm">
+                {{ receivedHawbData?.receiver_name }}<br />
+                {{ receivedHawbData?.receiver_address }}<br />
+                {{ receivedHawbData?.receiver_taluk_name }}<br />
+                {{ receivedHawbData?.receiver_pincode }}<br />
+                {{ receivedHawbData?.receiver_state }} <br />
+                <span *ngIf="receivedHawbData.receiver_mail">{{ receivedHawbData?.receiver_mail }} <br /> </span>
+                <span *ngIf="receivedHawbData.receiver_contact_no"> {{ receivedHawbData?.receiver_contact_no }} </span>
+                <span *ngIf="receivedHawbData.receiver_phone">,{{ receivedHawbData?.receiver_phone }}</span>
+              </p>
+            </div>
+
+            <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-id-card text-[#6A45C0]"></i>
+                <span>Aadhar Details</span>
+              </div>
+              <p class="text-gray-600 text-sm">
+                {{ receivedHawbData?.aadhar_name }}<br />
+                {{ receivedHawbData?.aadhar_no }}<br />
+                {{ receivedHawbData?.aadhar_details }}<br />
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="col-lg-3">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-credit-card text-[#6A45C0]"></i>
+                <span>Payment Status</span>
+              </div>
+              <p class="text-gray-600 text-sm">
+                {{
+                receivedHawbDatanew.payment_status === 'no'
+                ? 'Not Paid'
+                : receivedHawbDatanew.payment_status === 'yes'
+                ? 'Paid'
+                : receivedHawbDatanew.payment_status === 'npd'
+                ? 'Not Paid Departed'
+                : 'N/A'
+                }}
+              </p>
+            </div>
+            <div class="col-lg-3">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-calendar text-[#6A45C0]"></i>
+                <span>Payment Date</span>
+              </div>
+              <p class="text-gray-600 text-sm">{{ receivedHawbDatanew.payment_date || 'N/A' }}</p>
+            </div>
+            <div class="col-lg-3">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-calendar-alt text-[#6A45C0]"></i>
+                <span>Delivery Date</span>
+              </div>
+              <p class="text-gray-600 text-sm">{{ receivedHawbDatanew.expected_dly_date || 'N/A' }}</p>
+            </div>
+            <div class="col-lg-3">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-clock text-[#6A45C0]"></i>
+                <span>Transit Days</span>
+              </div>
+              <p class="text-gray-600 text-sm">{{ BoxGroups[0]?.payment_date_count || 'N/A' }}</p>
+            </div>
+          </div>
+
+          <div *ngIf="isOdaLoction" class="oda-location-alert w-100" style="width: 100%!important;">
+            <h5 class="text-danger" style="font-weight: bolder;">Notice</h5>
+
+            <b class="oda-title">Out of Delivery Area Detected (ODA)</b>
+            <p>Your pincode falls under the Out of Delivery Area (ODA) and Remote Locations. Estimated delivery time: 21
+              working days.</p>
+          </div>
+
+          <div class="section-title text-xl font-bold text-gray-800 mt-5 mb-3">Order Items</div>
+          <div class="overflow-x-auto mb-6">
+            <table class="min-w-full w-full bg-white border border-gray-200 rounded-lg">
+              <thead>
+                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  <th class="py-3 px-6 text-left">Item Details</th>
+                  <th class="py-3 px-6 text-left">Dimensions (cm)</th>
+                  <th class="py-3 px-6 text-left">Actual Weight</th>
+                  <th class="py-3 px-6 text-left">Vol. Weight</th>
+                </tr>
+              </thead>
+              <tbody class="text-gray-600 text-sm font-light">
+                <tr *ngFor="let item of PackingListDetails" class="border-b border-gray-200 hover:bg-[#F0EAFE]">
+                  <td class="py-3 px-6 text-left whitespace-normal break-words">
+                    {{ item.item_details }}
+                  </td>
+                  <td class="py-3 px-6 text-left">{{ item.length }} × {{ item.width }} × {{ item.height }}</td>
+                  <td class="py-3 px-6 text-left">{{ item.act_wgt }} kg</td>
+                  <td class="py-3 px-6 text-left">{{ item.vol_weight }} kg</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+
+        <div class="tab-content" *ngIf="activeTab === 'warehouse'">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-user-circle text-[#6A45C0]"></i>
+                <span>Booked By</span>
+              </div>
+              <p class="text-gray-600 text-sm">
+                {{ BookedCustomerDetails?.booker_name }}<br />
+                {{ BookedCustomerDetails?.booker_email }}<br />
+                {{ BookedCustomerDetails?.phone_no }}<br />
+                <span class="font-bold text-base text-[#6A45C0] cursor-pointer hover:underline"
+                  (click)="saledQuotationModel.open();">{{ BookedCustomerDetails?.count }}</span><span
+                  *ngIf="BookedCustomerDetails"> Sales Quotation Sent</span>
+              </p>
+            </div>
+
+            <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-warehouse text-[#6A45C0]"></i>
+                <span>Shipper's Address</span>
+              </div>
+              <p class="text-gray-600 text-sm">
+                {{ receivedHawbDatanew.sender_name }}<br />
+                {{ receivedHawbDatanew.sender_address }}<br />
+                {{ receivedHawbDatanew.sender_city }}<br />
+                {{ receivedHawbDatanew.sender_pincode }}<br />
+                {{ receivedHawbDatanew.sender_country }} <br />
+                <span class="text-[#6A45C0]">{{ receivedHawbDatanew?.senderEmail }}</span> <br />
+                {{ receivedHawbDatanew.sender_mobile }}
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-box text-[#6A45C0]"></i>
+                <span>Receiver's Address</span>
+              </div>
+              <p class="text-gray-600 text-sm">
+                {{ receivedHawbDatanew.receiver_name }}<br />
+                {{ receivedHawbDatanew.receiver_address }}<br />
+                {{ receivedHawbDatanew.receiver_taluk_name }}<br />
+                {{ receivedHawbDatanew.receiver_pincode }}<br />
+                {{ receivedHawbDatanew.receiver_state }} <br />
+                <span *ngIf="receivedHawbDatanew.receiver_mobile"> {{ receivedHawbDatanew?.receiver_mobile }} </span>
+                <span *ngIf="receivedHawbDatanew.receiver_phone">,{{ receivedHawbDatanew?.receiver_phone }}</span>
+              </p>
+            </div>
+
+            <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+              <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+                <i class="fas fa-id-card text-[#6A45C0]"></i>
+                <span>Aadhar Details</span>
+              </div>
+              <p class="text-gray-600 text-sm">
+                {{ receivedHawbDatanew?.aadhar_name }}<br />
+                {{ receivedHawbDatanew?.aadhar_no }}<br />
+                {{ receivedHawbDatanew?.aadhar_address }}<br />
+              </p>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto mb-6">
+            <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+              <thead>
+                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  <th class="py-3 px-6 text-left">Received Date</th>
+                  <th class="py-3 px-6 text-left">Box No.</th>
+                  <th class="py-3 px-6 text-left">Weight (kg)</th>
+                  <th class="py-3 px-6 text-left">Dimensions (cm)</th>
+                  <th class="py-3 px-6 text-left">Status</th>
+                </tr>
+              </thead>
+              <tbody class="text-gray-600 text-sm font-light">
+                <tr *ngFor="let item of ReceivedColoaderDate" class="border-b border-gray-200 hover:bg-[#F0EAFE]">
+                  <td class="py-3 px-6 text-left">{{ item.created_time }}</td>
+                  <td class="py-3 px-6 text-left">{{ item.carton_no }}</td>
+                  <td class="py-3 px-6 text-left">{{ item.act_wgt }}</td>
+                  <td class="py-3 px-6 text-left">{{ item.length }} × {{ item.width }} × {{ item.height }}</td>
+                  <td class="py-3 px-6 text-left">
+                    <span *ngIf="item.update_status != 1" class="text-red-500">Not Updated</span>
+                    <span *ngIf="item.update_status == 1" class="text-green-500">Updated</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section-title text-xl font-bold text-gray-800 mt-5 mb-3">Manifest Dispatch Status</div>
+          <h5 class="text-lg text-gray-700 font-medium">
+            Status:
+            <span *ngIf="!ManifestDetails?.consignment_date || ManifestDetails?.consignment_date == ''"
+              class="text-red-500">
+              Not Dispatched
+            </span>
+            <span *ngIf="ManifestDetails?.consignment_date && ManifestDetails?.consignment_date != ''"
+              class="text-green-500">
+              Dispatched
+            </span>
+          </h5>
+
+          <div *ngIf="ManifestDetails?.consignment_date" class="mt-4 overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+              <tbody class="text-gray-600 text-sm font-light">
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0] w-1/3">HAWB No</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.hawb_no }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">Final Weight</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.Manifest_final_weight }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">Consignment No</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.consignment_no }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">Consignment Date</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.consignment_date }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">MAWB No</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.mawb_no }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">Airlines</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.airlines }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">Origin</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.origin_location }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">Destination</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.destination_location }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">Flight Number</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.flight_number }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">Flight Date</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.flight_date }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">Total Bags</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.total_bags }}</td>
+                </tr>
+                <tr class="border-b border-gray-200">
+                  <th class="py-3 px-6 text-left font-semibold bg-gray-100 text-[#6A45C0]">Total Weight (kg)</th>
+                  <td class="py-3 px-6 text-left">{{ ManifestDetails?.shipment_total_weight }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="card1-header bg-gray-100 rounded-t-lg p-4 mb-4">
+          <div class="card1-title text-lg font-semibold text-gray-800">Additional Information</div>
+        </div>
+
+        <div class="section-title text-xl font-bold text-gray-800 mb-3">Summary</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+              <i class="fas fa-box text-[#6A45C0]"></i>
+              <span>Total Packing List</span>
+            </div>
+            <p class="text-gray-600 text-sm">
+              Total Pieces: {{ totalPieces }}<br />
+              Total Actual Weight: {{ totalActualWeight }} kg<br />
+              Total Volumetric Weight: {{ totalVolumetricWeight }} kg<br />
+              Total Chargeable Weight: {{ totalChargeableWeight }} kg
+            </p>
+          </div>
+
+          <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+              <i class="fas fa-box text-[#6A45C0]"></i>
+              <span>Received Packing List</span>
+            </div>
+            <p class="text-gray-600 text-sm">
+              Total Received Pieces: {{ totalReceivedPieces }}<br />
+              Total Received Weight: {{ totalReceivedWeight }} kg<br />
+              Total Received Volumetric Weight: {{ totalReceivedVolWeight }} kg<br />
+              Total Received Chargeable Weight: {{ totalReceivedChargeableWeight }} kg
+            </p>
+          </div>
+
+          <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+              <i class="fas fa-box text-[#6A45C0]"></i>
+              <span>Not Received Packing List</span>
+            </div>
+            <p class="text-gray-600 text-sm">
+              Total Not Received Pieces: {{ totalNotReceivedPieces }}<br />
+              Total Not Received Weight: {{ totalNotReceivedWeight }} kg<br />
+              Total Not Received Volumetric Weight: {{ totalNotReceivedVolWeight }} kg<br />
+              Total Not Received Chargeable Weight: {{ totalNotReceivedChargeableWeight }} kg
+            </p>
+          </div>
+        </div>
+
+        <div class="section-title text-xl font-bold text-gray-800 mb-3">Documentation</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div (click)="openImage(receivedHawbDatanew.aadhar_front_img || receivedHawbData.aadhar_front_url)"
+            *ngIf="receivedHawbDatanew.aadhar_front_img || receivedHawbData.aadhar_front_url"
+            class="bg-gray-50 rounded-lg p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-100 transition-colors duration-200">
+            <i class="fa fa-file-pdf text-red-500 text-2xl"></i>
+            <div>
+              <div class="font-medium text-gray-800">Aadhar_Front</div>
+              <div class="text-sm text-gray-500">View</div>
+            </div>
+          </div>
+          <div (click)="openImage(receivedHawbDatanew.aadhar_back_img || receivedHawbData.aadhar_back_url)"
+            *ngIf="receivedHawbDatanew.aadhar_back_img || receivedHawbData.aadhar_back_url"
+            class="bg-gray-50 rounded-lg p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-100 transition-colors duration-200">
+            <i class="fa fa-file-pdf text-red-500 text-2xl"></i>
+            <div>
+              <div class="font-medium text-gray-800">Aadhar_Back</div>
+              <div class="text-sm text-gray-500">View</div>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div (click)="openInvoice(receivedHawbData.deposit_inv_url)" *ngIf="receivedHawbData.deposit_inv_url"
+            class="bg-gray-50 rounded-lg p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-100 transition-colors duration-200">
+            <i class="fa fa-file-pdf text-red-500 text-2xl"></i>
+            <div>
+              <div class="font-medium text-gray-800">FreeAgent Deposit Invoice</div>
+              <div class="text-sm text-gray-500">View</div>
+            </div>
+          </div>
+          <div (click)="openInvoice(receivedHawbDatanew.free_agent_invoice_url)"
+            *ngIf="receivedHawbDatanew.free_agent_invoice_url"
+            class="bg-gray-50 rounded-lg p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-100 transition-colors duration-200">
+            <i class="fa fa-file-pdf text-red-500 text-2xl"></i>
+            <div>
+              <div class="font-medium text-gray-800">FreeAgent Final Invoice</div>
+              <div class="text-sm text-gray-500">View</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-title text-xl font-bold text-gray-800 mt-5 mb-3"
+          *ngIf="receivedHawbDatanew.free_agent_invoice_url || receivedHawbData.deposit_inv_url">
+          FreeAgent Invoice
+          <svg style="cursor: pointer" (click)="getDetialsOfInvoices(); getDetialsOfInvoices1()"
+            class="mb-1 inline-block ml-2" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+            viewBox="0 0 640 640">
+            <path
+              d="M552 256L408 256C398.3 256 389.5 250.2 385.8 241.2C382.1 232.2 384.1 221.9 391 215L437.7 168.3C362.4 109.7 253.4 115 184.2 184.2C109.2 259.2 109.2 380.7 184.2 455.7C259.2 530.7 380.7 530.7 455.7 455.7C463.9 447.5 471.2 438.8 477.6 429.6C487.7 415.1 507.7 411.6 522.2 421.7C536.7 431.8 540.2 451.8 530.1 466.3C521.6 478.5 511.9 490.1 501 501C401 601 238.9 601 139 501C39.1 401 39 239 139 139C233.3 44.7 382.7 39.4 483.3 122.8L535 71C541.9 64.1 552.2 62.1 561.2 65.8C570.2 69.5 576 78.3 576 88L576 232C576 245.3 565.3 256 552 256z" />
+          </svg>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200" *ngIf="freeagentDetails?.dated_on">
+            <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+              <i class="fas fa-calendar text-purple-500"></i>
+              <span>Deposit Invoice</span>
+            </div>
+            <table class="table-auto w-full text-sm">
+              <tbody>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Invoice Date:</td>
+                  <td class="py-1 text-right">{{ freeagentDetails?.dated_on | date: 'dd-MM-yyyy' }}</td>
+                </tr>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Due Date:</td>
+                  <td class="py-1 text-right">{{ freeagentDetails?.due_on | date: 'dd-MM-yyyy' }}</td>
+                </tr>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Total Value:</td>
+                  <td class="py-1 text-right">£{{ freeagentDetails?.total_value }}</td>
+                </tr>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Paid Value:</td>
+                  <td class="py-1 text-right">£{{ freeagentDetails?.paid_value }}</td>
+                </tr>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Due Value:</td>
+                  <td class="py-1 text-right">£{{ freeagentDetails?.due_value }}</td>
+                </tr>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Status:</td>
+                  <td class="py-1 text-right">{{ freeagentDetails?.long_status }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="address-card bg-gray-50 rounded-lg p-5 border border-gray-200"
+            *ngIf="freeagentDetailsFinal?.dated_on">
+            <div class="address-title flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-2">
+              <i class="fas fa-calendar text-purple-500"></i>
+              <span>Final Invoice</span>
+            </div>
+            <table class="table-auto w-full text-sm">
+              <tbody>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Invoice Date:</td>
+                  <td class="py-1 text-right">{{ freeagentDetailsFinal?.dated_on | date: 'dd-MM-yyyy' }}</td>
+                </tr>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Due Date:</td>
+                  <td class="py-1 text-right">{{ freeagentDetailsFinal?.due_on | date: 'dd-MM-yyyy' }}</td>
+                </tr>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Total Value:</td>
+                  <td class="py-1 text-right">£{{ freeagentDetailsFinal?.total_value }}</td>
+                </tr>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Paid Value:</td>
+                  <td class="py-1 text-right">£{{ freeagentDetailsFinal?.paid_value }}</td>
+                </tr>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Due Value:</td>
+                  <td class="py-1 text-right">£{{ freeagentDetailsFinal?.due_value }}</td>
+                </tr>
+                <tr>
+                  <td class="py-1 font-medium text-gray-700">Status:</td>
+                  <td class="py-1 text-right">{{ freeagentDetailsFinal?.long_status }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div *ngFor="let item of receivedInvoiceImages" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div *ngIf="item.ashawb_final_img1" (click)="openImage(item.ashawb_final_img1)"
+              class="flex items-center gap-4 mb-2 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors duration-200">
+              <i class="fa fa-image text-blue-500 text-2xl"></i>
+              <div>
+                <div class="font-medium text-gray-800">{{ item.hawb_no_box }} Final Img 1</div>
+                <div class="text-sm text-gray-500">View</div>
+              </div>
+            </div>
+
+            <div *ngIf="item.ashawb_final_img2" (click)="openImage(item.ashawb_final_img2)"
+              class="flex items-center gap-4 mb-2 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors duration-200">
+              <i class="fa fa-image text-blue-500 text-2xl"></i>
+              <div>
+                <div class="font-medium text-gray-800">{{ item.hawb_no_box }} Final Img 2</div>
+                <div class="text-sm text-gray-500">View</div>
+              </div>
+            </div>
+
+            <div *ngIf="item.hawb_img" (click)="openImage(item.hawb_img)"
+              class="flex items-center gap-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors duration-200">
+              <i class="fa fa-image text-blue-500 text-2xl"></i>
+              <div>
+                <div class="font-medium text-gray-800">{{ item.hawb_no_box }} Manifest Final Wt Img</div>
+                <div class="text-sm text-gray-500">View</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tabs flex space-x-2 border-b border-gray-200 mb-6">
+          <div class="tab px-4 py-2 cursor-pointer font-medium text-gray-600 transition-colors duration-200" [ngClass]="{
+      'border-b-2 border-[#6A45C0] text-[#6A45C0]': activeTab1 === 'emp'
+    }" (click)="setActiveTab1('emp')">
+            Employee Events
+          </div>
+          <div *ngIf="receivedHawbDatanew && receivedHawbDatanew.hawb_no"
+            class="tab px-4 py-2 cursor-pointer font-medium text-gray-600 transition-colors duration-200" [ngClass]="{
+      'border-b-2 border-[#6A45C0] text-[#6A45C0]': activeTab1 === 'cust'
+    }" (click)="setActiveTab1('cust')">
+            Customer Event
+          </div>
+        </div>
+
+        <div class="tab-content" *ngIf="activeTab1 === 'emp'">
+
+
+
+          <div class="section-title text-xl font-bold text-gray-800 mt-5 mb-3"></div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+              <thead>
+                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  <th class="py-3 px-6 text-left">Date</th>
+                  <th class="py-3 px-6 text-left">Event</th>
+                  <th class="py-3 px-6 text-left">Agent</th>
+                </tr>
+              </thead>
+              <tbody class="text-gray-600 text-sm font-light">
+                <tr *ngFor="let data of eventLogs; let i = index" class="border-b border-gray-200 hover:bg-gray-100">
+                  <td class="py-3 px-6 text-left whitespace-nowrap">{{ data.opr_date_time }}</td>
+                  <td class="py-3 px-6 text-left">{{ data.statues }}</td>
+                  <td class="py-3 px-6 text-left">{{ data.employee_name }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+
+
+
+
+        </div>
+        <div class="tab-content" *ngIf="activeTab1 === 'cust'">
+
+
+
+          <div class="section-title text-xl font-bold text-gray-800 mt-5 mb-3"></div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+              <thead>
+                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  <th class="py-3 px-6 text-left">Date</th>
+                  <th class="py-3 px-6 text-left">Event</th>
+                </tr>
+              </thead>
+              <tbody class="text-gray-600 text-sm font-light">
+                <tr *ngFor="let data of eventCustLogs; let i = index" class="border-b border-gray-200 hover:bg-gray-100">
+                  <td class="py-3 px-6 text-left whitespace-nowrap">{{ data.customer_tracked_time }}</td>
+                  <td class="py-3 px-6 text-left">{{ data.event }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+
+
+
+
+        </div>
+
+
+      </div>
+    </div>
+    <div class="timeline-panel w-full lg:w-1/3">
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
+          <h3 class="text-lg font-semibold text-gray-800">Tracking Timeline</h3>
+          <div
+            class="inline-flex items-center gap-2 rounded-full bg-[#E6E0F8] px-3 py-1 text-xs font-semibold text-[#6A45C0]">
+            <i class="fas fa-shipping-fast"></i>
+            <span>In Transit</span>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <ol class="space-y-0">
+          <li class="relative pl-8 pb-6 border-l border-gray-200 last:pb-0 last:border-l-0"
+            *ngFor="let event of timelineEvents">
+            <!-- dot -->
+            <span
+              class="absolute -left-1.5 top-2 block h-3 w-3 rounded-full bg-[#6A45C0] ring-4 ring-white shadow"></span>
+
+            <!-- tag -->
+            <span class="mb-2 inline-block rounded-full bg-[#E6E0F8] px-2 py-0.5 text-xs font-semibold text-[#6A45C0]">
+              {{ event.tag }}
+            </span>
+
+            <!-- title -->
+            <div class="text-base font-semibold text-gray-800 leading-snug">
+              {{ event.title }}
+            </div>
+
+            <!-- details -->
+            <div class="mt-1 text-sm text-gray-600">
+              {{ event.details }}
+            </div>
+
+            <!-- time -->
+            <div class="mt-1 flex items-center gap-1 text-xs text-gray-400">
+              <i class="far fa-clock"></i>
+              <span>{{ event.timestamp }}</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+
+
+  </div>
+</div>
+
+<div class="relative min-h-[200px]">
+
+
+  <button class="fixed bottom-8 right-8 bg-[#6A45C0] text-white rounded-full p-4 shadow-lg 
+           hover:bg-[#5939A3] transition-colors duration-300 
+           focus:outline-none focus:ring-2 focus:ring-[#6A45C0] focus:ring-offset-2" (click)="callNotesFile()">
+    <i class="fas fa-plus text-xl"></i>
+    <span class="ml-2 hidden md:inline">Add Note</span>
+  </button>
+</div>
+
+<modal #addNotes class="modal-top extra-large-modal" backdrop="static">
+  <ng-template #modalHeader>
+    <div>Add Notes</div>
+  </ng-template>
+
+  <ng-template #modalBody>
+    <app-add-notes></app-add-notes>
+  </ng-template>
+
+
+</modal>
+
+
+<modal #saledQuotationModel class="modal-top extra-large-modal" backdrop="static">
+  <ng-template #modalHeader>
+    <div>Sales Quotaion Overview</div>
+  </ng-template>
+
+  <ng-template #modalBody>
+    <div class="modal-body overflow-x-auto">
+      <table class="min-w-full border border-gray-300">
+        <thead>
+          <tr class="bg-gray-800 ">
+            <th class="px-4 py-2 text-center border border-gray-300">Si No.</th>
+            <th class="px-4 py-2 text-center border border-gray-300">Sended To</th>
+            <th class="px-4 py-2 text-center border border-gray-300">Sent Email</th>
+            <th class="px-4 py-2 text-center border border-gray-300">Phone No.</th>
+            <th class="px-4 py-2 text-center border border-gray-300">Sended By</th>
+            <th class="px-4 py-2 text-center border border-gray-300">Sended Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of BookedCustomerDetails?.details; let i = index"
+            class="odd:bg-white even:bg-gray-100 hover:bg-gray-200">
+            <td class="px-4 py-2 text-center border border-gray-300">{{ i+1 }}</td>
+            <td class="px-4 py-2 text-center border border-gray-300">{{ a.booker_name }}</td>
+            <td class="px-4 py-2 text-center border border-gray-300">{{ a.booker_email }}</td>
+            <td class="px-4 py-2 text-center border border-gray-300">{{ a.phone_no }}</td>
+            <td class="px-4 py-2 text-center border border-gray-300">{{ a.emp_name }}</td>
+            <td class="px-4 py-2 text-center border border-gray-300">{{ a.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-template>
+
+
+</modal>

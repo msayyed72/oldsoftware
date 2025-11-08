@@ -1,0 +1,7 @@
+  :host ::ng-deep .e-grid .e-content tr.row-booking-agent {
+  background-color: #fff9c4;
+}
+/* keep selected row legible */
+:host ::ng-deep .e-grid .e-content tr.row-booking-agent.e-selection {
+  background-color: #ffec99;
+}

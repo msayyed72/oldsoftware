@@ -1,0 +1,164 @@
+<ol class="flex flex-wrap items-center gap-y-4 font-semibold text-gray-500 dark:text-white-dark mb-3">
+    <li>
+        <a href="javascript:;"
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+            <icon-home />
+        </a>
+    </li>
+   
+    <li
+        class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full before:bg-primary">
+        <a href="javascript:;"
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 text-primary shadow dark:border-0 dark:bg-[#191e3a]">
+            <icon-box class="shrink-0 ltr:mr-2 rtl:ml-2" />
+           Hawb Assigned for Customs
+        </a>
+    </li>
+
+   
+</ol>
+
+<div class="grid grid-cols-2 gap-4">
+  <div class="p-4 panel">
+    <ejs-grid appInputSearch #mainGrid [dataSource]='receivedCartons' height="90vh" [toolbar]="toolbarOptions"
+      [filterSettings]='filterSettings' [allowSorting]="true" [allowFiltering]="true"
+      (rowDataBound)="onRowDataBound($event)">
+      <e-columns>
+        <!-- Select Checkbox -->
+        <e-column headerText="Select" width="10%" textAlign="Center">
+          <ng-template #template let-data>
+            <div class="form-check d-flex justify-content-center align-items-center">
+              <input type="checkbox" class="form-check-input fs-5" [checked]="isSelected(data.carton_id)"
+                (change)="handleSelection(data, $event)" [disabled]="isDisabled(data)">
+            </div>
+          </ng-template>
+        </e-column>
+        <e-column field="created_time" headerText="HAWB Date" width="20%" headerTextAlign="Center" textAlign="Center"
+          filterType="Excel">
+          <ng-template #template let-data>
+            <span>{{ data.created_time }}</span>
+          </ng-template>
+        </e-column>
+
+        <!-- HAWB No. -->
+        <e-column field="invoice_no" headerText="HAWB No." width="20%" headerTextAlign="Center" textAlign="Center"
+          filterType="Excel">
+          <ng-template #template let-data>
+            <span>{{ data.invoice_no }}</span>
+          </ng-template>
+        </e-column>
+
+        <!-- Carton No -->
+        <e-column field="carton_no" headerText="Package No" width="20%" headerTextAlign="Center" textAlign="Center"
+          filterType="Excel">
+          <ng-template #template let-data>
+            <span class="fw-bold ">{{ data.carton_no }}</span>
+          </ng-template>
+        </e-column>
+        <e-column field="weight" headerText="Package Wt" width="20%" headerTextAlign="Center" textAlign="Center"
+          filterType="Excel">
+          <ng-template #template let-data>
+            <span class="fw-bold ">{{ data.weight }}</span>
+          </ng-template>
+        </e-column>
+      </e-columns>
+    </ejs-grid>
+    <div class="p-3 border-t">
+      <button
+        class="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold text-lg rounded-lg shadow-sm flex items-center justify-center disabled:opacity-50"
+        (click)="openBaggingModal()" [disabled]="getCheckedCartons() === 0">
+        <i class="fas fa-boxes mr-2"></i>Bag Selected Packages
+        <span class="ml-2 bg-white text-red-500 rounded-full px-2 py-1 font-bold">
+          <b class="text-blue-500">{{ getCheckedCartons() | number }}</b>
+        </span>
+      </button>
+    </div>
+
+  </div>
+  <div class="p-4 panel">
+    <!-- Panel 2 content here -->
+    <ejs-grid appInputSearch #mainGrid [dataSource]='filteredRowAssignList' height="90vh" [toolbar]="toolbarOptions"
+      [allowSorting]="true" [allowFiltering]="true" [filterSettings]='filterSettings'>
+      <e-columns>
+        <!-- Select Checkbox -->
+        <!-- <e-column headerText="Select" width="80" textAlign="Center">
+                  <ng-template #template let-data>
+                    <div class="form-check d-flex justify-content-center align-items-center">
+                      <input type="checkbox" class="form-check-input fs-5"
+                             [checked]="isSelected(data.carton_id)"
+                             (change)="handleSelection(data, $event)"
+                             [disabled]="isDisabled(data)">
+                    </div>
+                  </ng-template>
+                </e-column> -->
+        <e-column field="created_time" headerText="HAWB No." width="20%" headerTextAlign="Center" textAlign="Center"
+          filterType="Excel">
+          <ng-template #template let-data>
+            <span>{{ data.created_time }}</span>
+          </ng-template>
+        </e-column>
+        <!-- Bag Name -->
+        <e-column field="bag" headerText="Bag Name" width="20%" textAlign="Center">
+          <ng-template #template let-data>
+            <span>{{ data.bag_no }}</span>
+          </ng-template>
+        </e-column>
+
+        <!-- HAWB No. -->
+        <e-column field="invoice_no" headerText="HAWB No." width="20%" textAlign="Center">
+          <ng-template #template let-data>
+            <span>{{ data.invoice_no }}</span>
+          </ng-template>
+        </e-column>
+
+        <!-- Carton No -->
+        <e-column field="carton_no" headerText="Package No" width="20%" textAlign="Center">
+
+        </e-column>
+        <e-column headerText="Action" width="20%" textAlign="Center" [template]="ActionTemplate">
+          <ng-template #ActionTemplate let-data>
+            <button (click)="confirmBaggingDelete(data)" class="btn btn-outline-danger btn-sm rounded-circle shadow-sm"
+              title="Delete">
+              <i class="fa fa-times"></i>
+            </button>
+          </ng-template>
+        </e-column>
+      </e-columns>
+    </ejs-grid>
+  </div>
+</div>
+
+<!-- extra-large-modal -->
+<modal #baggingModal class="modal-top " backdrop="static">
+  <ng-template #modalHeader>
+    <div>Create New Bag</div>
+  </ng-template>
+
+  <ng-template #modalBody>
+    <div class="form-floating mb-4">
+      <input type="text" class="form-input" [(ngModel)]="bagLabel" readonly>
+      <label for="bagLabel" class="text-sm font-medium text-gray-600">Bag Label (e.g., A, B, C...)</label>
+    </div>
+
+    <div *ngIf="selectedCartonsPreview.length > 0" class="bg-light rounded-3 p-3">
+      <h6 class="text-muted mb-3 font-bold text-gray-600">Selected Cartons ({{ selectedCartonsPreview.length }}) - Total
+        Wt: {{calculateTotalWt()}}</h6>
+      <div class="grid grid-cols-2 gap-2">
+        <div class="col-span-1" *ngFor="let carton of selectedCartonsPreview">
+          <div class="card border-0 shadow-sm h-full">
+            <div class="card-body py-3 px-3 text-center">
+              <div class="text-lg font-bold text-gray-800">{{ carton.invoice_no }}</div>
+              <div class="text-md font-bold text-gray-600">Pcs #{{ carton.carton_no }} - wt #{{ carton.weight }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #modalFooter>
+    <button type="button" (click)="baggingModal.close()" class="btn btn-outline-danger">Discard</button>
+    <button type="button" (click)="confirmBagging('A')" class="btn btn-primary ltr:ml-4 rtl:mr-4">Confirm
+      Bagging</button>
+  </ng-template>
+
+</modal>

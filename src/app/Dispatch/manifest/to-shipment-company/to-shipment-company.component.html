@@ -1,0 +1,1133 @@
+<form [formGroup]="valForm" class="form-validate mb-3" role="form" name="registerForm" novalidate=""
+  (submit)="submitForm($event, valForm.value)">
+
+  <ol class="flex flex-wrap items-center gap-y-4 font-semibold text-gray-500 dark:text-white-dark mb-3">
+    <li>
+      <a href="javascript:;"
+        class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+        <icon-home />
+      </a>
+    </li>
+
+    <li
+      class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full before:bg-primary">
+      <a href="javascript:;" routerLink="/Manifest/to-shipment-company"
+        class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 text-primary shadow dark:border-0 dark:bg-[#191e3a]">
+        <icon-box class="shrink-0 ltr:mr-2 rtl:ml-2" />
+        Shipment Manifest & Dispatch
+      </a>
+    </li>
+
+    <li class="ml-auto flex items-center justify-center text-gray-500 dark:text-white-dark">
+      <!-- You can replace this with dynamic date if necessary -->
+      <input type="date" class="form-input" formControlName="booking_date">
+    </li>
+  </ol>
+
+
+  <div class=" p-6 rounded-md shadow-md">
+    <div class="flex flex-row gap-4">
+      <div class="flex-1">
+        <label for="destination-country" class="block text-sm font-medium text-gray-700">Destination
+          Country</label>
+        <div class="col-lg-10 mb-3">
+          <select class="form-select" formControlName="country" #SHM *ngIf="updateBtn =='1'"
+            (keydown.enter)="DES.focus()" (change)="getDestination(valForm.value)">
+            <option value="">Select-Type</option>
+            <option *ngFor="let country2 of country" value="{{country2.country_code}}">
+              {{country2.country_name}}
+            </option>
+          </select>
+
+          <select class="form-select" formControlName="country" #SHM *ngIf="updateBtn =='2'"
+            (keydown.enter)="DES.focus()" (change)="getDestination(valForm.value)">
+            <option value="">Select-Type</option>
+            <option *ngFor="let country2 of country" value="{{country2.country_code}}">
+              {{country2.country_name}}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="flex-1">
+        <label for="shipment-mode" class="block text-sm font-medium text-gray-700"
+          [ngStyle]="{'color': valForm.controls['Shipment_mode'].hasError('required') && (valForm.controls['Shipment_mode'].dirty || valForm.controls['Shipment_mode'].touched)? 'red' : ''}">Shipment
+          Mode</label>
+        <div class="col-lg-10 mb-3">
+          <select class="form-select" formControlName="Shipment_mode" #SHM (keydown.enter)="SHC.focus()"
+            (change)="getshipmentCompany(valForm.value)" *ngIf="updateBtn =='1'"
+            [ngStyle]="{'border-color': valForm.controls['Shipment_mode'].hasError('required') && (valForm.controls['Shipment_mode'].dirty || valForm.controls['Shipment_mode'].touched)? 'red' : ''}">
+            <option value="">Select-Type</option>
+            <option *ngFor="let list of S_mode_List" value="{{list.transit_type_id}}">
+              {{list.transit_type_name}}</option>
+          </select>
+
+          <select class="form-select" formControlName="Shipment_mode" #SHM (keydown.enter)="SHC.focus()"
+            (change)="getshipmentCompany(valForm.value)" *ngIf="updateBtn =='2'"
+            [ngStyle]="{'border-color': valForm.controls['Shipment_mode'].hasError('required') && (valForm.controls['Shipment_mode'].dirty || valForm.controls['Shipment_mode'].touched)? 'red' : ''}">
+            <option value="">Select-Type</option>
+            <option *ngFor="let list of S_mode_List" value="{{list.transit_type_id}}">
+              {{list.transit_type_name}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-row gap-4 mt-4">
+      <div class="flex-1">
+        <label
+          [ngStyle]="{'color': valForm.controls['destination'].hasError('required') && (valForm.controls['destination'].dirty || valForm.controls['destination'].touched)? 'red' : ''}"
+          for="destination-port" class="block text-sm font-medium text-gray-700">Destination Port</label>
+        <div class="col-lg-10 mb-1">
+          <select class="form-select" formControlName="destination" (keydown.enter)="SHM.focus()" #DES
+            *ngIf="updateBtn =='1'"
+            [ngStyle]="{'border-color': valForm.controls['destination'].hasError('required') && (valForm.controls['destination'].dirty || valForm.controls['destination'].touched)? 'red' : ''}">
+            <option value="">Select-Type</option>
+            <option *ngFor="let list of DestinationList" value="{{list.point_id}}">
+              {{list.custom_point_name}}</option>
+          </select>
+
+          <select class="form-select" formControlName="destination" (keydown.enter)="SHM.focus()" #DES
+            *ngIf="updateBtn =='2'"
+            [ngStyle]="{'border-color': valForm.controls['destination'].hasError('required') && (valForm.controls['destination'].dirty || valForm.controls['destination'].touched)? 'red' : ''}">
+            <option value="">Select-Type</option>
+            <option *ngFor="let list of DestinationList" value="{{list.point_id}}">
+              {{list.custom_point_name}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex-1">
+        <label for="shipping-line" class="block text-sm font-medium text-gray-700"
+          [ngStyle]="{'color': valForm.controls['Shipment_company'].hasError('required') && (valForm.controls['Shipment_company'].dirty || valForm.controls['Shipment_company'].touched)? 'red' : ''}">
+          Air/Shipping Line</label>
+        <div class="col-lg-10">
+          <select class="form-select" #SHC (keydown.enter)="submitForm($event, valForm.value)"
+            formControlName="Shipment_company" (change)="ShipmentCompanyassign(valForm.value)"
+            [ngStyle]="{'border-color': valForm.controls['Shipment_company'].hasError('required') && (valForm.controls['Shipment_company'].dirty || valForm.controls['Shipment_company'].touched)? 'red' : ''}">
+            <option value="">Select-Type</option>
+            <option *ngFor="let list of S_company_List" value="{{list.s_company_name}}">
+              {{list.s_company_name}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col md:flex-row md:gap-4 mt-8 justify-between">
+      <div class="flex flex-wrap gap-4 mb-4 md:mb-0">
+        <button type="button"
+          class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          (click)="v1_sp_ds_check_wt_ready_manifest();readyForManifest.open();">Ready For Manifest</button>
+        <button type="button"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          (click)="getAllFinalWtBasedOnManifestNo()">Add Final Weight</button>
+      </div>
+
+      <div class="flex flex-wrap gap-4 mb-4 md:mb-0 justify-center">
+        <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          type="submit" [ngClass]="{'bnt-hide': saveBtn !=='1'}" *ngIf="saveBtn =='1'">
+          <span *ngIf="Save_spin !=='1'">Save</span>
+          <span *ngIf="Save_spin !=='2'">Loading...</span>
+        </button>
+        <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          type="button" [ngClass]="{'bnt-hide': updateBtn !=='2'}" *ngIf="updateBtn =='2'"
+          (click)="update(valForm.value)">
+          <span *ngIf="update_spin !=='1'">Update</span>
+          <span *ngIf="update_spin !=='2'">Loading...</span>
+        </button>
+        <button class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          type="button" (click)="reset()">Reset</button>
+        <button class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          type="button" (click)="gotobooking()">GO TO Dispatch</button>
+      </div>
+
+      <div class="flex flex-wrap gap-4 justify-end">
+        <button type="button"
+          class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          *ngIf="this.btn == '1'" (click)="getAllFinalWtBasedOnManifestNoForMail();" (click)="mawbnoassign(valForm.value)">
+          Dispatch
+        </button>
+
+        <button type="button"
+          class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          *ngIf="this.btn == '2' && this.selectedDate?.airline_tracking_id?.length == 0"
+          (click)="undispatch(valForm.value)">
+          UN Dispatch
+        </button>
+
+        <button type="button"
+          class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          *ngIf="this.selectedDate?.airline_tracking_id?.length > 0" (click)="deleteShipGo()">
+          Delete ShipGo
+        </button>
+
+        <button type="button"
+          class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          *ngIf="this.btn == '2' && this.selectedDate?.airline_tracking_id?.length == 0"
+          (click)="bookShipGo(valForm.value)">
+          Book ShipGo
+        </button>
+
+        <!-- New Tailwind CSS button for Delete ShipGo -->
+        <!-- <button type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto" 
+            *ngIf="this.selectedDate?.airline_tracking_id?.length > 0" (click)="deleteShipGo()">
+            Delete ShipGo
+        </button> -->
+
+       <button  class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto" type="button"
+   *ngIf="this.btn  == '2'"
+  (click)="getDataForTypeOfIATA();classicModal125.open()">
+  Mawb Update
+</button> 
+<button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto" type="button"
+ *ngIf="this.btn  == '2'"
+  (click)="classicModal126.open()">
+  Delivery Note Update
+</button> 
+        <button type="button" mat-button [matMenuTriggerFor]="menu"
+          class="bg-teal-500 hover:bg-teal-600 text-white py-2 px-4 rounded w-full md:w-auto">Export - Clearance
+          Manifest</button>
+
+        <mat-menu #menu="matMenu">
+         
+           <button mat-menu-item (click)="exportClearanceExcel()" [disabled]="btn_load !=='2'">
+            <span *ngIf="btn_load !=='1'">Clearance Manifest</span>
+            <span *ngIf="btn_load !=='2'">Downloading...</span>
+          </button>
+   <button mat-menu-item (click)="downloadLabel()" [disabled]="btn_load !=='2'">
+            <span *ngIf="btn_load !=='1'">Download Labels</span>
+            <span *ngIf="btn_load !=='2'">Downloading...</span>
+          </button>
+        
+          <button mat-menu-item (click)="v1_SP_Report_Dispatch_Manifest_Wise_delivery()" [disabled]="btn_load !=='2'">
+            <span *ngIf="btn_load !=='1'">Delivery Manifest</span>
+            <span *ngIf="btn_load !=='2'">Downloading...</span>
+          </button>
+
+           <button mat-menu-item (click)="manifest_pdf()" [disabled]="btn_load !=='2'">
+            <span *ngIf="btn_load !=='1'">Airlines Label</span>
+            <span *ngIf="btn_load !=='2'">Downloading...</span>
+          </button>
+          <button mat-menu-item (click)="DownloadAllAadharFiles()" [disabled]="btn_load !=='2'">
+            <span *ngIf="btn_load !=='1'">Download Document</span>
+            <span *ngIf="btn_load !=='2'">Downloading...</span>
+          </button>
+
+       
+
+          <button mat-menu-item (click)="downloadPackingList()" [disabled]="btn_load !=='2'">
+            <span *ngIf="btn_load !=='1'">Packing List</span>
+            <span *ngIf="btn_load !=='2'">Downloading...</span>
+          </button>
+
+          <button mat-menu-item (click)="v1_sp_ds_final_manifest_export_get()" [disabled]="btn_load !=='2'">
+            <span *ngIf="btn_load !=='1'">Final Manifest</span>
+            <span *ngIf="btn_load !=='2'">Downloading...</span>
+          </button>
+
+       
+
+          <button mat-menu-item (click)="v1_SP_Report_customs_manifest()" [disabled]="btn_load !=='2'">
+            <span *ngIf="btn_load !=='1'">Customes Manifest</span>
+            <span *ngIf="btn_load !=='2'">Downloading...</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+
+  </div>
+  <div class="bg-white rounded-lg shadow-md p-4">
+    <div class="flex justify-between items-center mb-4">
+      <button class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" type="button"
+        (click)="pre_cus('R')" [disabled]="start_sr == 10">
+        &lt;&lt; Preview
+      </button>
+      <button class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" type="button"
+        [disabled]="nxt_action == 1" (click)="next_cus('R')">
+        Next &gt;&gt;
+      </button>
+    </div>
+    <div class="overflow-x-auto">
+      <ejs-grid #mainGrid cssClass="custom-grid" [rowHeight]="40" [filterSettings]="filterSettings" appInputSearch
+        [allowExcelExport]="true" [toolbar]="toolbarOptions" [dataSource]="DP_to_SC_List" height="60vh"
+        [textWrapSettings]="{wrapMode:'all'}" [allowTextWrap]='true' [allowSorting]="false" [allowFiltering]="true"
+        (rowSelected)="edit($event)">
+        <e-columns>
+          <!-- <e-column field="pageNo" headerText="S.No" textAlign="Center" width="50"></e-column> -->
+          <e-column field="ptp_mf_no" headerText="Dispatch Manifest" width="150"></e-column>
+          <e-column field="manifest_date" headerText="Dispatch Date" format="yMd" textAlign="Center"
+            width="120"></e-column>
+          <e-column field="Destination" headerText="Destination Port" width="150"></e-column>
+          <e-column field="shipment_name" headerText="Air/Shipping Line" width="150"></e-column>
+          <e-column field="seal_no" headerText="MAWB No." width="150"></e-column>
+          <e-column field="shipment_no" headerText="Shipment No." width="150" [template]="ShipmentNoREf">
+            <ng-template #ShipmentNoREf let-data>
+              <div *ngIf="loading" class="flex justify-center items-center h-full">
+                <icon-loader
+                  class="inline-block shrink-0 animate-[spin_2s_linear_infinite] align-middle ltr:mr-2 rtl:ml-2" />
+              </div>
+              <button class="e-btn e-flat" type="button" *ngIf="!loading && data.airline_tracking_id"
+                (click)="openTrackingDetial(data.airline_tracking_id)">
+                {{data.shipment_no}}
+              </button>
+            </ng-template>
+          </e-column>
+          <e-column field="manifest_final_boxes" headerText="Tot MF Bags" textAlign="Right" width="120"></e-column>
+          <e-column field="invoice_count" headerText="Tot HAWB" textAlign="Right" width="120"></e-column>
+          <e-column field="carton_count" headerText="Tot Packages" textAlign="Right" width="120"></e-column>
+          <e-column field="final_wt" headerText="Final Wt." textAlign="Right" width="120"></e-column>
+          <e-column field="act_wt" headerText="Actual Wt." textAlign="Right" width="120"></e-column>
+          <e-column field="total_received_weight" headerText="Chargeable Wt." textAlign="Right" width="120"></e-column>
+          <e-column field="CreatedBy" headerText="Dispatch By" width="150"></e-column>
+          <e-column field="dispatch_status" headerText="Dispatch Status" width="150"></e-column>
+          <e-column headerText="Actions" textAlign="Center" [template]="template" width="150">
+            <ng-template #template let-data>
+              <span (click)="delete(data, $event)">
+                <i class="fa fa-trash text-red-500 cursor-pointer"></i>
+              </span>
+            </ng-template>
+          </e-column>
+        </e-columns>
+      </ejs-grid>
+    </div>
+
+
+  </div>
+</form>
+
+
+
+<modal #readyForManifest class="modal-top extra-large-modal" [closeOnOutsideClick]="false">
+  <ng-template #modalHeader>
+
+    <div>Ready To Manifest</div>
+  </ng-template>
+  <ng-template #modalBody>
+    <div class="flex justify-end">
+      <button type="button" class="btn btn-dark mb-2">
+        Total Actual Weight:<span class="badge my-0 bg-white-light text-black ltr:ml-4 rtl:mr-4">{{
+          totalCartonWeight.toFixed(2) }} kg</span>
+      </button>
+    </div>
+    <ejs-grid #mainGridnew appInputSearch [dataSource]="readyForManifestDetails" [allowPaging]="true"
+      [allowExcelExport]="true" [pageSettings]='{ pageSize: 50, pageSizes: [25,50,100,150] }' height="60vh"
+      [allowFiltering]="true" [filterSettings]="filterSettings" [toolbar]="toolbarOptions"
+      (rowDataBound)="onRowDataBound($event)" (toolbarClick)="toolbarClick($event)">
+      <e-columns>
+        <e-column field="invoice_no" headerText="HAWB NO" width="120"></e-column>
+        <e-column field="box_no" headerText="Bag NO" width="120"></e-column>
+        <e-column field="status" headerText="Weight & Dimensions Check" width="180">
+
+        </e-column>
+        <e-column field="carton_no" headerText="Number of Pieces" width="150"></e-column>
+        <e-column field="carton_weight" headerText="Actual/Dead Weight of Total Pcs" width="200"></e-column>
+        <e-column field="final_wt" headerText="Final Weight" width="200"></e-column>
+        <e-column field="content" headerText="Contents" width="300"></e-column>
+        <e-column field="sender_name" headerText="Sender Name" width="180"></e-column>
+        <e-column field="sender_address" headerText="Sender's Address" width="300"></e-column>
+        <e-column field="receiver_aadhar_name" headerText="Receiver Name as per Aadhaar" width="200"></e-column>
+        <e-column field="receiver_aadhar_address" headerText="Receiver's Aadhaar Address" width="350"></e-column>
+      </e-columns>
+    </ejs-grid>
+  </ng-template>
+
+</modal>
+<modal #finalWeight class="modal-top extra-large-modal" [closeOnOutsideClick]="false">
+  <ng-template #modalHeader>
+
+    <div>Final Shipmet Modification</div>
+  </ng-template>
+  <ng-template #modalBody>
+    <div class="flex justify-end">
+      <button type="button" class="btn btn-dark mb-2">
+        Total Actual Weight:<span class="badge my-0 bg-white-light text-black ltr:ml-4 rtl:mr-4">{{
+          calculateTotalFinalWt() }} kg</span>
+      </button>
+    </div>
+    <ejs-grid #finalWeightChangeTable appInputSearch [dataSource]="gotAllManifestDetails" height="90vh"
+      [contextMenuItems]="['Copy', 'CopyWithHeaders']" [allowPaging]="true" [allowSorting]="true"
+      [allowFiltering]="true" [filterSettings]="filterSettings" [allowRowDragAndDrop]="true"
+      [editSettings]="editSettings" [allowExcelExport]="true"
+      [pageSettings]="{ pageSize: 50, pageSizes: [25,50,100,150] }"
+      [selectionSettings]="{ type: 'Multiple', mode: 'Cell' }" (rowDrop)="onRowDrop($event)"
+      (toolbarClick)="onToolbarClick($event)" [toolbar]="['Search','Excel']">
+
+      <e-columns>
+        <e-column field="booking_date" headerText="HAWB Date" width="150" [allowEditing]="false"></e-column>
+        <e-column field="mergeHawb" headerText="HAWB No." width="150" [allowEditing]="false"></e-column>
+        <!-- <e-column field="bag_no" headerText="Bag No" width="150" [allowEditing]="false"></e-column> -->
+        <e-column field="colorForName" headerText="Sender Name" width="150" [template]="inputSenderName">
+          <ng-template #inputSenderName let-data>
+            <div>
+              <input (keydown)="handleArrowKeys($event)"
+                [ngStyle]="getHighlightStyle(data.sender_name, data.receiver_name)"
+                class="form-input w-full resize-none" [(ngModel)]="data.sender_name"
+                (change)="onFinalWeightUpdate(data)">
+            </div>
+          </ng-template>
+
+
+        </e-column>
+        <!-- <e-column field="receiver_name" headerText="Receiver Name" width="150" [allowEditing]="false"></e-column> -->
+        <e-column field="receiver_name" headerText="Receiver Name" width="150" [allowEditing]="false"
+          [template]="receiverNameTemplate" [sortComparer]="duplicateSortComparer"></e-column>
+
+        <ng-template #receiverNameTemplate let-data>
+          <span style="word-break: normal ;" [ngStyle]="getReceiverStyle(data.receiver_name)">
+            {{ data.receiver_name }}
+          </span>
+        </ng-template>
+        <e-column field="final_img" [template]="imageTemplate" headerText="Final Img." width="80"
+          [allowEditing]="false"></e-column>
+        <ng-template #imageTemplate let-data>
+          <div appViewer [viewerOptions]="{ movable: true, zoomable: true }"   >
+            <img class="small-img" [src]="data.final_img" />
+          </div>
+        </ng-template>
+
+        <e-column field="act_wt" headerText="Actual Wt." width="150" [allowEditing]="false"></e-column>
+        <e-column field="final_wt" headerText="Final Wt" width="150" textAlign="Right" [template]="inputFinalWeight">
+          <ng-template #inputFinalWeight let-data>
+            <input type="text" class="form-input" (keydown)="handleArrowKeys($event)"
+              [ngStyle]="getHighlightStyleValue(data.final_wt)" [(ngModel)]="data.final_wt"
+              (change)="onFinalWeightUpdate(data)">
+          </ng-template>
+        </e-column>
+        <!-- <e-column field="label_print_status" type="number" headerText="Next sts" width="150"
+              [allowEditing]="false"></e-column> -->
+
+      </e-columns>
+    </ejs-grid>
+  </ng-template>
+
+</modal>
+
+<modal #viewShipmentTracking class="modal-top extra-large-modal" [closeOnOutsideClick]="false">
+  <ng-template #modalHeader>
+
+    <div>Ready To Manifest</div>
+  </ng-template>
+  <ng-template #modalBody>
+    <div class="shipment-container p-4">
+      <div class="flex justify-between items-center mb-4">
+        <h5 class="text-lg font-bold">
+          Shipment <small class="text-sm font-normal text-gray-500">#{{shipmentData?.id}}</small>
+        </h5>
+      </div>
+
+      <div class="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="flex items-center">
+            <div class="w-1/3 text-right text-sm font-semibold text-gray-700">Reference:</div>
+            <div class="w-2/3 text-sm text-gray-900">{{shipmentData?.summary?.reference}}</div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-1/3 text-right text-sm font-semibold text-gray-700">Carrier:</div>
+            <div class="w-2/3 text-sm text-gray-900">{{shipmentData?.summary?.airline}}</div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-1/3 text-right text-sm font-semibold text-gray-700">Status:</div>
+            <div class="w-2/3">
+              <span class="bg-gray-700 text-white text-xs font-semibold px-2 py-1 rounded-full cursor-default"
+                data-toggle="tooltip" data-placement="top" title="Your shipment is Booked and waiting to be sailed.">
+                {{shipmentData?.summary?.status}}
+              </span>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-1/3 text-right text-sm font-semibold text-gray-700">AWB Number:</div>
+            <div class="w-2/3 text-sm text-gray-900">{{shipmentData?.summary?.awb_number}}</div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-1/3 text-right text-sm font-semibold text-gray-700">Pieces:</div>
+            <div class="w-2/3 text-sm text-gray-900">{{shipmentData?.summary?.cargo?.pieces}}</div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-1/3 text-right text-sm font-semibold text-gray-700">Weight:</div>
+            <div class="w-2/3 text-sm text-gray-900">{{shipmentData?.summary?.cargo?.weight}} kg</div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-1/3 text-right text-sm font-semibold text-gray-700">Volume:</div>
+            <div class="w-2/3 text-sm text-gray-900"><span>-</span></div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-1/3 text-right text-sm font-semibold text-gray-700">Creator:</div>
+            <div class="w-2/3 text-sm text-gray-900">
+              <div class="whitespace-nowrap">
+                <div>{{shipmentData?.created_at}}</div>
+                <div class="mt-2">{{shipmentData?.created_by}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end items-center mb-4 space-x-2">
+        <a class="flex items-center px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors duration-200"
+          target="_blank" (click)="openTrackingLink()">
+          <i class="fas fa-map-marker-alt mr-1"></i>Live Position
+        </a>
+        <div class="relative inline-block text-left">
+          <button
+            class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            type="button" data-toggle="dropdown" aria-expanded="false" fdprocessedid="voxfqf">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div
+            class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+            style="">
+            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" (click)="deleteShipGo()">
+              <i class="fas fa-trash-alt mr-1"></i> Delete Shipment
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="navigation-tabs mb-4">
+        <div class="flex border-b border-gray-300">
+          <button class="px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600">MOVEMENTS</button>
+        </div>
+      </div>
+
+      <div class="movements-table border border-gray-300 rounded-lg">
+        <div class="grid grid-cols-6 gap-4 p-2 bg-gray-200 font-semibold text-gray-700 border-b border-gray-300">
+          <div class="col-span-1">Pieces</div>
+          <div class="col-span-1">Location</div>
+          <div class="col-span-1">Event</div>
+          <div class="col-span-1">Date</div>
+          <div class="col-span-1">Flight</div>
+          <div class="col-span-1">Status</div>
+        </div>
+        <div *ngFor="let event of shipmentData?.tracking_events; let i = index"
+          class="grid grid-cols-6 gap-4 p-2 border-b border-gray-200 items-center"
+          [ngClass]="{'bg-blue-50': isLastAct(i)}">
+          <div class="col-span-1 text-sm text-gray-700">{{event.pieces}} Pieces</div>
+          <div class="col-span-1 text-sm text-gray-700">{{event.location}}</div>
+          <div class="col-span-1 text-sm text-gray-700">
+            {{event.event}}<br><span class="text-xs text-gray-500">{{event.status}}</span>
+          </div>
+          <div class="col-span-1 text-sm text-gray-700">{{event.timestamp | date: 'dd/MM/yyyy HH:mm'}}</div>
+          <div class="col-span-1 text-sm text-gray-700">{{event.flight}}</div>
+          <div class="col-span-1">
+            <div *ngIf="event.status === 'ACT'"
+              class="w-5 h-5 flex items-center justify-center rounded-full bg-green-500 text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div *ngIf="event.status !== 'ACT'" class="w-5 h-5 rounded-full bg-gray-400"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+</modal>
+<div [ngClass]="{'image-modal': true, 'hidden': !showModal}" style="z-index: 999999;">
+  <button type="button" class="absolute top-0 right-0 text-white text-3xl cursor-pointer"
+    (click)="closeModal()">×</button>
+  <div class="relative z-999999">
+    <img [src]="selectedImage" [ngClass]="{ 'zoomed': isZoomed }" class="modal-img" (click)="toggleZoom()" />
+  </div>
+</div>
+
+
+
+<modal #classicModal class="modal-top extra-large-modal" [closeOnOutsideClick]="false">
+  <ng-template #modalHeader>
+
+    <div>Dispatch Manifest</div>
+  </ng-template>
+  <ng-template #modalBody>
+    <form [formGroup]="dispatchForm" class="mb-3" name="disForm" novalidate>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Clearance Org -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold required"
+            [ngStyle]="{'color': dispatchForm.controls['clr_org'].hasError('required') && (dispatchForm.controls['clr_org'].dirty || dispatchForm.controls['clr_org'].touched)? 'red' : ''}">
+            Clearance Organization
+          </label>
+          <select class="form-select text-sm" formControlName="clr_org"
+            [ngStyle]="{'border-color': dispatchForm.controls['clr_org'].hasError('required') && (dispatchForm.controls['clr_org'].dirty || dispatchForm.controls['clr_org'].touched)? 'red' : ''}">
+            <option value="" disabled selected hidden>Select-Type</option>
+            <option *ngFor="let list of OrganizationList" [value]="list.clearance_licence_id">
+              {{list.clr_licence_name}}
+            </option>
+          </select>
+        </div>
+
+        <!-- AWB Pieces -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold"
+            [ngStyle]="{'color': dispatchForm.controls['awb_pices'].hasError('required') && (dispatchForm.controls['awb_pices'].dirty || dispatchForm.controls['awb_pices'].touched)? 'red' : ''}">
+            AWB Pieces
+          </label>
+          <input type="text" class="form-input text-sm" formControlName="awb_pices"
+            [ngStyle]="{'border-color': dispatchForm.controls['awb_pices'].hasError('required') && (dispatchForm.controls['awb_pices'].dirty || dispatchForm.controls['awb_pices'].touched)? 'red' : ''}">
+        </div>
+
+        <!-- MAWB No -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold">MAWB No</label>
+          <input type="text" class="form-input text-sm" formControlName="mawb2">
+        </div>
+
+        <!-- Flight No -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold">Flight No</label>
+          <input type="text" class="form-input text-sm" formControlName="flight_no">
+        </div>
+
+        <!-- Flight Date -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold">Flight Date</label>
+          <input type="date" class="form-input text-sm" formControlName="flight_date">
+        </div>
+
+        <!-- Shipment Total Weight -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold">Shipment Total Weight</label>
+          <input type="text" class="form-input text-sm" formControlName="shipment_total_wt">
+        </div>
+
+        <!-- Total Bags -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold">Total Bags</label>
+          <input type="number" class="form-input text-sm" formControlName="total_bags">
+        </div>
+
+        <!-- Sub Contractor Number -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold">Subcontractor Number</label>
+          <input type="text" class="form-input text-sm" formControlName="sub_contractor_number">
+        </div>
+
+        <!-- Manifest Date -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold">Manifest Date</label>
+          <input type="date" class="form-input text-sm" formControlName="manifest_date">
+        </div>
+
+        <!-- Shipper Name -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold">Shipper Name</label>
+          <input type="text" class="form-input text-sm" formControlName="shipperName">
+        </div>
+
+        <!-- Receiver Name -->
+        <div class="mb-3">
+          <label class="text-sm font-semibold">Receiver Name</label>
+          <input type="text" class="form-input text-sm" formControlName="recName">
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-center space-x-4 mt-4">
+        <button class="btn btn-primary" type="button" (click)="DispatchForm(dispatchForm.value,$event)">
+          <span *ngIf="Save_spin_1 !=='1'">Dispatch</span>
+          <span *ngIf="Save_spin_1 !=='2'">Loading...</span>
+        </button>
+
+        <button class="btn btn-danger" type="button" (click)="classicModal.close()">Cancel</button>
+      </div>
+
+    </form>
+
+  </ng-template>
+
+</modal>
+
+
+<!-- Button to open the modal -->
+<!-- <button mat-button (click)="openDialog()">Open Modal</button> -->
+
+<!-- Template Reference for the Modal -->
+<ng-template #modalTemplate>
+  <h2  class="p-3 bg-grey-200">
+    <div style="display: flex; justify-content: space-between; width: 100%;" class="p-0">
+        <span>Final Shipment Modification</span>
+        <span mat-dialog-action class="cursor-pointer" ><span mat-button (click)="dialog.closeAll()">X</span></span>
+    </div>
+</h2>
+  <!-- <div mat-dialog-actions class="flex justify-end">
+    <button >X</button>
+  </div> -->
+  <div mat-dialog-content>
+    <div class="flex justify-end">
+      <button type="button" class="btn btn-dark mb-2">
+        Total Actual Weight:<span class="badge my-0 bg-white-light text-black ltr:ml-4 rtl:mr-4">{{
+          calculateTotalFinalWt() }} kg</span>
+      </button>
+    </div>
+    <ejs-grid #finalWeightChangeTable appInputSearch [dataSource]="gotAllManifestDetails" height="90vh"
+      [contextMenuItems]="['Copy', 'CopyWithHeaders']" [allowPaging]="true" [allowSorting]="true"
+      [allowFiltering]="true" [filterSettings]="filterSettings" [allowRowDragAndDrop]="true"
+      [editSettings]="editSettings" [allowExcelExport]="true"
+      [pageSettings]="{ pageSize: 50, pageSizes: [25,50,100,150] }"
+      [selectionSettings]="{ type: 'Multiple', mode: 'Cell' }" (rowDrop)="onRowDrop($event)"
+      (toolbarClick)="onToolbarClick($event)" [toolbar]="['Search','Excel']">
+
+      <e-columns>
+        <e-column field="booking_date" headerText="HAWB Date" width="150" [allowEditing]="false"></e-column>
+        <e-column field="mergeHawb" headerText="HAWB No." width="150" [allowEditing]="false"></e-column>
+        <!-- <e-column field="bag_no" headerText="Bag No" width="150" [allowEditing]="false"></e-column> -->
+        <e-column field="colorForName" headerText="Sender Name" width="150" [template]="inputSenderName">
+          <ng-template #inputSenderName let-data>
+            <div>
+              <input (keydown)="handleArrowKeys($event)"
+                [ngStyle]="getHighlightStyle(data.sender_name, data.receiver_name)"
+                class="form-input w-full resize-none" [(ngModel)]="data.sender_name"
+                (change)="onFinalWeightUpdate(data)">
+            </div>
+          </ng-template>
+
+
+        </e-column>
+        <!-- <e-column field="receiver_name" headerText="Receiver Name" width="150" [allowEditing]="false"></e-column> -->
+        <e-column field="receiver_name" headerText="Receiver Name" width="150" [allowEditing]="false"
+          [template]="receiverNameTemplate" [sortComparer]="duplicateSortComparer"></e-column>
+
+        <ng-template #receiverNameTemplate let-data>
+          <span style="word-break: normal ;" [ngStyle]="getReceiverStyle(data.receiver_name)">
+            {{ data.receiver_name }}
+          </span>
+        </ng-template>
+        <e-column field="final_img" [template]="imageTemplate" headerText="Final Img." width="80"
+          [allowEditing]="false"></e-column>
+        <ng-template #imageTemplate let-data>
+          <div   appViewer [viewerOptions]="{ movable: true, zoomable: true }">
+            <img class="small-img" [src]="data.final_img" />
+          </div>
+        </ng-template>
+
+        <e-column field="act_wt" headerText="Actual Wt." width="150" [allowEditing]="false"></e-column>
+        <e-column field="final_wt" headerText="Final Wt" width="150" textAlign="Right" [template]="inputFinalWeight">
+          <ng-template #inputFinalWeight let-data>
+            <input type="text" class="form-input" (keydown)="handleArrowKeys($event)"
+              [ngStyle]="getHighlightStyleValue(data.final_wt)" [(ngModel)]="data.final_wt"
+              (change)="onFinalWeightUpdate(data)">
+          </ng-template>
+        </e-column>
+        <!-- <e-column field="label_print_status" type="number" headerText="Next sts" width="150"
+              [allowEditing]="false"></e-column> -->
+
+      </e-columns>
+    </ejs-grid>
+  </div>
+
+</ng-template>  
+
+
+ <modal #classicModal125 class="modal-top extra-large-modal" [closeOnOutsideClick]="false">
+   <ng-template #modalHeader>
+
+    <div>Mawb Update</div>
+  </ng-template>
+  <ng-template #modalBody>
+ <form [formGroup]="MAWBUPDATEFORM" class="w-full" name="disForm" novalidate>
+  <div class="flex flex-wrap -mx-3 mb-6">
+ <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Company</label>
+    <select class="form-select" (change)="ChangesData($event)">
+  <option value="">-select-</option>
+  <option *ngFor="let a of iataTyoeOfData" [value]="a.name">{{a.name}}</option>
+</select>
+
+    </div>
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+          <label class="form-label">IATA Code</label>
+      <input maxlength="30  " type="text"
+        class="form-input"
+        formControlName="iata_code">
+    </div>
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">
+        Air/Shipping Line
+      </label>
+      <div class="relative">
+        <select class="form-select"
+          formControlName="airlines_id">
+          <option value="">Select-Type</option>
+          <option *ngFor="let list of S_company_List" value="{{list.shipment_company_id}}">
+            {{list.s_company_name}}</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Manifest No</label>
+      <input type="text"
+        class="form-input"
+        formControlName="ptp_mf_no" readonly>
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Issused By</label>
+      <input type="text"
+        class="form-input"
+        formControlName="issused_by">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Mawb No</label>
+      <input type="text"
+        class="form-input"
+        value="{{this.mawbno123}}" readonly>
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Issusing Carrier Name</label>
+      <input type="text"
+        class="form-input"
+        formControlName="issusing_carrier_name">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Issusing Carrier Address</label>
+      <textarea
+        class="form-input"
+        formControlName="issusing_carrier_address"></textarea>
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Executed On Date</label>
+      <input type="date"
+        class="form-input"
+        formControlName="Executed_on_date">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Rate Charge</label>
+      <input type="number"
+        class="form-input"
+        formControlName="rate_charge">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Requested Flight Date 1</label>
+      <input type="text"
+        class="form-input"
+        formControlName="requested_flight_date_1">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Requested Flight Date 2</label>
+      <input type="text"
+        class="form-input"
+        formControlName="requested_flight_date_2">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Valuation Charge 1</label>
+      <input type="number"
+        class="form-input"
+        formControlName="valuationcharge_1">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Valuation Charge 2</label>
+      <input type="number"
+        class="form-input"
+        formControlName="valuationcharge_2">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Total Other Charge Due Agent 1</label>
+      <input type="number"
+        class="form-input"
+        formControlName="total_other_charge_due_agent_1">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Total Other Charge Due Agent 2</label>
+      <input type="number"
+        class="form-input"
+        formControlName="total_other_charge_due_agent_2">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6"> 
+      <label class="form-label">Total Other Charges Due Carrier 1</label>
+      <input type="number"
+        class="form-input"
+        formControlName="total_other_charge_due_carrier_1">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Total Other Charges Due Carrier 2</label>
+      <input type="number"
+        class="form-input"
+        formControlName="total_other_charge_due_carrier_2">
+    </div>
+
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Acounting Information</label>
+      <textarea
+        class="form-input"
+        formControlName="acounting_information"></textarea>
+    </div>
+    <div class="w-full lg:w-1/2 px-3 mb-6">
+      <label class="form-label">Handling Information</label>
+      <textarea
+        class="form-input"
+        formControlName="handling_changes" maxlength="500"></textarea>
+    </div>
+      <!-- <div class="w-full lg:w-1/2 px-3 mb-6">
+  
+    </div> -->
+  </div>
+
+  <div class="flex justify-center mt-4">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" type="button" (click)="updatemawb()">
+      <span>Update</span>
+    </button>
+    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2" type="button" (click)="classicModal125.close()">
+      <span>Cancel</span>
+    </button>
+    <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded" type="button" (click)="Downloadmawb()"><span>Download</span></button>
+  </div>
+</form>
+  </ng-template>
+</modal>
+ <!-- <div class="modal fade" bsModal #classicModal125="bs-modal" tabindex="-1" role="dialog" aria-labelledby="myBigModalLabel"
+  aria-hidden="true" [config]="{backdrop: 'static', keyboard: false}">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Mawb Update</h4>
+        <button type="button" class="close" aria-label="Close" (click)="classicModal125.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="MAWBUPDATEFORM" class="form-validate mb-3" name="disForm" novalidate>
+          <div class="form-row">
+ 
+              <div class="col-lg-6 mb-3">
+              <label
+                >
+                Air/Shipping Line
+              </label>
+              <select class="custom-select custom-select-sm"
+                formControlName="airlines_id">
+                <option value="">Select-Type</option>
+                <option *ngFor="let list of S_company_List" value="{{list.shipment_company_id}}">
+                  {{list.s_company_name}}</option>
+              </select>
+             </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Manifest No</label>
+              <input type="text" class="form-control" formControlName="ptp_mf_no" readonly>
+            </div>
+
+            <div class="col-lg-6 mb-3">
+              <label
+                >
+                Issused By
+              </label>
+              <input type="text" class="form-control" formControlName="issused_by">
+            </div>
+
+            <div class="col-lg-6 mb-3">
+              <label
+                >
+                Mawb No
+              </label>
+              <input type="text" class="form-control" value="{{this.mawbno123}}"  readonly>
+            </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Issusing Carrier Name</label>
+              <input type="text" class="form-control" formControlName="issusing_carrier_name">
+            </div>
+
+            
+             <div class="col-lg-6 mb-3">
+              <label>Issusing Carrier Address</label>
+              <textarea type="text" class="form-control" formControlName="issusing_carrier_address"></textarea>
+
+            </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Executed On Date</label>
+              <input type="date" class="form-control" formControlName="Executed_on_date">
+            </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Rate Charge</label>
+              <input type="number" class="form-control" formControlName="rate_charge">
+            </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Requested Flight Date 1</label>
+              <input type="text" class="form-control" formControlName="requested_flight_date_1">
+            </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Requested Flight Date 2</label>
+              <input type="text" class="form-control" formControlName="requested_flight_date_2">
+            </div>
+
+          
+
+           
+            <div class="col-lg-6 mb-3">
+              <label>Valuation Charge 1</label>
+              <input type="number" class="form-control" formControlName="valuationcharge_1">
+            </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Valuation Charge 2</label>
+              <input type="number" class="form-control" formControlName="valuationcharge_2">
+            </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Total Other Charge Due Agent 1</label>
+              <input type="number" class="form-control" formControlName="total_other_charge_due_agent_1">
+            </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Total Other Charge Due Agent 2</label>
+              <input type="number" class="form-control" formControlName="total_other_charge_due_agent_2">
+            </div>
+ 
+             <div class="col-lg-6 mb-3">
+              <label>Total Other Charges Due Carrier1</label>
+              <input type="number" class="form-control" formControlName="total_other_charge_due_carrier_1">
+            </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Total Other Charges Due Carrier2</label>
+              <input type="number" class="form-control" formControlName="total_other_charge_due_carrier_2">
+            </div>
+            <div class="col-lg-6 mb-3">
+              <label>Acounting Information</label>
+              <textarea type="text" class="form-control" formControlName="acounting_information"></textarea>
+
+            </div>
+
+             
+          </div>
+
+           <div class="text-center mt-4">
+            <button class="btn btn-primary mr-2" type="button" >
+              <span (click)="updatemawb()">Update</span>
+             </button>
+           
+            <button class="btn btn-danger" type="button" (click)="classicModal125.hide()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+  <modal #classicModal126 class="modal-top extra-large-modal" [closeOnOutsideClick]="false">
+   <ng-template #modalHeader>
+
+    <div>Delivery Note Update</div>
+  </ng-template>
+
+  <ng-template #modalBody>
+     <form [formGroup]="DelivarynoteUPDATEFORM" class="form-validate mb-3" name="disForm" novalidate>
+          <div class="flex flex-wrap -mx-3 mb-6">
+            <!-- Clearance Org -->
+             
+
+            <!-- AWB Pieces -->
+             
+            <div class="w-full lg:w-1/2 px-3 mb-6">
+              <label class="form-label"
+                >
+                Ptp Mf No
+              </label>
+              <input type="text" class="form-input" formControlName="ptp_mf_no" readonly>
+            </div>
+
+            <!-- MAWB No -->
+            <div class="w-full lg:w-1/2 px-3 mb-6">
+              <label class="form-label">Delivery Note Date</label>
+              <input type="date" class="form-input" formControlName="delivery_note_date">
+            </div>   
+
+
+             <div class="w-full lg:w-1/2 px-3 mb-6">
+              <label class="form-label">Acounting Information</label>
+              <textarea type="text" class="form-input" formControlName="delivery_address"></textarea>
+
+            </div>
+             
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex justify-center mt-4">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" type="button" (click)="updateDelivarynote()" >
+              <span >Update</span>
+              <!-- <span *ngIf="Save_spin_1 !=='2'">Loading...</span> -->
+            </button>
+            <!-- <button class="btn btn-success mr-2" type="button">
+              <span *ngIf="Save_spin_1 !=='1'">Dispatch & Send Mail</span>
+              <span *ngIf="Save_spin_1 !=='2'">Loading...</span>
+            </button> -->
+            <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2" type="button" (click)="classicModal126.close()">Cancel</button>
+                <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded" type="button" (click)="DownloadDelivary()"><span>Download</span></button>
+           </div>
+        </form>
+  </ng-template>
+ </modal>
+
+ <!-- <div class="modal fade" bsModal #classicModal126="bs-modal" tabindex="-1" role="dialog" aria-labelledby="myBigModalLabel"
+  aria-hidden="true" [config]="{backdrop: 'static', keyboard: false}">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Delivary Note Update</h4>
+        <button type="button" class="close" aria-label="Close" (click)="classicModal126.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="DelivarynoteUPDATEFORM" class="form-validate mb-3" name="disForm" novalidate>
+          <div class="form-row">
+            
+             
+            <div class="col-lg-6 mb-3">
+              <label
+                >
+                Ptp Mf No
+              </label>
+              <input type="text" class="form-control" formControlName="ptp_mf_no" readonly>
+            </div>
+
+             <div class="col-lg-6 mb-3">
+              <label>Delivery Note Date</label>
+              <input type="date" class="form-control" formControlName="delivery_note_date">
+            </div>   
+
+
+             <div class="col-lg-6 mb-3">
+              <label>Acounting Information</label>
+              <textarea type="text" class="form-control" formControlName="delivery_address"></textarea>
+
+            </div>
+             
+          </div>
+
+           <div class="text-center mt-4">
+            <button class="btn btn-primary mr-2" type="button" >
+              <span (click)="updateDelivarynote()">Update</span>
+             </button>
+           
+            <button class="btn btn-danger" type="button" (click)="classicModal126.hide()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> -->

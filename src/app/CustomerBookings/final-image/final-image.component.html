@@ -1,0 +1,94 @@
+<ol class="flex flex-wrap items-center gap-y-4 font-semibold text-gray-500 dark:text-white-dark mb-3">
+  <li>
+    <a href="javascript:;"
+      class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+      <icon-home />
+    </a>
+  </li>
+  <li
+    class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full ">
+    <a href="javascript:;"
+      class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 text-primary shadow dark:border-0 dark:bg-[#191e3a]">
+      <icon-users-group class="shrink-0 ltr:mr-2 rtl:ml-2" />
+      Final Image
+    </a>
+  </li>
+</ol>
+
+<div class="vibrant-header text-center col-12">
+</div>
+<form class="mx-auto mb-5 w-full sm:w-1/2">
+  <div class="relative">
+    <input type="text" placeholder="Search Hawb..."
+      class="form-input h-11 rounded-full bg-white shadow-[0_0_4px_2px_rgb(31_45_61_/_10%)] placeholder:tracking-wider ltr:pr-11 rtl:pl-11"
+      [(ngModel)]="invoiceFilter" maxlength="6" (input)="v1_sp_ds_hawb_final_invoice_image_get()" name="search" />
+    <button type="button"
+      class="btn btn-primary absolute inset-y-0 m-auto flex h-9 w-9 items-center justify-center rounded-full p-0 ltr:right-1 rtl:left-1">
+      <icon-search class="mx-auto" (click)="v1_sp_ds_hawb_final_invoice_image_get()" />
+    </button>
+  </div>
+</form>
+
+<div class="container-fluid">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" *ngIf="receivedDate.length > 0">
+    <div class="mb-4" *ngFor="let item of receivedDate">
+      <div class="card shadow-md p-4 rounded-lg border border-gray-200">
+        <h5 class="mb-3 text-lg font-semibold">Box No: {{ item.box_no }} | HAWB: {{ item.hawb_no_box }}</h5>
+        <div class="mb-2">
+          <label class="block text-sm font-medium text-gray-700">Upload HAWB Weight Image:</label>
+          <input type="file" class="form-input w-full p-2 border border-gray-300 rounded-md" accept="image/*"
+            (change)="onFileSelected($event, item, 'hawb_img')">
+        </div>
+        <div class="mb-2">
+          <label class="block text-sm font-medium text-gray-700">Upload Final Image 1:</label>
+          <input type="file" class="form-input w-full p-2 border border-gray-300 rounded-md" accept="image/*"
+            (change)="onFileSelected($event, item, 'ashawb_final_img1')">
+        </div>
+        <div class="mb-2">
+          <label class="block text-sm font-medium text-gray-700">Upload Final Image 2:</label>
+          <input type="file" class="form-input w-full p-2 border border-gray-300 rounded-md" accept="image/*"
+            (change)="onFileSelected($event, item, 'ashawb_final_img2')">
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 mt-2">
+          <div class="col-span-1 flex flex-col items-center text-center" *ngIf="item.hawb_img">
+            <small style="white-space: nowrap;">Preview HAWB Weight:</small>
+            <div class="relative mt-2">
+              <a [href]="item.hawb_img" target="_blank">
+                <img [src]="item.hawb_img" alt="HAWB Image"
+                  class="img-thumbnail border rounded-md max-w-[120px] cursor-pointer">
+                <span
+                  class="badge absolute ltr:right-0 rtl:left-0 -top-3 bg-danger p-0.5 px-1.5 rounded-full cursor-pointer"
+                  (click)="handleDeleteClick($event, item, 'hawb_img')">x</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-span-1 flex flex-col items-center text-center" *ngIf="item.ashawb_final_img1">
+            <small style="white-space: nowrap;">Preview Final Image 1:</small>
+            <div class="relative mt-2">
+              <a [href]="item.ashawb_final_img1" target="_blank">
+                <img [src]="item.ashawb_final_img1" alt="ASHAWB Final Image"
+                  class="img-thumbnail border rounded-md max-w-[120px] cursor-pointer">
+                <span class="badge absolute ltr:right-0 rtl:left-0 -top-3 bg-danger p-0.5 px-1.5 rounded-full"
+                  (click)="handleDeleteClick($event, item,'ashawb_final_img1')">x</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-span-1 flex flex-col items-center text-center" *ngIf="item.ashawb_final_img2">
+            <small style="white-space: nowrap;">Preview Final Image 2:</small>
+            <div class="relative mt-2">
+              <a [href]="item.ashawb_final_img2" target="_blank">
+                <img [src]="item.ashawb_final_img2" alt="ASHAWB Final Image"
+                  class="img-thumbnail border rounded-md max-w-[120px] cursor-pointer">
+                <span class="badge absolute ltr:right-0 rtl:left-0 -top-3 bg-danger p-0.5 px-1.5 rounded-full"
+                  (click)="handleDeleteClick($event, item,'ashawb_final_img2')">x</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

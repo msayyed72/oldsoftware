@@ -1,0 +1,16 @@
+.custom-table {
+    font-size: 12px; /* Adjust the font size as needed */
+}
+
+.custom-table .e-columnheader, 
+.custom-table .e-rowcell {
+    font-size: 12px; /* Adjust the font size for headers and cells */
+}
+  :host ::ng-deep .e-grid .e-content tr.row-booking-agent {
+  background-color: #fff9c4;
+}
+/* keep selected row legible */
+:host ::ng-deep .e-grid .e-content tr.row-booking-agent.e-selection {
+  background-color: #ffec99;
+}
+/* styles.css – small tweaks if needed */

@@ -1,0 +1,332 @@
+<div class="flex items-center justify-between mb-3">
+  <!-- Breadcrumbs -->
+  <ol class="flex flex-wrap items-center gap-y-4 font-semibold text-gray-500 dark:text-white-dark">
+      <li>
+          <a href="javascript:;"
+              class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+              <icon-home />
+          </a>
+      </li>
+      <li
+    class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full before:bg-primary">
+    <a routerLink="/universal/sendMail"
+      class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 text-primary shadow dark:border-0 dark:bg-[#191e3a]">
+      <icon-box class="shrink-0 ltr:mr-2 rtl:ml-2" />
+     Email Template
+    </a>
+  </li>
+        <li
+    class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full before:bg-primary">
+    <button
+      class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+      <icon-cpu-bolt class="ltr:mr-2 rtl:ml-2" />
+     Tempalte Mail Send
+      <!-- <icon-caret-down class="inline-block ltr:ml-1 rtl:mr-1" /> -->
+    </button>
+
+    <!-- <mat-menu #menu="matMenu">
+      <button mat-menu-item> New Bookings</button>
+      <button mat-menu-item> Pickup Arranged Shipments</button>
+      <button mat-menu-item> Cancelled Bookings</button>
+    </mat-menu> -->
+  </li>
+  </ol>
+
+  <!-- Back Button -->
+  <button routerLink="/universal/sendMail"
+      class="flex items-center gap-2 rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 dark:bg-[#191e3a] dark:text-white-dark dark:hover:bg-[#222946]">
+      <i class="fas fa-arrow-left"></i> Back
+  </button>
+</div>
+
+
+<div>
+    <div class="relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)]">
+        <div class="panel absolute z-10 hidden h-full w-[240px] max-w-full flex-none space-y-4 p-4 ltr:rounded-r-none rtl:rounded-l-none xl:relative xl:block xl:h-auto ltr:xl:rounded-r-md rtl:xl:rounded-l-md"
+            [ngClass]="{ '!block': isShowTaskMenu }">
+            <div class="flex h-full flex-col pb-16">
+                <form [formGroup]="filterForm">
+                    <div class="pb-5">
+                        <div class="flex items-center text-center">
+                            <div class="shrink-0">
+                                <icon-clipboard-text />
+                            </div>
+                            <h3 class="text-lg font-semibold ltr:ml-3 rtl:mr-3">Send Mail</h3>
+                        </div>
+                    </div>
+                    <div class="mb-5 h-px w-full border-b border-[#e0e6ed] dark:border-[#1b2e4b]"></div>
+                    <div class="relative h-full grow ltr:pr-3.5 rtl:pl-3.5" appearance="compact">
+                        <div class="w-full space-y-4">
+                            <div class="w-full">
+                                <label for="type">Type</label>
+                                <select class="form-select" formControlName="type" #typeOfFilter
+                                    (change)="getSelectedType(typeOfFilter.value)">
+                                    <option value="">-select-</option>
+                                    <option value="1">Manifest</option>
+                                    <option value="2">Hawb</option>
+                                    <option value="3">State</option>
+                                    <option value="4">Pinocde</option>
+                                </select>
+                            </div>
+
+                            <div class="w-full" *ngIf="filterForm?.value.type == '1'">
+                                <label for="ptpMfNo">Enter a Manifest Number:-</label>
+                                <input type="text" id="ptpMfNo" formControlName="ptpMfNo" class="form-input" />
+                            </div>
+                            <div class="w-full"
+                                [ngStyle]="{ 'display': filterForm?.value.type == '2' ? 'block' : 'none' }">
+                                <label for="ptpMfNo">Enter HawbNo's:-</label>
+                                <input type="text" id="tags" formControlName="hawbNo" class="w-full" />
+
+                            </div>
+                            <div class="w-full"
+                                [ngStyle]="{ 'display': filterForm?.value.type == '3' ? 'block' : 'none' }">
+                                <div class="w-full">
+                                    <label for="ptpMfNo">From Date:-</label>
+                                    <input type="date" formControlName="fromDate" class="w-full form-input" />
+
+                                </div>
+                                <div class="w-full">
+                                    <label for="ptpMfNo">To Date:-</label>
+                                    <input type="date" formControlName="toDate" class="w-full form-input" />
+
+                                </div>
+                                <div class="w-full">
+                                    <label for="ptpMfNo">State Name:-</label>
+                                    <select class="form-select" formControlName="stateName">
+                                        <option value="">-select-</option>
+                                        <option *ngFor="let a of GetStateNames" [value]="a.state_name">{{a.state_name}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="w-full"
+                                [ngStyle]="{ 'display': filterForm?.value.type == '4' ? 'block' : 'none' }">
+                                <div class="w-full">
+                                    <label for="ptpMfNo">From Date:-</label>
+                                    <input type="date" formControlName="fromDate" class="w-full form-input" />
+
+                                </div>
+                                <div class="w-full">
+                                    <label for="ptpMfNo">To Date:-</label>
+                                    <input type="date" formControlName="toDate" class="w-full form-input" />
+
+                                </div>
+                                <div class="w-full">
+                                    <label for="ptpMfNo">Pinocde:-</label>
+                                    <input type="text" formControlName="pincode" class="w-full form-input" />
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-0 w-full p-4 ltr:left-0 rtl:right-0">
+                        <!-- Add New Task Button -->
+
+
+                        <!-- Fetch Button -->
+                        <button class="btn btn-secondary w-full mb-2" type="button" (click)="fetchDate()">
+                            Fetch
+                        </button>
+
+                        <!-- Send Mail Button -->
+                        <button class="btn btn-success w-full" type="button" (click)="SendMailToCustomers()">
+                            Send Mail
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+        <div class="overlay absolute z-[5] hidden h-full w-full rounded-md bg-black/60"
+            [ngClass]="{ '!block xl:!hidden': isShowTaskMenu }" (click)="isShowTaskMenu = !isShowTaskMenu"></div>
+        <div class="panel h-full flex-1 overflow-auto p-0">
+            <div class="flex h-full flex-col">
+                <div class="flex w-full flex-col gap-4 p-4 sm:flex-row sm:items-center">
+                    <div class="flex items-center ltr:mr-3 rtl:ml-3">
+                        <button type="button" class="block hover:text-primary ltr:mr-3 rtl:ml-3 xl:hidden"
+                            (click)="isShowTaskMenu = !isShowTaskMenu">
+                            <icon-menu />
+                        </button>
+                        <div class="group relative flex-1">
+                            <input type="text" class="peer form-input ltr:!pr-10 rtl:!pl-10"
+                                placeholder="Search Hawb..." name="searchTask" [(ngModel)]="searchTask"
+                                (ngModelChange)="searchTasks()" />
+                            <div
+                                class="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-[11px] rtl:left-[11px]">
+                                <icon-search />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-1 items-center justify-center sm:flex-auto sm:justify-end">
+                        <p class="ltr:mr-3 rtl:ml-3">{{ pager.startIndex + 1 + '-' + (pager.endIndex + 1) + ' of ' +
+                            filteredTasks.length }}</p>
+                        <button type="button" [disabled]="pager.currentPage == 1"
+                            class="rounded-md bg-[#f4f4f4] p-1 enabled:hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-60 ltr:mr-3 rtl:ml-3 dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30"
+                            (click)="pager.currentPage = pager.currentPage - 1; searchTasks(false)">
+                            <icon-caret-down class="h-5 w-5 rotate-90 rtl:-rotate-90" />
+                        </button>
+                        <button type="button" [disabled]="pager.currentPage == pager.totalPages"
+                            class="rounded-md bg-[#f4f4f4] p-1 enabled:hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30"
+                            (click)="pager.currentPage = pager.currentPage + 1; searchTasks(false)">
+                            <icon-caret-down class="h-5 w-5 -rotate-90 rtl:rotate-90" />
+                        </button>
+                    </div>
+                </div>
+                <div class="h-px w-full border-b border-[#e0e6ed] dark:border-[#1b2e4b]"></div>
+                <ng-container class="w-full" *ngIf="pagedTasks.length" style="width: 100%!important">
+                    <div class="table-responsive overflow-y-auto sm:min-h-[300px]">
+                        <!-- <table class="table-hover ">
+                            <tbody>
+                                <ng-container *ngFor="let task of pagedTasks">
+                                    <tr class="group cursor-pointer"
+                                        [ngClass]="{ 'bg-white-light/30 dark:bg-[#1a2941]': task.status === 'complete' }">
+                                        <td>
+                                            {{task.hawb_no}}
+                                        </td>
+                                           <td>
+                                            {{task.Payment_status}}
+                                        </td>
+                                        <td>
+                                            <div (click)="viewTask(task)">
+                                                <div class="whitespace-nowrap text-base font-semibold group-hover:text-primary"
+                                                   >
+                                                    {{ task.templateSubject }}
+                                                </div>
+                                                <div class="line-clamp-1 overflow-hidden text-white-dark"
+                                                        >
+                                                    {{ task.templateBodyClean }}
+                                                </div>
+                                            </div>
+                                        </td>
+
+
+
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table> -->
+                    <ejs-grid #filterTableGrid
+  [dataSource]="pagedTasks"
+  [allowFiltering]="true"
+  [filterSettings]="filterSettings"
+  [allowSorting]="true"
+  [selectionSettings]="{ type: 'Multiple', mode: 'Row', checkboxOnly: false }"
+  [allowSelection]="true"
+  (rowSelected)="onRowSelected($event)"
+  height="400px"
+  class="ej2-grid-custom">
+
+  <e-columns>
+    <e-column type="checkbox" width="50"></e-column>
+    <e-column field="hawb_no" headerText="HAWB No" width="120"></e-column>
+    <e-column field="Payment_status" headerText="Payment Status" width="150"></e-column>
+    <e-column headerText="Template" width="300">
+      <ng-template #template let-data>
+        <div>
+          <div class="whitespace-nowrap text-base font-semibold hover:text-primary cursor-pointer">
+            {{ data.templateSubject }}
+          </div>
+          <div class="line-clamp-1 overflow-hidden text-white-dark">
+            {{ data.templateBodyClean }}
+          </div>
+        </div>
+      </ng-template>
+    </e-column>
+  </e-columns>
+
+</ejs-grid>
+
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="!pagedTasks.length">
+                    <div
+                        class="flex h-full min-h-[400px] items-center justify-center text-lg font-semibold sm:min-h-[300px]">
+                        No data available</div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <modal #addTaskModal class="no-footer">
+        <ng-template #modalHeader>
+            <div class="!font-medium">{{ params.value.id ? 'Edit Task' : 'Add Task' }}</div>
+        </ng-template>
+        <ng-template #modalBody>
+            <form [formGroup]="params" class="text-sm" (submit)="saveTask()">
+                <div class="mb-5">
+                    <label for="title">Title</label>
+                    <input id="title" type="text" placeholder="Enter Task Title" class="form-input"
+                        formControlName="title" />
+                </div>
+                <div class="mb-5">
+                    <label for="assignee">Assignee</label>
+                    <select id="assignee" class="form-select" formControlName="assignee">
+                        <option value="">Select Assignee</option>
+                        <option value="John Smith">John Smith</option>
+                        <option value="Kia Vega">Kia Vega</option>
+                        <option value="Sandy Doe">Sandy Doe</option>
+                        <option value="Jane Foster">Jane Foster</option>
+                        <option value="Donna Frank">Donna Frank</option>
+                    </select>
+                </div>
+                <div class="mb-5 flex justify-between gap-4">
+                    <div class="flex-1">
+                        <label for="tag">Tag</label>
+                        <select id="tag" class="form-select" formControlName="tag">
+                            <option value="">Select Tag</option>
+                            <option value="team">Team</option>
+                            <option value="update">Update</option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <label for="priority">Priority</label>
+                        <select id="priority" class="form-select" formControlName="priority">
+                            <option value="">Select Priority</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-5">
+                    <label>Description</label>
+                    <quill-editor #quillEditorObj [modules]="editorOptions" placeholder="" formControlName="description"
+                        class="w-full" (onContentChanged)="setDiscriptionText($event)"></quill-editor>
+                </div>
+                <div class="mt-8 flex items-center justify-end ltr:text-right rtl:text-left">
+                    <button type="button" class="btn btn-outline-danger" (click)="addTaskModal.close()">Cancel</button>
+                    <button type="submit" class="btn btn-primary ltr:ml-4 rtl:mr-4">{{ params.value.id ? 'Update' :
+                        'Add' }}</button>
+                </div>
+            </form>
+        </ng-template>
+    </modal>
+
+    <modal #viewTaskModal class="modal-center extra-large-modal">
+        <ng-template #modalHeader>
+            <div class="flex flex-wrap items-center gap-2 !font-medium">
+                <div>Hawb {{selectedTask?.hawb_no   }}</div>
+               
+            </div>
+        </ng-template>
+        <ng-template #modalBody >
+            <div class="grid gap-6 p-6">
+                 <div>
+                <input type="text" class="form-input" placeholder="Enter Subject"  [(ngModel)]="selectedTask.templateSubject"/>
+            </div>
+<div>
+     <quill-editor #editor [modules]="editorOptions" placeholder="" [(ngModel)]="selectedTask.templateBody"
+                    class="w-full" style="min-height: 200px"
+                   ></quill-editor>
+</div>
+            </div>
+
+            <div class="mt-8 flex items-center justify-end">
+                <button type="button" class="btn btn-outline-danger" (click)="viewTaskModal.close()">Close</button>
+            </div>
+        </ng-template>
+    </modal>
+</div>

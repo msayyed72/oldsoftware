@@ -1,0 +1,21 @@
+  <ejs-spreadsheet #default (created)="created()" [showRibbon]="false" [allowEditing]="true" 
+    (actionComplete)="onActionComplete($event)" (paste)="onActionComplete($event)">
+    <e-sheets>
+      <e-sheet name="Payment History">
+        <e-ranges>
+          <e-range [dataSource]="data1"></e-range>
+        </e-ranges>
+        <e-columns>
+          <e-column [width]="180"></e-column>
+          <e-column [width]="130"></e-column>
+          <e-column [width]="130"></e-column>
+          <e-column [width]="130"></e-column>
+          <e-column [width]="130"></e-column>
+          <e-column [width]="130"></e-column>
+          <e-column [width]="130"></e-column>
+          <e-column [width]="130"></e-column>
+          <e-column [width]="130"></e-column>
+        </e-columns>
+      </e-sheet>
+    </e-sheets>
+  </ejs-spreadsheet>

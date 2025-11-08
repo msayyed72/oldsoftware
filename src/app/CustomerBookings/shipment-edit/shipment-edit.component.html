@@ -1,0 +1,1364 @@
+<ol class="flex flex-wrap items-center gap-y-4 font-semibold text-gray-500 dark:text-white-dark mb-3">
+    <li>
+        <a href="javascript:;"
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+            <icon-home />
+        </a>
+    </li>
+    <!-- <li
+        class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full ">
+        <a href="javascript:;"
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 text-primary shadow dark:border-0 dark:bg-[#191e3a]">
+            <icon-users-group class="shrink-0 ltr:mr-2 rtl:ml-2" />
+
+            Customer
+        </a>
+    </li> -->
+    <li
+        class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full before:bg-primary">
+        <a href="javascript:;" routerLink="/customer/newBookings"
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 text-primary shadow dark:border-0 dark:bg-[#191e3a]">
+            <icon-box class="shrink-0 ltr:mr-2 rtl:ml-2" />
+
+            new Bookings
+        </a>
+    </li>
+    <li
+        class="flex items-center before:relative before:-top-0.5 before:mx-4 before:inline-block before:h-1 before:w-1 before:rounded-full before:bg-primary">
+        <button mat-button [matMenuTriggerFor]="menu"
+            class="flex items-center justify-center rounded-md border border-gray-500/20 p-2.5 shadow hover:text-gray-500/70 dark:border-0 dark:bg-[#191e3a] dark:hover:text-white-dark/70">
+            <icon-cpu-bolt class="ltr:mr-2 rtl:ml-2" />
+            New Bookings Shipment Edit
+            <icon-caret-down class="inline-block ltr:ml-1 rtl:mr-1" />
+        </button>
+
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item routerLink="/customer/newBookings"> New Bookings</button>
+
+            <button mat-menu-item routerLink="/customer/awaitpickups">Pickup Arranged Shipmets</button>
+            <button mat-menu-item routerLink="/customer/cancelBookings">Cancelled Bookings</button>
+
+        </mat-menu>
+    </li>
+
+</ol>
+
+
+<div>
+    <div class="flex flex-col gap-0.5 lg:flex-row">
+        <div class="panel flex-1 px-0 py-0 ltr:lg:mr-1 rtl:lg:ml-6">
+    <h3 class="p-3">HAWB : - <span *ngIf="this.receivedData?.invoice_no" class="text-red-600">{{this.receivedData['invoice_no']}}</span> <span  *ngIf="this.receivedData?.reason_for_non_pickup.length > 0"> Tag :- <span class="badge bg-secondary">{{this.receivedData['reason_for_non_pickup']}}</span></span></h3>
+   <div class="w-full px-3 flex items-center space-x-2">
+  <span *ngIf="receivedData && receivedData?.contact_status"
+        [ngClass]="receivedData.contact_status === 'N' ? 'text-red-500' : 'text-green-500'"
+        [ngxTippy]="receivedData.contact_status === 'N' ? 'Not Contacted' : 'Contacted'">
+    <icon-phone-call class="h-5 w-5"></icon-phone-call>
+  </span>
+
+  <span *ngIf="receivedData"
+        [ngClass]="receivedData?.verified_details == 1 ? 'text-green-500' : 'text-red-500'"
+        [ngxTippy]="receivedData?.verified_details == 1 ? 'Details Verified' : 'Details Not Verified'">
+    <icon-square-check class="h-5 w-5"></icon-square-check>
+  </span>
+</div>
+
+            <form class="space-y-5 text-sm" [formGroup]="shipmentForm">
+                <!-- Sender and Receiver Details -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Sender Details (Left Side) -->
+                    <div class="space-y-4 dark:text-white-light shadow-md rounded-lg p-5">
+                        <h2 class="text-lg font-semibold">Sender Details</h2>
+                        <div class="flex gap-4">
+                            <div class="w-full">
+                                <label for="senderName">Name</label>
+                                <input id="senderName" formControlName="sender_name" type="text"
+                                    placeholder="Enter Name" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['sender_name'].invalid && shipmentForm.controls['sender_name'].touched}" />
+                            </div>
+                            <div class="w-full">
+                                <label for="senderPhone">Phone</label>
+                                <input id="senderPhone" formControlName="sender_mobile" type="text"
+                                    placeholder="Enter Phone" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['sender_mobile'].invalid && shipmentForm.controls['sender_mobile'].touched}" />
+                            </div>
+                        </div>
+                        <div>
+                            <label for="senderEmail">Email</label>
+                            <input id="senderEmail" formControlName="senderEmail" type="email" placeholder="Enter Email"
+                                class="form-input w-full"
+                                [ngClass]="{'border-red-500': shipmentForm.controls['senderEmail'].invalid && shipmentForm.controls['senderEmail'].touched}" />
+                        </div>
+                        <div>
+                            <label for="senderAddress">Address</label>
+                            <input id="senderAddress" formControlName="sender_address" type="text"
+                                placeholder="Enter Address" class="form-input w-full"
+                                [ngClass]="{'border-red-500': shipmentForm.controls['sender_address'].invalid && shipmentForm.controls['sender_address'].touched}" />
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-full">
+                                <label for="senderCity">City</label>
+                                <input id="senderCity" formControlName="senderCity" type="text" placeholder="Enter City"
+                                    class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['senderCity'].invalid && shipmentForm.controls['senderCity'].touched}" />
+                            </div>
+                            <div class="w-full">
+                                <label for="Pincode">Pincode</label>
+                                <input id="Pincode" formControlName="sender_pincode" type="text"
+                                    placeholder="Enter Pincode" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['sender_pincode'].invalid && shipmentForm.controls['sender_pincode'].touched}" />
+                            </div>
+                        </div>
+                        <!-- Collection Type Section -->
+                        <div class="flex gap-4">
+                            <div class="w-full">
+                                <label for="collectionType">Collection Type</label>
+                                <input value="{{collectionType}}" class="form-input w-full" readonly>
+                            </div>
+                            <div class="w-full flex items-end">
+                                <button type="button" (click)="modal16?.open()" mat-raised-button
+                                    class="btn btn-secondary">Change</button>
+                            </div>
+                        </div>
+                           <div class="flex gap-4">
+                            <div class="w-full">
+                                <label for="collectionType">Sales Representative Name </label>
+                                <input *ngIf="receivedData?.employee_name" value="{{receivedData.employee_name}}" class="form-input w-full" readonly>
+                            </div>
+                            <div class="w-full flex items-end">
+                                <button type="button" (click)="salesRep?.open();getEmployee()" mat-raised-button
+                                    class="btn btn-secondary">Change</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Receiver Details (Right Side) -->
+                    <div class="space-y-4  shadow-md rounded-lg p-5">
+                        <h2 class="text-lg font-semibold">Receiver Details</h2>
+                        <div class="flex gap-4">
+                            <div class="w-full">
+                                <label for="receiverName">Name</label>
+                                <input id="receiverName" formControlName="receiver_name" type="text"
+                                    placeholder="Enter Name" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['receiver_name'].invalid && shipmentForm.controls['receiver_name'].touched}" />
+                            </div>
+                            <div class="w-full">
+                                <label for="receiverPhone1">Phone 1</label>
+                                <input id="receiverPhone1" formControlName="receiver_mobile" type="text"
+                                    placeholder="Enter Phone 1" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['receiver_mobile'].invalid && shipmentForm.controls['receiver_mobile'].touched}" />
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-full">
+                                <label for="receiverPhone2">Phone 2</label>
+                                <input id="receiverPhone2" formControlName="receiver_phone" type="text"
+                                    placeholder="Enter Phone 2" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['receiver_phone'].invalid && shipmentForm.controls['receiver_phone'].touched}" />
+                            </div>
+                            <div class="w-full">
+                                <label for="receiverEmail">Email</label>
+                                <input id="receiverEmail" formControlName="receiverEmaild" type="email"
+                                    placeholder="Enter Email" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['receiverEmaild'].invalid && shipmentForm.controls['receiverEmaild'].touched}" />
+                            </div>
+                        </div>
+                        <div>
+                            <label for="receiverAddress">Address</label>
+                            <input id="receiverAddress" formControlName="receiver_address" type="text"
+                                placeholder="Enter Address" class="form-input w-full"
+                                [ngClass]="{'border-red-500': shipmentForm.controls['receiver_address'].invalid && shipmentForm.controls['receiver_address'].touched}" />
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-full">
+                                <label for="receiverState">State</label>
+                                <input id="receiverState" formControlName="receiver_state" type="text"
+                                    placeholder="Enter State" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['receiver_state'].invalid && shipmentForm.controls['receiver_state'].touched}" />
+                            </div>
+                             <div class="w-full">
+                                <label for="receiverPincode">Pincode</label>
+                                <input id="receiverPincode" formControlName="receiver_pincode" type="text"
+                                    placeholder="Enter Pincode" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['receiver_pincode'].invalid && shipmentForm.controls['receiver_pincode'].touched}" />
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-full">
+                                <label for="receiverTaluk">Taluk</label>
+                                <input id="receiverTaluk" formControlName="receiver_taluk_name" type="text"
+                                    placeholder="Enter Taluk" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['receiver_taluk_name'].invalid && shipmentForm.controls['receiver_taluk_name'].touched}" />
+                            </div>
+                            <div class="w-full">
+                                <label for="receiverDistrict">District</label>
+                                <input id="receiverDistrict" formControlName="receiver_district_name" type="text"
+                                    placeholder="Enter District" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['receiver_district_name'].invalid && shipmentForm.controls['receiver_district_name'].touched}" />
+                            </div>
+                        </div>
+                        <div>
+                            <label for="receiverPostOffice">Post Office</label>
+                            <input id="receiverPostOffice" formControlName="receiver_postoffice" type="text"
+                                placeholder="Enter Post Office" class="form-input w-full"
+                                [ngClass]="{'border-red-500': shipmentForm.controls['receiver_postoffice'].invalid && shipmentForm.controls['receiver_postoffice'].touched}" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aadhar and Package Details Section -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Aadhar Details -->
+                    <div class="space-y-4  shadow-md rounded-lg p-5">
+                        <h2 class="text-lg font-semibold">Aadhar Details</h2>
+                        <div class="flex gap-4">
+                            <div class="w-full">
+                                <label for="aadharName">Aadhar Name</label>
+                                <input id="aadharName" formControlName="aadhar_name" type="text"
+                                    placeholder="Enter Aadhar Name" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['aadhar_name'].invalid && shipmentForm.controls['aadhar_name'].touched}" />
+                            </div>
+                            <div class="w-full">
+                                <label for="aadharNumber">Aadhar Number</label>
+                                <input id="aadharNumber" formControlName="aadhar_no" type="text"
+                                    placeholder="Enter Aadhar Number" class="form-input w-full"
+                                    [ngClass]="{'border-red-500': shipmentForm.controls['aadhar_no'].invalid && shipmentForm.controls['aadhar_no'].touched}" />
+                            </div>
+                        </div>
+                        <div>
+                            <label for="aadharDetails">Aadhar Details</label>
+                            <input id="aadharDetails" formControlName="aadhar_details" type="text"
+                                placeholder="Enter Additional Aadhar Details" class="form-input w-full"
+                                [ngClass]="{'border-red-500': shipmentForm.controls['aadhar_details'].invalid && shipmentForm.controls['aadhar_details'].touched}" />
+                        </div>
+                        <!-- Aadhar Card Images -->
+                        <!-- Aadhar Card Images -->
+                        <!-- Aadhar Card Images -->
+                        <div class="flex gap-4">
+                            <div class="w-full sm:w-1/2">
+                                <label for="aadharImage1">Aadhar Front</label>
+                                <input id="aadharImage1" type="file" class="form-input w-full"
+                                    (change)="frontAadhaarCard($event); onFileSelected($event)" />
+                            </div>
+                            <div class="w-full sm:w-1/2" *ngIf="frontUploaded || backUploaded">
+                                <label for="aadharImage2">Aadhar Back</label>
+                                <input id="aadharImage2" type="file" class="form-input w-full"
+                                    (change)="backAadhaarCard($event); onFileSelected1($event);" />
+                            </div>
+                        </div>
+
+                        <!-- Image Preview Section -->
+                 <div *ngIf="shipmentForm.value.aadhar_front_url" class="mt-2 flex gap-4">
+  <!-- Front Aadhar -->
+<!-- Aadhaar Front -->
+<div class="w-full sm:w-1/2">
+  
+  <!-- Show Image -->
+  <div *ngIf="isImage1(shipmentForm.value.aadhar_front_url)" appViewer
+       [viewerOptions]="{ movable: true, zoomable: true }">
+    <img [src]="shipmentForm.value.aadhar_front_url | safeUrl"
+         alt="Aadhaar Front"
+         class="w-full h-auto object-contain max-h-[500px]" />
+  </div>
+
+  <!-- Show PDF in doc-viewer -->
+  <ngx-doc-viewer *ngIf="isPdf1(shipmentForm.value.aadhar_front_url)"
+                  [url]="shipmentForm.value.aadhar_front_url"
+                  viewer="google"
+                  style="width:100%; height:500px">
+  </ngx-doc-viewer>
+
+  <!-- Show Drive in iframe -->
+  <iframe *ngIf="isDrive(shipmentForm.value.aadhar_front_url)"
+          [src]="getDrivePreviewUrl(shipmentForm.value.aadhar_front_url) | safeUrl"
+          width="100%" height="500px" style="border:0;">
+  </iframe>
+
+</div>
+
+<div class="w-full sm:w-1/2">
+  
+  <!-- Show Image -->
+  <div *ngIf="isImage1(shipmentForm.value.aashar_back_url)" appViewer
+       [viewerOptions]="{ movable: true, zoomable: true }">
+    <img [src]="shipmentForm.value.aashar_back_url | safeUrl"
+         alt="Aadhaar Front"
+         class="w-full h-auto object-contain max-h-[500px]" />
+  </div>
+
+  <!-- Show PDF in doc-viewer -->
+  <ngx-doc-viewer *ngIf="isPdf1(shipmentForm.value.aashar_back_url)"
+                  [url]="shipmentForm.value.aashar_back_url"
+                  viewer="google"
+                  style="width:100%; height:500px">
+  </ngx-doc-viewer>
+
+  <!-- Show Drive in iframe -->
+  <iframe *ngIf="isDrive(shipmentForm.value.aashar_back_url)"
+          [src]="getDrivePreviewUrl(shipmentForm.value.aashar_back_url) | safeUrl"
+          width="100%" height="500px" style="border:0;">
+  </iframe>
+
+</div>
+
+</div>
+
+
+
+
+                    </div>
+
+                    <!-- Package Details -->
+                    <div class="space-y-4  shadow-md rounded-lg p-5">
+                        <h2 class="text-lg font-semibold">Package Details</h2>
+                        <div *ngFor="let data of PackingListDetails; let i = index"
+                            class="flex justify-between items-center">
+                            <div class="w-1/4">
+                                <label for="packageWeight{{i}}">Package</label>
+                                <input [id]="'packageWeight' + i" [value]="data['carton_no']" type="number"
+                                    placeholder="Enter Weight" class="form-input w-full" readonly />
+                            </div>
+                            <div class="w-1/4">
+                                <label for="packageWeight{{i}}">Weight (kg)</label>
+                                <input [id]="'packageWeight' + i" [value]="data['chrg_weight']" type="number"
+                                    placeholder="Enter Weight" class="form-input w-full" readonly />
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" (click)="PactchIndexValue(data)"
+                                    class="btn btn-secondary">Edit</button>
+                                <button type="button" (click)="deleteCartonDetail(data,i)"
+                                    class="btn btn-danger">Delete</button>
+                            </div>
+                        </div>
+                        <button type="button" (click)="modal3?.open()" class="btn btn-secondary mt-4">Add New
+                            Package</button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <!-- <button type="button"  class="btn btn-secondary !mt-6 w-full">Submit</button> -->
+            </form>
+        </div>
+        <div class="mt-6 w-full lg:mt-0 lg:w-80 shadow-md rounded-lg   p-3.5">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
+                <!-- deposit_invoice_status === "0" -->
+                <button type="button"
+                    *ngIf="receivedData && receivedData?.contact_status && receivedData?.contact_status === 'N'"
+                    class="btn btn-danger w-full gap-2" (click)="updateContact()">
+                    <icon-phone-call class="shrink-0 ltr:mr-2 rtl:ml-2" />
+                    Call Verification
+                </button>
+                <button *ngIf="receivedData?.verified_details == 1" class="btn btn-success"
+                    (click)="verifyColoaderPickup(receivedData, '0', 'verified')">
+                    <i class="fas fa-check-circle me-2 "></i>
+                    <span>Undo Verified Details</span>
+                </button>
+                <button *ngIf="receivedData?.verified_details != 1" class="btn btn-danger"
+                    (click)="verifyColoaderPickup(receivedData, '1', 'verified')">
+                    <i class="fas fa-check-circle me-2 "></i>
+                    <span>Mark Details Verified</span>
+                </button>
+                  <button type="button" class="btn btn-secondary w-full gap-2" (click)="UpdateInvoice()">
+                        <icon-refresh class="shrink-0 ltr:mr-2 rtl:ml-2" />
+                        Update Hawb Details
+                    </button>
+                     <button *ngIf="collectionType != 'Drop_At_Warehouse'; else DropOff" type="button"
+                        class="btn btn-warning   w-full gap-2" (click)="modal5?.open()">
+                        <icon-download class="shrink-0 ltr:mr-2 rtl:ml-2"></icon-download>
+                        Assign To Third-Party
+                    </button>
+
+                    <ng-template #DropOff>
+                        <button type="button" class="btn btn-danger w-full gap-2" (click)="modal5?.open()">
+                            <icon-download class="shrink-0 ltr:mr-2 rtl:ml-2"></icon-download>
+                            Confirm DropOff
+                        </button>
+                    </ng-template>
+
+
+                   
+                   <button type="button" class="btn btn-dark w-full gap-2" (click)="tags?.open(); salesRepId = receivedData['reason_for_non_pickup']">
+    <icon-tag class="shrink-0 ltr:mr-2 rtl:ml-2" />
+    Add Tags
+</button>
+
+
+                <ng-container *ngIf="receivedData?.contact_status !== 'N'">
+                    <!-- deposit_invoice_status === "1" -->
+                  
+                   
+                </ng-container>
+                 <button type="button" class="btn btn-danger w-full gap-2" (click)="cancelShipment()">
+    <icon-x class="shrink-0 ltr:mr-2 rtl:ml-2" />
+    Cancel Shipment
+</button>
+                 <button type="button" class="btn btn-info w-full gap-2" (click)="callNotesFile()">
+                        <icon-save class="shrink-0 ltr:mr-2 rtl:ml-2" />
+                        Add Notes
+                    </button>
+                <button class="btn btn-primary w-full gap-2" routerLink="/customer/newBookings">
+                    <icon-logout class="shrink-0 ltr:mr-2 rtl:ml-2" />
+                    Back To New Bookings
+                </button>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<!-- <button type="button" class="btn btn-secondary">ZoomIn Up</button> -->
+
+
+<modal #modal16 class="modal-top animate animate-zoom-in-up" [closeOnOutsideClick]="false">
+    <ng-template #modalHeader>
+        <div>Collection Type</div>
+    </ng-template>
+
+    <ng-template #modalBody>
+        <div>
+            <label for="shipmentType">Select Shipment Type:</label>
+            <select id="shipmentType" [(ngModel)]="shipmentType" class="form-select w-full text-white-dark">
+                <option value="pickup">Pickup</option>
+                <option value="Drop_At_Warehouse">Drop</option>
+            </select>
+        </div>
+
+        <div *ngIf="shipmentType === 'pickup'">
+            <label for="pickupDate">Pickup Date:</label>
+            <input type="date" id="pickupDate" [(ngModel)]="newCollectionType" class="form-input w-full">
+        </div>
+    </ng-template>
+
+    <ng-template #modalFooter>
+        <button type="button" (click)="modal16.close()" class="btn btn-outline-danger">Discard</button>
+        <button type="button" (click)="updateCollectionType()"
+            class="btn btn-secondary ltr:ml-4 rtl:mr-4">Change</button>
+    </ng-template>
+</modal>
+
+<modal #salesRep class="modal-top animate animate-zoom-in-up" [closeOnOutsideClick]="false"> 
+    <ng-template #modalHeader>
+        <div>Sales Rep.</div>
+    </ng-template>
+
+    <ng-template #modalBody>
+        <div>
+            <label for="shipmentType">Select Sales Rep. Name:</label>
+            <select id="shipmentType" [(ngModel)]="salesRepId" class="form-select w-full text-white-dark">
+                <option value="" disabled selected>Select Employee</option>
+                      <option *ngFor="let emp of employees" [value]="emp.employee_id">
+                        {{ emp.employee_name }}
+                      </option>
+            </select>
+        </div>
+
+       
+    </ng-template>
+
+    <ng-template #modalFooter>
+        <button type="button" (click)="salesRep.close()" class="btn btn-outline-danger">Discard</button>
+        <button type="button" (click)="v1_ds_pickup_order_sales_repersent_update('1')"
+            class="btn btn-secondary ltr:ml-4 rtl:mr-4">Assign</button>
+    </ng-template>
+</modal>
+
+<modal #tags class="modal-top animate animate-zoom-in-up" [closeOnOutsideClick]="false">
+    <ng-template #modalHeader>
+        <div>Add Tags</div>
+    </ng-template>
+
+    <ng-template #modalBody>
+        <div>
+            <label for="shipmentType">Add Tags:</label>
+         
+            <input type="text" class="form-input" [(ngModel)]="salesRepId">
+        </div>
+
+       
+    </ng-template>
+
+    <ng-template #modalFooter>
+        <button type="button" (click)="tags.close()" class="btn btn-outline-danger">Discard</button>
+        <button type="button" (click)="v1_ds_pickup_order_sales_repersent_update('2')"
+            class="btn btn-secondary ltr:ml-4 rtl:mr-4">Assign</button>
+    </ng-template>
+</modal>
+
+<!-- <button type="button" class="btn btn-secondary" (click)="modal2?.open()">ZoomIn Up</button> -->
+<!-- Modal -->
+<!-- Modal -->
+<modal #modal1 class="modal-top animate animate-zoom-in-up" [closeOnOutsideClick]="false">
+    <ng-template #modalHeader>
+        <div>Update Packing List:- <span style="color: red;">{{this.packingListForm.value.carton_no ?
+                this.packingListForm.value.carton_no :
+                this.PackingListDetails.length + 1}}</span></div>
+    </ng-template>
+
+    <ng-template #modalBody>
+        <!-- Box Type and Actual Weight in one row -->
+        <form [formGroup]="packingListForm">
+            <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="boxType" class="block text-sm font-medium text-gray-700">Box Type</label>
+                    <select  id="boxType" class="form-select w-full p-2 border border-gray-300 rounded-md"
+                        formControlName="item_type" placeholder="Enter Box Type">
+                    <option value="" disabled selected>-Select Package Type-
+                                                        </option>
+
+                                                        <option value="Box">Box/Carton</option>
+                                                        <option value="Suitcase">Suitcase/Bag</option>
+                                                        <option value="Other">Others</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="actualWeight" class="block text-sm font-medium text-gray-700">Actual Weight (kg)</label>
+                    <input type="number" id="actualWeight"
+                        class="form-input w-full p-2 border border-gray-300 rounded-md" formControlName="act_wgt"
+                        placeholder="Enter Actual Weight" (input)="this.calculateWeights()">
+                </div>
+            </div>
+
+            <!-- Length, Width, and Height in one row -->
+            <div class="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label for="length" class="block text-sm font-medium text-gray-700">Length (cm)</label>
+                    <input type="number" id="length" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                        formControlName="length" placeholder="Enter Length" (input)="this.calculateWeights()">
+                </div>
+                <div>
+                    <label for="width" class="block text-sm font-medium text-gray-700">Width (cm)</label>
+                    <input type="number" id="width" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                        formControlName="width" placeholder="Enter Width" (input)="this.calculateWeights()">
+                </div>
+                <div>
+                    <label for="height" class="block text-sm font-medium text-gray-700">Height (cm)</label>
+                    <input type="number" id="height" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                        formControlName="height" placeholder="Enter Height" (input)="this.calculateWeights()">
+                </div>
+            </div>
+
+            <!-- Item Details in one row -->
+            <div class="mb-4">
+                <label for="itemDetails" class="block text-sm font-medium text-gray-700">Item Details</label>
+                <textarea id="itemDetails" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                    formControlName="item_details" placeholder="Enter Item Details"></textarea>
+            </div>
+
+            <!-- Table for Weight Calculation -->
+            <div class="mb-4">
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2 border border-gray-300 text-left">Actual Weight (kg)</th>
+                            <th class="px-4 py-2 border border-gray-300 text-left">Volumetric Weight (kg)</th>
+                            <th class="px-4 py-2 border border-gray-300 text-left">Chargeable Weight (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2 border border-gray-300">{{ packingListForm.value.act_wgt }}</td>
+                            <td class="px-4 py-2 border border-gray-300">{{ packingListForm.value.vol_weight }}</td>
+                            <td class="px-4 py-2 border border-gray-300">{{ packingListForm.value.chrg_weight }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #modalFooter>
+        <button type="button" (click)="modal1.close()" class="btn btn-outline-danger">Discard</button>
+        <button type="button" (click)="submitForm()" class="btn btn-secondary ltr:ml-4 rtl:mr-4">Update</button>
+    </ng-template>
+</modal>
+<modal #modal3 class="modal-top animate animate-zoom-in-up" [closeOnOutsideClick]="false">
+    <ng-template #modalHeader>
+        <div>Insert New Packing List:- <span style="color: red;">{{this.packingListForm.value.carton_no ?
+                this.packingListForm.value.carton_no :
+                this.PackingListDetails.length + 1}}</span></div>
+    </ng-template>
+
+    <ng-template #modalBody>
+        <!-- Box Type and Actual Weight in one row -->
+        <form [formGroup]="packingListForm">
+            <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="boxType" class="block text-sm font-medium text-gray-700">Box Type</label>
+                    <!-- <input type="text" id="boxType" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                        formControlName="item_type" placeholder="Enter Box Type"> -->
+                         <select type="text" id="boxType" class="form-select w-full p-2 border border-gray-300 rounded-md"
+                        formControlName="item_type" placeholder="Enter Box Type">
+                    <option value="" disabled selected>-Select Package Type-
+                                                        </option>
+
+                                                        <option value="Box">Box/Carton</option>
+                                                        <option value="Suitcase">Suitcase/Bag</option>
+                                                        <option value="Other">Others</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="actualWeight" class="block text-sm font-medium text-gray-700">Actual Weight (kg)</label>
+                    <input type="number" id="actualWeight"
+                        class="form-input w-full p-2 border border-gray-300 rounded-md" formControlName="act_wgt"
+                        placeholder="Enter Actual Weight" (input)="this.calculateWeights()">
+                </div>
+            </div>
+
+            <!-- Length, Width, and Height in one row -->
+            <div class="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label for="length" class="block text-sm font-medium text-gray-700">Length (cm)</label>
+                    <input type="number" id="length" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                        formControlName="length" placeholder="Enter Length" (input)="this.calculateWeights()">
+                </div>
+                <div>
+                    <label for="width" class="block text-sm font-medium text-gray-700">Width (cm)</label>
+                    <input type="number" id="width" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                        formControlName="width" placeholder="Enter Width" (input)="this.calculateWeights()">
+                </div>
+                <div>
+                    <label for="height" class="block text-sm font-medium text-gray-700">Height (cm)</label>
+                    <input type="number" id="height" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                        formControlName="height" placeholder="Enter Height" (input)="this.calculateWeights()">
+                </div>
+            </div>
+
+            <!-- Item Details in one row -->
+            <div class="mb-4">
+                <label for="itemDetails" class="block text-sm font-medium text-gray-700">Item Details</label>
+                <textarea id="itemDetails" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                    formControlName="item_details" placeholder="Enter Item Details"></textarea>
+            </div>
+
+            <!-- Table for Weight Calculation -->
+            <div class="mb-4">
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2 border border-gray-300 text-left">Actual Weight (kg)</th>
+                            <th class="px-4 py-2 border border-gray-300 text-left">Volumetric Weight (kg)</th>
+                            <th class="px-4 py-2 border border-gray-300 text-left">Chargeable Weight (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2 border border-gray-300">{{ packingListForm.value.act_wgt }}</td>
+                            <td class="px-4 py-2 border border-gray-300">{{ packingListForm.value.vol_weight }}</td>
+                            <td class="px-4 py-2 border border-gray-300">{{ packingListForm.value.chrg_weight }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #modalFooter>
+        <button type="button" (click)="modal3.close()" class="btn btn-outline-danger">Discard</button>
+        <button type="button" (click)="v1_SP_Ds_hawb_order_Insert_by_hawb_id()"
+            class="btn btn-secondary ltr:ml-4 rtl:mr-4">Save</button>
+    </ng-template>
+</modal>
+
+
+
+
+<modal #modal5 class="modal-top extra-large-modal" [closeOnOutsideClick]="false">
+    <ng-template #modalHeader>
+        <div class="flex items-center justify-between p-4 bg-gray-100 border-b border-gray-200 rounded-t-lg">
+            <h5 class="text-xl font-semibold text-gray-900">
+                Pickup & Drop-off Details For - HAWB NO. :- {{ receivedData['invoice_no'] }}
+            </h5>
+
+        </div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div *ngIf="receivedData" class="p-6 overflow-y-auto max-h-[80vh]">
+            <div *ngIf="receivedData['collection_type'] !== 'Drop_At_Warehouse'">
+                <div *ngIf="!entryMethod" class="text-center mb-6">
+                    <div class="p-6 rounded-lg ">
+                        <h5 class="mb-4  text-blue-600">Select an Assignment Method
+                        </h5>
+                        <div
+                            class="flex flex-col items-center justify-center space-y-4 sm:flex-row sm:space-y-0 sm:space-x-6">
+
+                            <button type="button" (click)="entryMethod = 'api'" class="btn btn-outline-info"> <i
+                                    class="bi bi-plug mr-2"></i>API Connection</button>
+
+                            <!-- <button
+                                class="flex items-center px-6 py-3 text-lg font-medium text-blue-600 transition-colors duration-200 bg-white border border-blue-600 rounded-full shadow-sm hover:bg-blue-50"
+                                >
+                               
+                            </button> -->
+                            <button type="button" class="btn btn-outline-dark" (click)="entryMethod = 'manual'">
+                                <i class="bi bi-input-cursor-text mr-2"></i>Manual Entry</button>
+
+
+                        </div>
+                    </div>
+                </div>
+                <form [formGroup]="assignForm" *ngIf="entryMethod === 'api'">
+                    <div class="space-y-6">
+                        <div class="w-full">
+                            <button type="button"
+                                class="flex items-center text-blue-600 transition-colors duration-150 hover:text-blue-800"
+                                (click)="resetEntryMethod()">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M15 8a.5.5 0 0 1-.5.5H3.707l4.147 4.146a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 1 1 .708.708L3.707 7.5H14.5a.5.5 0 0 1 .5.5" />
+                                </svg>
+                                Back to Options
+                            </button>
+                        </div>
+                        <div class="flex justify-center">
+                            <div class="w-full sm:w-1/2 md:w-1/3">
+                                <div class="space-y-2">
+                                    <label for="coloaderType" class="block font-bold text-gray-700">Type of
+                                        Third-Party</label>
+                                    <select
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        id="coloaderType" formControlName="coLoder">
+                                        <option value="-1" selected hidden>Select</option>
+                                        <option *ngFor="let CO_Loader of CO_Loader"
+                                            value="{{ CO_Loader.transporter_id }}">
+                                            {{ CO_Loader.transporter_name }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-6 border-gray-300" />
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Name</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_name"
+                                    [ngModelOptions]="{ standalone: true }" />
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Contact No</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_contact_no"
+                                    [ngModelOptions]="{ standalone: true }" />
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Email</label>
+                                <input type="email"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].shipper_mail_id"
+                                    [ngModelOptions]="{ standalone: true }" />
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Address1</label>
+                                <textarea
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_address"
+                                    [ngModelOptions]="{ standalone: true }"></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Address2</label>
+                                <textarea
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_address2"
+                                    [ngModelOptions]="{ standalone: true }"></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Address3</label>
+                                <textarea
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_address3"
+                                    [ngModelOptions]="{ standalone: true }"></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender City</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].shipper_city"
+                                    [ngModelOptions]="{ standalone: true }" />
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Pincode</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_pincode"
+                                    [ngModelOptions]="{ standalone: true }" />
+                            </div>
+                        </div>
+                        <div class="w-full overflow-hidden border border-gray-200 rounded-lg shadow-sm">
+                            <div class="flex justify-end p-4">
+                                <button
+                                    class="flex items-center px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                                    (click)="addRow()">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto max-h-[40vh]">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-violet-700 sticky top-0">
+                                        <tr>
+                                            <th scope="col" class="">
+                                                Package No</th>
+                                            <th scope="col" class="">
+                                                Shipment Wt</th>
+                                            <th scope="col" class="">
+                                                Length</th>
+                                            <th scope="col" class="">
+                                                Width</th>
+                                            <th scope="col" class="">
+                                                Height</th>
+                                            <th scope="col" class="">
+                                                Volumetric Wt</th>
+                                            <th scope="col" class="">
+                                                Chargeable Wt</th>
+                                            <th scope="col" class="whitespace-nowrap">
+                                                Package Details</th>
+                                            <th scope="col" class="">
+                                                Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr *ngFor="let list of totalReceivedData; let i = index">
+                                            <td
+                                                class="px-6 py-4 text-sm font-medium text-center text-gray-900 whitespace-nowrap">
+                                                {{ list.box_no || i + 1 }}</td>
+                                            <td class="">
+                                                <input type="number" [(ngModel)]="list.weight"
+                                                    [ngModelOptions]="{ standalone: true }"
+                                                    (input)="calculateChargeableWeight(list)" class="form-input" />
+                                            </td>
+                                            <td class="">
+                                                <input type="number" [(ngModel)]="list.length"
+                                                    [ngModelOptions]="{ standalone: true }"
+                                                    (input)="calculateChargeableWeight(list)" class="form-input" />
+                                            </td>
+                                            <td class="">
+                                                <input type="number" [(ngModel)]="list.width"
+                                                    [ngModelOptions]="{ standalone: true }"
+                                                    (input)="calculateChargeableWeight(list)" class="form-input" />
+                                            </td>
+                                            <td class="">
+                                                <input type="number" [(ngModel)]="list.height"
+                                                    [ngModelOptions]="{ standalone: true }"
+                                                    (input)="calculateChargeableWeight(list)" class="form-input" />
+                                            </td>
+                                            <td class="">
+                                                <input type="number" [value]="list.vol_wgt" class="form-input"
+                                                    readonly />
+                                            </td>
+                                            <td class="">
+                                                {{ list.chargeable_wt }}</td>
+                                            <td class="">
+                                                <textarea class="form-input" [(ngModel)]="list.item_details"
+                                                    [ngModelOptions]="{ standalone: true }"></textarea>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm font-medium text-center whitespace-nowrap">
+                                                <button
+                                                    class="p-2 text-red-600 transition-colors duration-200 rounded-full hover:bg-red-100"
+                                                    (click)="deleteRow(i)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="flex justify-center mt-6 space-x-4">
+                            <button type="button"
+                                class="px-8 py-3 text-lg font-semibold text-gray-700 transition-colors duration-200 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
+                                (click)="resetEntryMethod()">
+                                Cancel
+                            </button>
+                            <button class="btn btn-secondary"
+                                [disabled]="!assignForm.value.coLoder || assignForm.value.coLoder === '-1' || isAssignBranchIsProcessing"
+                                (click)="ValidatePickup(assignForm.value)">
+                                <span *ngIf="isAssignBranchIsProcessing"
+                                    class="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                Assign via API
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <form [formGroup]="assignForm" *ngIf="entryMethod === 'manual'">
+                    <div class="space-y-6">
+                        <div class="w-full">
+                            <button type="button"
+                                class="flex items-center text-blue-600 transition-colors duration-150 hover:text-blue-800"
+                                (click)="resetEntryMethod()">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M15 8a.5.5 0 0 1-.5.5H3.707l4.147 4.146a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 1 1 .708.708L3.707 7.5H14.5a.5.5 0 0 1 .5.5" />
+                                </svg>
+                                Back to Options
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div>
+                                <label for="coloaderType" class="block font-bold text-gray-700">Type of
+                                    Third-Party</label>
+                                <select
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    id="coloaderType" formControlName="coLoder">
+                                    <option value="-1" selected hidden>Select</option>
+                                    <option *ngFor="let CO_Loader of CO_Loader" value="{{ CO_Loader.transporter_id }}">
+                                        {{ CO_Loader.transporter_name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="localTransitNo" class="block font-bold text-gray-700">Third-Party
+                                    Consignment
+                                    Number</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    id="localTransitNo" formControlName="local_trasfer"
+                                    placeholder="Third-Party Consignment No" />
+                            </div>
+                            <div>
+                                <label for="shipmentRefNo" class="block font-bold text-gray-700">Third-Party
+                                    Ref No</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    id="shipmentRefNo" formControlName="ship_ref_no" placeholder="Third-Party Ref No" />
+                            </div>
+                        </div>
+                        <hr class="my-6 border-gray-300" />
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Name</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_name"
+                                    [ngModelOptions]="{ standalone: true }" />
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Contact No</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_contact_no"
+                                    [ngModelOptions]="{ standalone: true }" />
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Email</label>
+                                <input type="email"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].shipper_mail_id"
+                                    [ngModelOptions]="{ standalone: true }" />
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Address1</label>
+                                <textarea
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_address"
+                                    [ngModelOptions]="{ standalone: true }"></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Address2</label>
+                                <textarea
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_address2"
+                                    [ngModelOptions]="{ standalone: true }"></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Address3</label>
+                                <textarea
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_address3"
+                                    [ngModelOptions]="{ standalone: true }"></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender City</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].shipper_city"
+                                    [ngModelOptions]="{ standalone: true }" />
+                            </div>
+                            <div>
+                                <label class="block font-bold text-gray-700">Sender Pincode</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    [(ngModel)]="totalReceivedData[0].sender_pincode"
+                                    [ngModelOptions]="{ standalone: true }" />
+                            </div>
+                        </div>
+                        <div class="w-full overflow-hidden border border-gray-200 rounded-lg shadow-sm">
+                            <div class="flex justify-end p-4">
+                                <button
+                                    class="flex items-center px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                                    (click)="addRow()">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto max-h-[40vh]">
+                                <table class="min-w-full ">
+                                    <thead class="bg-green-700 sticky top-0">
+                                        <tr>
+                                            <th scope="col" class="">
+                                                SR NO.</th>
+                                            <th scope="col" class="">
+                                                HAWB No.</th>
+                                            <th scope="col" class="">
+                                                Package No.</th>
+                                            <th scope="col" class="">
+                                                Third-Party Parcel No.</th>
+                                            <th scope="col" class="">
+                                                Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white  ">
+                                        <tr *ngFor="let data of totalReceivedData; let i = index">
+                                            <td class="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
+                                                {{ i + 1 }}</td>
+                                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{{
+                                                data.invoice_no }}</td>
+                                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{{
+                                                data.box_no }}</td>
+                                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                <input type="text" class="form-input" [(ngModel)]="data.parcelNumbers"
+                                                    [ngModelOptions]="{ standalone: true }"
+                                                    placeholder="Enter Third-Party Parcel No." />
+                                            </td>
+                                            <td class="px-6 py-4 text-sm font-medium text-center whitespace-nowrap">
+                                                <button
+                                                    class="p-2 text-red-600 transition-colors duration-200 rounded-full hover:bg-red-100"
+                                                    (click)="deleteRow(i)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="flex justify-center mt-6 space-x-4">
+                            <button type="button"
+                                class="px-8 py-3 text-lg font-semibold text-gray-700 transition-colors duration-200 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
+                                (click)="resetEntryMethod()">
+                                Cancel
+                            </button>
+                            <button class="btn btn-success" [disabled]="isAssignBranchIsProcessing"
+                                (click)="ValidateManualPickup(manualReference)">
+                                <span *ngIf="isAssignBranchIsProcessing"
+                                    class="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                Confirm Manual Assignment
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div *ngIf="receivedData['collection_type'] === 'Drop_At_Warehouse'">
+                <div class="w-full overflow-hidden border border-gray-200 rounded-lg shadow-sm">
+                    <div class="flex justify-end p-4">
+                        <button class="flex items-center px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                            (click)="addRow()">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto max-h-[40vh]">
+                        <table class="min-w-full ">
+                            <thead class="bg-violet-700 sticky top-0">
+                                <tr>
+                                    <th scope="col" class="">
+                                        Package No</th>
+                                    <th scope="col" class="">
+                                        Shipment Wt</th>
+                                    <th scope="col" class="">
+                                        Length</th>
+                                    <th scope="col" class="">
+                                        Width</th>
+                                    <th scope="col" class="">
+                                        Heignt</th>
+                                    <th scope="col" class="">
+                                        Volumetric Wt</th>
+                                    <th scope="col" class="">
+                                        Chargeable Wt</th>
+                                    <th scope="col" class="whitespace-nowrap    ">
+                                        Package Details</th>
+                                    <th scope="col" class="">
+                                        Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white ">
+                                <tr *ngFor="let list of totalReceivedData; let i = index">
+                                    <td
+                                        class="px-6 py-4 text-sm font-medium text-center text-gray-900 whitespace-nowrap">
+                                        {{ list.box_no || i + 1 }}</td>
+                                    <td class="">
+                                        <input type="number" [(ngModel)]="list.weight"
+                                            (input)="calculateChargeableWeight(list)" class="form-input" />
+                                    </td>
+                                    <td class="">
+                                        <input type="number" [(ngModel)]="list.length"
+                                            (input)="calculateChargeableWeight(list)" class="form-input" />
+                                    </td>
+                                    <td class="">
+                                        <input type="number" [(ngModel)]="list.width"
+                                            (input)="calculateChargeableWeight(list)" class="form-input" />
+                                    </td>
+                                    <td class="">
+                                        <input type="number" [(ngModel)]="list.height"
+                                            (input)="calculateChargeableWeight(list)" class="form-input" />
+                                    </td>
+                                    <td class="">
+                                        <input type="number" [value]="list.vol_wgt" class="form-input" readonly />
+                                    </td>
+                                    <td class="">
+                                        {{ list.chargeable_wt }}</td>
+                                    <td class="">
+                                        <textarea class="form-input" [(ngModel)]="list.item_details"></textarea>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm font-medium text-center whitespace-nowrap">
+                                        <button
+                                            class="p-2 text-red-600 transition-colors duration-200 rounded-full hover:bg-red-100"
+                                            (click)="deleteRow(i)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                        <button
+                                            class="p-2 ml-2 text-blue-600 transition-colors duration-200 rounded-full hover:bg-blue-100"
+                                            (click)="copyRowData(i)">
+                                            <i class="fa fa-copy"></i>
+                                        </button>
+                                        <button
+                                            class="p-2 ml-2 text-green-600 transition-colors duration-200 rounded-full hover:bg-green-100"
+                                            *ngIf="copiedRowData && copiedRowData.box_no !== list.box_no && list.pickup_id === ''"
+                                            (click)="pasteRowData(i)">
+                                            <i class="fa fa-paste"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="flex justify-center mt-6">
+                    <div class="w-full sm:w-1/2 md:w-1/3 flex justify-center">
+                        <!-- <button type="button"
+                                class="px-8 py-3 text-lg font-semibold text-gray-700 transition-colors duration-200 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
+                                (click)="resetEntryMethod()">
+                                Cancel
+                            </button> -->
+                        <button class="btn btn-warning ml-2" (click)="v1_SP_Ds_hawb_order_Insert_by_hawb_id();sendmailtocustomer();">
+                            <i class="bi bi-box-seam mr-2"></i>Confirm Dropoff
+                        </button>
+                         
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <!-- <ng-template #modalFooter>
+        <button type="button" (click)="modal5.close()" class="btn btn-outline-danger">Discard</button>
+        <button type="button" (click)="modal5.close()" class="btn btn-primary ltr:ml-4 rtl:mr-4">Save</button>
+    </ng-template> -->
+</modal>
+
+
+<!-- Modal -->
+<modal #modal7 class="modal-top extra-large-modal" backdrop="static" [closeOnOutsideClick]="false">
+    <ng-template #modalHeader>
+        <div>Add Notes</div>
+    </ng-template>
+
+    <ng-template #modalBody>
+        <app-add-notes></app-add-notes>
+    </ng-template>
+
+
+</modal>
+
+
+
+<modal #pickupTimeModal class="modal-center animate animate-zoom-in-up " [closeOnOutsideClick]="false"> 
+    <ng-template #modalHeader>
+        <div>Dpd Confirm Details  - HAWB NO. :- {{ receivedData['invoice_no'] }}</div>
+    </ng-template>
+
+    <ng-template #modalBody>
+        <!-- Box Type and Actual Weight in one row -->
+
+        <!-- Pickup Date and Other Fields -->
+        <div class="block text-sm font-medium text-gray-700">
+            <label for="pickupDate" class="block text-sm font-medium text-gray-700">Preferred Pickup Date</label>
+            <input type="date" id="pickupDate" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                [(ngModel)]="newCollectionType" name="pickupTime" (change)="AssginTime()">
+
+        </div>
+        <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="totalPcs" class="block text-sm font-medium text-gray-700">Total Pcs</label>
+                <input type="number" id="totalPcs" class="form-input " placeholder="Enter Total Pcs"
+                    [(ngModel)]="totalPcsOfInvoice" name="totalPcsOfInvoice">
+            </div>
+            <div>
+                <label for="totalWeight" class="block text-sm font-medium text-gray-700">Total Weight (kg)</label>
+                <input type="number" id="totalWeight" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                    placeholder="Enter Total Weight" [(ngModel)]="totalWtOfInvoice">
+            </div>
+
+        </div>
+
+        <!-- Service Selection -->
+        <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="service" class="block text-sm font-medium text-gray-700">Service</label>
+                <select *ngIf="coloaderCode =='1'" id="service" class="form-input " [(ngModel)]="typeOfService">
+                    <option value="1^12">Next Day</option>
+                    <option value="11">Two Day</option>
+                </select>
+                <input class="form-control" *ngIf="coloaderCode =='6'" type="text" readonly [(ngModel)]="typeOfService">
+
+            </div>
+            <div>
+                <label for="refNo" class="block text-sm font-medium text-gray-700">Ref No (Optional)</label>
+                <input type="text" id="refNo" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                    placeholder="Enter Ref No" [(ngModel)]="optinalRef2">
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template #modalFooter>
+        <button type="button" (click)="pickupTimeModal.close()" class="btn btn-outline-danger">Discard</button>
+        <button type="button" (click)="assignToDpdCourerForPickup(); pickupTimeModal.close()"
+            class="btn btn-secondary ltr:ml-4 rtl:mr-4">Confirm</button>
+    </ng-template>
+</modal>
+
+<modal #pickupDateTimeModal class="modal-top animate animate-zoom-in-up " [closeOnOutsideClick]="false">
+    <ng-template #modalHeader>
+        <div>ParcelForce Confirm Details  - HAWB NO. :- {{ receivedData['invoice_no'] }} </div>
+    </ng-template>
+
+    <ng-template #modalBody>
+        <!-- Box Type and Actual Weight in one row -->
+
+        <!-- Pickup Date and Other Fields -->
+        <div class="block text-sm font-medium text-gray-700">
+            <label for="pickupDate" class="block text-sm font-medium text-gray-700">Preferred Pickup Date</label>
+            <input type="date" id="pickupDate" class="form-input w-full p-2 border border-gray-300 rounded-md"
+                [(ngModel)]="newCollectionType" name="pickupTime">
+
+        </div>
+        <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="totalPcs" class="block text-sm font-medium text-gray-700">From Time</label>
+                <select id="service" class="form-input " [(ngModel)]="fromTime">
+                    <option *ngFor="let time of availableTimes" [value]="time">{{ time }}</option>
+                </select>
+            </div>
+            <div>
+                <label for="totalPcs" class="block text-sm font-medium text-gray-700">To Time</label>
+                <select id="service" class="form-input " [(ngModel)]="toTime">
+                    <option *ngFor="let time of availableTimes" [value]="time">{{ time }}</option>
+                </select>
+            </div>
+
+        </div>
+        <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="totalPcs" class="block text-sm font-medium text-gray-700">Total Pcs</label>
+                <input type="number" id="totalPcs" class="form-input " placeholder="Enter Total Pcs"
+                    [(ngModel)]="totalPcsOfInvoice" name="totalPcsOfInvoice">
+            </div>
+            <div>
+                <label for="totalWeight" class="block text-sm font-medium text-gray-700">Ref No.(Optinal)</label>
+                <input type="text" id="totalWeight" [(ngModel)]="optinalRef2"
+                    class="form-input w-full p-2 border border-gray-300 rounded-md" placeholder="Enter Ref">
+            </div>
+
+        </div>
+        <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="totalPcs" class="block text-sm font-medium text-gray-700">Instruction 1 (Optional)</label>
+                <input type="text" id="totalPcs" class="form-input " placeholder="Special Instruction 1"
+                    [(ngModel)]="instruction1" name="totalPcsOfInvoice">
+            </div>
+            <div>
+                <label for="totalWeight" class="block text-sm font-medium text-gray-700">Instruction 2
+                    (Optional)</label>
+                <input type="text" id="totalWeight" [(ngModel)]="instruction2"
+                    class="form-input w-full p-2 border border-gray-300 rounded-md" placeholder="Special Instruction 2">
+            </div>
+
+        </div>
+        <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="totalPcs" class="block text-sm font-medium text-gray-700">Instruction 3 (Optional)</label>
+                <input type="text" id="totalPcs" class="form-input " placeholder="Special Instruction 3"
+                    [(ngModel)]="instruction3" name="totalPcsOfInvoice">
+            </div>
+            <div>
+                <label for="totalWeight" class="block text-sm font-medium text-gray-700">Instruction 4
+                    (Optional)</label>
+                <input type="text" id="totalWeight" [(ngModel)]="instruction4"
+                    class="form-input w-full p-2 border border-gray-300 rounded-md" placeholder="Special Instruction 4">
+            </div>
+
+        </div>
+
+        <!-- Service Selection -->
+
+    </ng-template>
+
+    <ng-template #modalFooter>
+        <button type="button" (click)="pickupDateTimeModal.close()" class="btn btn-outline-danger">Discard</button>
+        <button type="button" (click)="confirmPickupTime(); pickupDateTimeModal.close()"
+            class="btn btn-secondary ltr:ml-4 rtl:mr-4">Confirm</button>
+    </ng-template>
+</modal>
+<!-- <button (click)="successConnectedOfShipment.open   ()">dsa</button> -->
+<modal #successConnectedOfShipment class="modal-center custom-modal" [closeOnOutsideClick]="false">
+    <ng-template #modalBody>
+        <div class="flex items-center justify-center ">
+            <div class="max-w-md w-full bg-white rounded-xl shadow-2xl overflow-hidden border border-green-100">
+            
+                <div class="p-6">
+                    <div class="flex justify-center mb-5">
+                        <div
+                            class="h-24 w-24 rounded-full bg-green-100 flex items-center justify-center animate-pulse-ring">
+                            <div class="h-20 w-20 rounded-full bg-green-200 flex items-center justify-center">
+                                <i class="fas fa-check text-4xl text-green-600 animate-checkmark"
+                                    style="animation-delay: 0.2s;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-6 animate-fade-in" style="animation-delay: 0.5s;">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Pickup Arranged Successfully For
+                         <span class="text-red-500">{{this.receivedData['invoice_no']}}</span> to {{this.assignForm.get('coloaderName').value}}!</h3>
+                        <p class="text-gray-600">Your pickup request has been confirmed and is being processed.</p>
+                    </div>
+
+                    <div class="bg-green-50 rounded-lg p-4 mb-6 text-center border border-green-200 animate-fade-in"
+                        style="animation-delay: 0.7s;">
+                        <p class="text-sm text-green-800 font-medium">Reference Number</p>
+                        <p class="text-xl font-mono font-bold text-green-900">
+                            {{this.assignForm.get('local_trasfer').value}}</p>
+                    </div>
+                    <div class="flex justify-center mb-5">
+                        <button class="btn btn-secondary" routerLink="/customer/awaitpickups">Go To Third-Party Pickup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ng-template>
+</modal>
+
+
+<!-- <ngx-custom-modal #successConnectedOfShipment>
+    <ng-template #modalHeader> <div>Modal Title</div> </ng-template>
+    <ng-template #modalBody>
+        <p>
+            Mauris mi tellus, pharetra vel mattis sed, tempus ultrices eros. Phasellus egestas sit amet velit sed luctus. Orci varius
+            natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse potenti. Vivamus ultrices sed urna ac
+            pulvinar. Ut sit amet ullamcorper mi.
+        </p>
+    </ng-template>
+    <ng-template #modalFooter>
+        <button type="button" (click)="modal2.close()" class="btn btn-outline-danger">Discard</button>
+        <button type="button" (click)="modal2.close()" class="btn btn-primary ltr:ml-4 rtl:mr-4">Save</button>
+    </ng-template>
+</ngx-custom-modal> -->

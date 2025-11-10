@@ -1,0 +1,171 @@
+import { PrismaService } from '../prisma/prisma.service';
+export declare class ManifestsService {
+    private prisma;
+    constructor(prisma: PrismaService);
+    create(data: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        origin: string;
+        destination: string;
+        status: import(".prisma/client").$Enums.ManifestStatus;
+        totalWeight: number;
+        notes: string | null;
+        manifestNumber: string;
+        manifestType: import(".prisma/client").$Enums.ManifestType;
+        dispatchDate: Date;
+        vehicleNumber: string | null;
+        driverName: string | null;
+        driverPhone: string | null;
+        totalShipments: number;
+    }>;
+    findAll(): Promise<({
+        items: ({
+            shipment: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                serviceType: string;
+                status: import(".prisma/client").$Enums.ShipmentStatus;
+                notes: string | null;
+                createdBy: string;
+                hawbNumber: string | null;
+                bookingId: string | null;
+                currentLocation: string | null;
+                trackingNumber: string;
+                senderName: string;
+                senderAddress: string;
+                senderCity: string;
+                senderState: string;
+                senderPincode: string;
+                senderPhone: string;
+                receiverName: string;
+                receiverAddress: string;
+                receiverCity: string;
+                receiverState: string;
+                receiverPincode: string;
+                receiverPhone: string;
+                weight: number;
+                dimensions: string | null;
+                declaredValue: number;
+                paymentMode: string;
+            };
+        } & {
+            id: string;
+            addedAt: Date;
+            manifestId: string;
+            shipmentId: string;
+        })[];
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        origin: string;
+        destination: string;
+        status: import(".prisma/client").$Enums.ManifestStatus;
+        totalWeight: number;
+        notes: string | null;
+        manifestNumber: string;
+        manifestType: import(".prisma/client").$Enums.ManifestType;
+        dispatchDate: Date;
+        vehicleNumber: string | null;
+        driverName: string | null;
+        driverPhone: string | null;
+        totalShipments: number;
+    })[]>;
+    findOne(id: string): Promise<{
+        items: ({
+            shipment: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                serviceType: string;
+                status: import(".prisma/client").$Enums.ShipmentStatus;
+                notes: string | null;
+                createdBy: string;
+                hawbNumber: string | null;
+                bookingId: string | null;
+                currentLocation: string | null;
+                trackingNumber: string;
+                senderName: string;
+                senderAddress: string;
+                senderCity: string;
+                senderState: string;
+                senderPincode: string;
+                senderPhone: string;
+                receiverName: string;
+                receiverAddress: string;
+                receiverCity: string;
+                receiverState: string;
+                receiverPincode: string;
+                receiverPhone: string;
+                weight: number;
+                dimensions: string | null;
+                declaredValue: number;
+                paymentMode: string;
+            };
+        } & {
+            id: string;
+            addedAt: Date;
+            manifestId: string;
+            shipmentId: string;
+        })[];
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        origin: string;
+        destination: string;
+        status: import(".prisma/client").$Enums.ManifestStatus;
+        totalWeight: number;
+        notes: string | null;
+        manifestNumber: string;
+        manifestType: import(".prisma/client").$Enums.ManifestType;
+        dispatchDate: Date;
+        vehicleNumber: string | null;
+        driverName: string | null;
+        driverPhone: string | null;
+        totalShipments: number;
+    }>;
+    update(id: string, data: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        origin: string;
+        destination: string;
+        status: import(".prisma/client").$Enums.ManifestStatus;
+        totalWeight: number;
+        notes: string | null;
+        manifestNumber: string;
+        manifestType: import(".prisma/client").$Enums.ManifestType;
+        dispatchDate: Date;
+        vehicleNumber: string | null;
+        driverName: string | null;
+        driverPhone: string | null;
+        totalShipments: number;
+    }>;
+    addShipment(manifestId: string, shipmentId: string): Promise<{
+        id: string;
+        addedAt: Date;
+        manifestId: string;
+        shipmentId: string;
+    }>;
+    removeShipment(manifestId: string, shipmentId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
+    delete(id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        origin: string;
+        destination: string;
+        status: import(".prisma/client").$Enums.ManifestStatus;
+        totalWeight: number;
+        notes: string | null;
+        manifestNumber: string;
+        manifestType: import(".prisma/client").$Enums.ManifestType;
+        dispatchDate: Date;
+        vehicleNumber: string | null;
+        driverName: string | null;
+        driverPhone: string | null;
+        totalShipments: number;
+    }>;
+}

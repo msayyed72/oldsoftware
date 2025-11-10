@@ -10,14 +10,22 @@ export default function Home() {
             Logistics Management System
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Modern shipment tracking and warehouse management
+            Book your cargo shipment easily and track it in real-time
           </p>
-          <Link
-            href="/login"
-            className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-          >
-            Get Started
-          </Link>
+          <div className="flex gap-4 justify-center">
+            <Link
+              href="/booking"
+              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Book Shipment
+            </Link>
+            <Link
+              href="/login"
+              className="inline-block bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+            >
+              Staff Login
+            </Link>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-16">

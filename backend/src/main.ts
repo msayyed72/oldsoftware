@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   app.enableCors({
-    origin: ['http://localhost:5000', 'http://0.0.0.0:5000'],
+    origin: true, // Allow all origins in development
     credentials: true,
   });
 
@@ -14,8 +14,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   const port = process.env.PORT || 3000;
-  await app.listen(port, '127.0.0.1');
-  console.log(`🚀 Backend server running on http://localhost:${port}/api`);
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 Backend server running on http://0.0.0.0:${port}/api`);
 }
 
 bootstrap();

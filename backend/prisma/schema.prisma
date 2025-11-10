@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(STAFF)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings  Booking[]
+  shipments Shipment[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+model Booking {
+  id              String   @id @default(uuid())
+  bookingNumber   String   @unique
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  customerAddress String
+  origin          String
+  destination     String
+  serviceType     String
+  status          BookingStatus @default(PENDING)
+  totalWeight     Float
+  totalValue      Float
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdBy       String
+  user            User     @relation(fields: [createdBy], references: [id])
+
+  shipments       Shipment[]
+
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Shipment {
+  id              String   @id @default(uuid())
+  trackingNumber  String   @unique
+  hawbNumber      String?
+  bookingId       String?
+  booking         Booking? @relation(fields: [bookingId], references: [id])
+  senderName      String
+  senderAddress   String
+  senderCity      String
+  senderState     String
+  senderPincode   String
+  senderPhone     String
+  receiverName    String
+  receiverAddress String
+  receiverCity    String
+  receiverState   String
+  receiverPincode String
+  receiverPhone   String
+  weight          Float
+  dimensions      String?
+  declaredValue   Float
+  status          ShipmentStatus @default(CREATED)
+  paymentMode     String
+  serviceType     String
+  currentLocation String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdBy       String
+  user            User     @relation(fields: [createdBy], references: [id])
+
+  manifestItems   ManifestItem[]
+
+  @@map("shipments")
+}
+
+enum ShipmentStatus {
+  CREATED
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  RETURNED
+  CANCELLED
+}
+
+model Manifest {
+  id              String   @id @default(uuid())
+  manifestNumber  String   @unique
+  manifestType    ManifestType
+  origin          String
+  destination     String
+  dispatchDate    DateTime
+  status          ManifestStatus @default(OPEN)
+  vehicleNumber   String?
+  driverName      String?
+  driverPhone     String?
+  totalShipments  Int      @default(0)
+  totalWeight     Float    @default(0)
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  items           ManifestItem[]
+
+  @@map("manifests")
+}
+
+enum ManifestType {
+  DISPATCH
+  RECEIVING
+  FORWARD
+  RETURN
+}
+
+enum ManifestStatus {
+  OPEN
+  CLOSED
+  IN_TRANSIT
+  RECEIVED
+}
+
+model ManifestItem {
+  id          String   @id @default(uuid())
+  manifestId  String
+  manifest    Manifest @relation(fields: [manifestId], references: [id], onDelete: Cascade)
+  shipmentId  String
+  shipment    Shipment @relation(fields: [shipmentId], references: [id])
+  addedAt     DateTime @default(now())
+
+  @@unique([manifestId, shipmentId])
+  @@map("manifest_items")
+}

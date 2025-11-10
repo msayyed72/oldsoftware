@@ -1,6 +1,0 @@
-/* Ensure description cell handles long text properly */
-.description-cell {
-    white-space: normal; /* Allows wrapping of long text */
-    word-wrap: break-word; /* Break words when needed */
-    word-break: break-word; /* Allows breaking of long words */
-}

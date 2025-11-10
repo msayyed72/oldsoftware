@@ -16,6 +16,20 @@ const shipments_module_1 = require("./shipments/shipments.module");
 const bookings_module_1 = require("./bookings/bookings.module");
 const manifests_module_1 = require("./manifests/manifests.module");
 const jobs_module_1 = require("./jobs/jobs.module");
+const bullModuleConfig = process.env.REDIS_HOST ?
+    bullmq_1.BullModule.forRoot({
+        connection: {
+            host: process.env.REDIS_HOST || 'localhost',
+            port: parseInt(process.env.REDIS_PORT) || 6379,
+            maxRetriesPerRequest: 3,
+            retryStrategy: (times) => {
+                if (times > 3)
+                    return null;
+                return Math.min(times * 50, 2000);
+            },
+        },
+    }) :
+    null;
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -25,12 +39,7 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
-            bullmq_1.BullModule.forRoot({
-                connection: {
-                    host: process.env.REDIS_HOST || 'localhost',
-                    port: parseInt(process.env.REDIS_PORT) || 6379,
-                },
-            }),
+            ...(bullModuleConfig ? [bullModuleConfig] : []),
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
             shipments_module_1.ShipmentsModule,
